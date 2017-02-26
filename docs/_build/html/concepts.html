@@ -105,7 +105,7 @@
 <p>第二種通道用途是用於回覆。值得注意是他們只有做一件事就是監聽 -介面服務。每一個回應的 channel 是各自獨立的名稱且當其 client 端被終止，必須路由回界面服務。</p>
 <p>這不是巨大差異 - 他們能然根據核心定義 <em>channel</em> 行為 - 但當我們想擴大規模時會出現一些問題。我們可以愉快的根據叢集隨機附載平衡服務正常的 channels 和 workers - 最終，任何 worker 可以處理訊息 - 但回應 channels 必須傳送訊息到它們正在監聽的 channel 服務。</p>
 <p>對於這個理由，Channels 對此區分出兩種不同類型的 <em>channel 型態</em>，且通過一個包含 <code class="docutils literal"><span class="pre">!</span></code> 的字符名稱來表示一個 <em>回應 channel</em>。 -e.g. <code class="docutils literal"><span class="pre">http.response!f5G3fE21f</span></code>。<em>一般 channels</em> 不會包含它，但是會與其他休息中的回覆 channel 名稱一起，它們通常包含字符 <code class="docutils literal"><span class="pre">a-z</span> <span class="pre">A-Z</span> <span class="pre">0-9</span> <span class="pre">-</span> <span class="pre">_</span></code>，且必須少於 200 字符的長度。</p>
-<p>這裡可以用選擇後端實現來理解他 - 畢竟，這只對於 Scale 重要，因為這邊你想要分割兩種不同類型 — 但是它仍然存在。假如你是撰寫後端或是介面服務想要更多彈性與掌控 channel types 可以參考 <span class="xref std std-ref">scaling-up</span>。</p>
+<p>這裡可以用選擇後端實現來理解他 - 畢竟，這只對於 Scale 重要，因為這邊你想要分割兩種不同類型 — 但是它仍然存在。假如你是撰寫後端或是介面服務想要更多彈性與掌控 channel types 可以參考 <a class="reference internal" href="deploying.html#scaling-up"><span class="std std-ref">Scaling Up</span></a>。</p>
 </div>
 <div class="section" id="groups">
 <h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
@@ -161,7 +161,7 @@
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="本標題的永久連結">¶</a></h2>
 <p>這是一個高級的 channels 和 groups 概覽與如何開始思考它。記住，Django 提供一些 channels 但你自由的使用與消費，所有的 channels 都是 network-transparent</p>
 <p>有件事是 channels 不是保證渠道的交付。假如你需要確定是一個將被完成任務，使用一個為此設計的系統設定去重試與保持(e.g. Celery)，或是做出一個管理命令，假如檢查沒有完成，會重新送出一個訊息給 channel (自己動手去重試這個邏輯)。</p>
-<p>我們將在文檔的其餘部分更詳細地介紹什麼樣的任務適合用在 Channels 中，但現在讓我們進入 <span class="xref doc">getting-started</span> 並編寫一些程式碼。</p>
+<p>我們將在文檔的其餘部分更詳細地介紹什麼樣的任務適合用在 Channels 中，但現在讓我們進入 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 並編寫一些程式碼。</p>
 </div>
 </div>
 

@@ -1,0 +1,389 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Generic Consumers &#8212; test 0.0.1 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="generic-consumers">
+<h1>Generic Consumers<a class="headerlink" href="#generic-consumers" title="本標題的永久連結">¶</a></h1>
+<p>Much like Django&#8217;s class-based views, Channels has class-based consumers.
+They provide a way for you to arrange code so it&#8217;s highly modifiable and
+inheritable, at the slight cost of it being harder to figure out the execution
+path.</p>
+<p>We recommend you use them if you find them valuable; normal function-based
+consumers are also entirely valid, however, and may result in more readable
+code for simpler tasks.</p>
+<p>There is one base generic consumer class, <code class="docutils literal"><span class="pre">BaseConsumer</span></code>, that provides
+the pattern for method dispatch and is the thing you can build entirely
+custom consumers on top of, and then protocol-specific subclasses that provide
+extra utility - for example, the <code class="docutils literal"><span class="pre">WebsocketConsumer</span></code> provides automatic
+group management for the connection.</p>
+<p>When you use class-based consumers in <a class="reference internal" href="routing.html"><span class="doc">routing</span></a>, you need
+to use <code class="docutils literal"><span class="pre">route_class</span></code> rather than <code class="docutils literal"><span class="pre">route</span></code>; <code class="docutils literal"><span class="pre">route_class</span></code> knows how to
+talk to the class-based consumer and extract the list of channels it needs
+to listen on from it directly, rather than making you pass it in explicitly.</p>
+<p>Here&#8217;s a routing example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">route_class</span>
+
+<span class="n">channel_routing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">route_class</span><span class="p">(</span><span class="n">consumers</span><span class="o">.</span><span class="n">ChatServer</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/chat/&quot;</span><span class="p">),</span>
+    <span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">ws_connect</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/$&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Class-based consumers are instantiated once for each message they consume,
+so it&#8217;s safe to store things on <code class="docutils literal"><span class="pre">self</span></code> (in fact, <code class="docutils literal"><span class="pre">self.message</span></code> is the
+current message by default, and <code class="docutils literal"><span class="pre">self.kwargs</span></code> are the keyword arguments
+passed in from the routing).</p>
+<div class="section" id="base">
+<h2>Base<a class="headerlink" href="#base" title="本標題的永久連結">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">BaseConsumer</span></code> class is the foundation of class-based consumers, and what
+you can inherit from if you wish to build your own entirely from scratch.</p>
+<p>You use it like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic</span> <span class="k">import</span> <span class="n">BaseConsumer</span>
+
+<span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">BaseConsumer</span><span class="p">):</span>
+
+    <span class="n">method_mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;channel.name.here&quot;</span><span class="p">:</span> <span class="s2">&quot;method_name&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>All you need to define is the <code class="docutils literal"><span class="pre">method_mapping</span></code> dictionary, which maps
+channel names to method names. The base code will take care of the dispatching
+for you, and set <code class="docutils literal"><span class="pre">self.message</span></code> to the current message as well.</p>
+<p>If you want to perfom more complicated routing, you&#8217;ll need to override the
+<code class="docutils literal"><span class="pre">dispatch()</span></code> and <code class="docutils literal"><span class="pre">channel_names()</span></code> methods in order to do the right thing;
+remember, though, your channel names cannot change during runtime and must
+always be the same for as long as your process runs.</p>
+<p><code class="docutils literal"><span class="pre">BaseConsumer</span></code> and all other generic consumers that inherit from it provide
+two instance variables on the class:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">self.message</span></code>, the <a class="reference internal" href="reference.html#ref-message"><span class="std std-ref">Message object</span></a> representing the
+message the consumer was called for.</li>
+<li><code class="docutils literal"><span class="pre">self.kwargs</span></code>, keyword arguments from the <a class="reference internal" href="routing.html"><span class="doc">Routing</span></a></li>
+</ul>
+</div>
+<div class="section" id="websockets">
+<h2>WebSockets<a class="headerlink" href="#websockets" title="本標題的永久連結">¶</a></h2>
+<p>There are two WebSockets generic consumers; one that provides group management,
+simpler send/receive methods, and basic method routing, and a subclass which
+additionally automatically serializes all messages sent and receives using JSON.</p>
+<p>The basic WebSocket generic consumer is used like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">WebsocketConsumer</span>
+
+<span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="c1"># Set to True to automatically port users from HTTP cookies</span>
+    <span class="c1"># (you don&#39;t need channel_session_user, this implies it)</span>
+    <span class="n">http_user</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Set to True if you want it, else leave it out</span>
+    <span class="n">strict_ordering</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">connection_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to return the list of groups to automatically add/remove</span>
+<span class="sd">        this connection to/from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform things on connection start</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Accept the connection; this is done by default if you don&#39;t override</span>
+        <span class="c1"># the connect function.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a message is received with either text or bytes</span>
+<span class="sd">        filled out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Simple echo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="nb">bytes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform things on connection close</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>You can call <code class="docutils literal"><span class="pre">self.send</span></code> inside the class to send things to the connection&#8217;s
+<code class="docutils literal"><span class="pre">reply_channel</span></code> automatically. Any group names returned from <code class="docutils literal"><span class="pre">connection_groups</span></code>
+are used to add the socket to when it connects and to remove it from when it
+disconnects; you get keyword arguments too if your URL path, say, affects
+which group to talk to.</p>
+<p>Additionally, the property <code class="docutils literal"><span class="pre">self.path</span></code> is always set to the current URL path.</p>
+<p>The JSON-enabled consumer looks slightly different:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">JsonWebsocketConsumer</span>
+
+<span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">JsonWebsocketConsumer</span><span class="p">):</span>
+
+    <span class="c1"># Set to True if you want it, else leave it out</span>
+    <span class="n">strict_ordering</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">connection_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to return the list of groups to automatically add/remove</span>
+<span class="sd">        this connection to/from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform things on connection start</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a message is received with decoded JSON content</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Simple echo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform things on connection close</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>For this subclass, <code class="docutils literal"><span class="pre">receive</span></code> only gets a <code class="docutils literal"><span class="pre">content</span></code> argument that is the
+already-decoded JSON as Python datastructures; similarly, <code class="docutils literal"><span class="pre">send</span></code> now only
+takes a single argument, which it JSON-encodes before sending down to the
+client.</p>
+<p>Note that this subclass still can&#8217;t intercept <code class="docutils literal"><span class="pre">Group.send()</span></code> calls to make
+them into JSON automatically, but it does provide <code class="docutils literal"><span class="pre">self.group_send(name,</span> <span class="pre">content)</span></code>
+that will do this for you if you call it explicitly.</p>
+<p><code class="docutils literal"><span class="pre">self.close()</span></code> is also provided to easily close the WebSocket from the
+server end with an optional status code once you are done with it.</p>
+</div>
+<div class="section" id="websocket-multiplexing">
+<span id="multiplexing"></span><h2>WebSocket Multiplexing<a class="headerlink" href="#websocket-multiplexing" title="本標題的永久連結">¶</a></h2>
+<p>Channels provides a standard way to multiplex different data streams over
+a single WebSocket, called a <code class="docutils literal"><span class="pre">Demultiplexer</span></code>.</p>
+<p>It expects JSON-formatted WebSocket frames with two keys, <code class="docutils literal"><span class="pre">stream</span></code> and
+<code class="docutils literal"><span class="pre">payload</span></code>, and will match the <code class="docutils literal"><span class="pre">stream</span></code> against the mapping to find a
+channel name. It will then forward the message onto that channel while
+preserving <code class="docutils literal"><span class="pre">reply_channel</span></code>, so you can hook consumers up to them directly
+in the <code class="docutils literal"><span class="pre">routing.py</span></code> file, and use authentication decorators as you wish.</p>
+<p>Example using class-based consumer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">WebsocketDemultiplexer</span><span class="p">,</span> <span class="n">JsonWebsocketConsumer</span>
+
+<span class="k">class</span> <span class="nc">EchoConsumer</span><span class="p">(</span><span class="n">JsonWebsocketConsumer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">multiplexer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Send data with the multiplexer</span>
+        <span class="n">multiplexer</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;I just connected!&quot;</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">multiplexer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stream </span><span class="si">%s</span><span class="s2"> is closed&quot;</span> <span class="o">%</span> <span class="n">multiplexer</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">multiplexer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Simple echo</span>
+        <span class="n">multiplexer</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;original_message&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">})</span>
+
+
+<span class="k">class</span> <span class="nc">AnotherConsumer</span><span class="p">(</span><span class="n">JsonWebsocketConsumer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">multiplexer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Some other actions here</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">Demultiplexer</span><span class="p">(</span><span class="n">WebsocketDemultiplexer</span><span class="p">):</span>
+
+    <span class="c1"># Wire your JSON consumers here: {stream_name : consumer}</span>
+    <span class="n">consumers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="n">EchoConsumer</span><span class="p">,</span>
+        <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">AnotherConsumer</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">multiplexer</span></code> allows the consumer class to be independant of the stream name.
+It holds the stream name and the demultiplexer on the attributes <code class="docutils literal"><span class="pre">stream</span></code> and <code class="docutils literal"><span class="pre">demultiplexer</span></code>.</p>
+<p>The <a class="reference internal" href="binding.html"><span class="doc">data binding</span></a> code will also send out messages to clients
+in the same format, and you can encode things in this format yourself by
+using the <code class="docutils literal"><span class="pre">WebsocketDemultiplexer.encode</span></code> class method.</p>
+</div>
+<div class="section" id="sessions-and-users">
+<h2>Sessions and Users<a class="headerlink" href="#sessions-and-users" title="本標題的永久連結">¶</a></h2>
+<p>If you wish to use <code class="docutils literal"><span class="pre">channel_session</span></code> or <code class="docutils literal"><span class="pre">channel_session_user</span></code> with a
+class-based consumer, simply set one of the variables in the class body:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="n">channel_session_user</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>This will run the appropriate decorator around your handler methods, and provide
+<code class="docutils literal"><span class="pre">message.channel_session</span></code> and <code class="docutils literal"><span class="pre">message.user</span></code> on the message object - both
+the one passed in to your handler as an argument as well as <code class="docutils literal"><span class="pre">self.message</span></code>,
+as they point to the same instance.</p>
+<p>And if you just want to use the user from the django session, add <code class="docutils literal"><span class="pre">http_user</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="n">http_user</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>This will give you <code class="docutils literal"><span class="pre">message.user</span></code>, which will be the same as <code class="docutils literal"><span class="pre">request.user</span></code>
+would be on a regular View.</p>
+</div>
+<div class="section" id="applying-decorators">
+<h2>Applying Decorators<a class="headerlink" href="#applying-decorators" title="本標題的永久連結">¶</a></h2>
+<p>To apply decorators to a class-based consumer, you&#8217;ll have to wrap a functional
+part of the consumer; in this case, <code class="docutils literal"><span class="pre">get_handler</span></code> is likely the place you
+want to override; like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyConsumer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">your_decorator</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also use the Django <code class="docutils literal"><span class="pre">method_decorator</span></code> utility to wrap methods that
+have <code class="docutils literal"><span class="pre">message</span></code> as their first positional argument - note that it won&#8217;t work
+for more high-level methods, like <code class="docutils literal"><span class="pre">WebsocketConsumer.receive</span></code>.</p>
+</div>
+<div class="section" id="as-route">
+<h2>As route<a class="headerlink" href="#as-route" title="本標題的永久連結">¶</a></h2>
+<p>Instead of making routes using <code class="docutils literal"><span class="pre">route_class</span></code> you may use the <code class="docutils literal"><span class="pre">as_route</span></code> shortcut.
+This function takes route filters (<a class="reference internal" href="routing.html#filters"><span class="std std-ref">Filters</span></a>) as kwargs and returns
+<code class="docutils literal"><span class="pre">route_class</span></code>. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">consumers</span>
+
+<span class="n">channel_routing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">consumers</span><span class="o">.</span><span class="n">ChatServer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/chat/&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Use the <code class="docutils literal"><span class="pre">attrs</span></code> dict keyword for dynamic class attributes. For example you have
+the generic consumer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyGenericConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+    <span class="n">group_prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">connection_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>You can create consumers with different <code class="docutils literal"><span class="pre">group</span></code> and  <code class="docutils literal"><span class="pre">group_prefix</span></code> with <code class="docutils literal"><span class="pre">attrs</span></code>,
+like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">consumers</span>
+
+<span class="n">channel_routing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">consumers</span><span class="o">.</span><span class="n">MyGenericConsumer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/path/1/&quot;</span><span class="p">,</span>
+                                         <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;group_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;pre&#39;</span><span class="p">}),</span>
+    <span class="n">consumers</span><span class="o">.</span><span class="n">MyGenericConsumer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/path/2/&quot;</span><span class="p">,</span>
+                                         <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;group_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;public&#39;</span><span class="p">}),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="concepts.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Generic Consumers</a><ul>
+<li><a class="reference internal" href="#base">Base</a></li>
+<li><a class="reference internal" href="#websockets">WebSockets</a></li>
+<li><a class="reference internal" href="#websocket-multiplexing">WebSocket Multiplexing</a></li>
+<li><a class="reference internal" href="#sessions-and-users">Sessions and Users</a></li>
+<li><a class="reference internal" href="#applying-decorators">Applying Decorators</a></li>
+<li><a class="reference internal" href="#as-route">As route</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="concepts.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/generics.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, test.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/generics.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

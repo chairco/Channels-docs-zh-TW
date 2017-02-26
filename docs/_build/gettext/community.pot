@@ -1,0 +1,50 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, test
+# This file is distributed under the same license as the test package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: test 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../community.rst:2
+msgid "Community Projects"
+msgstr ""
+
+#: ../../community.rst:4
+msgid "These projects from the community are developed on top of Channels:"
+msgstr ""
+
+#: ../../community.rst:6
+msgid "Djangobot_, a bi-directional interface server for Slack."
+msgstr ""
+
+#: ../../community.rst:7
+msgid "knocker_, a generic desktop-notification system."
+msgstr ""
+
+#: ../../community.rst:8
+msgid "Beatserver_, a periodic task scheduler for django channels."
+msgstr ""
+
+#: ../../community.rst:9
+msgid "cq_, a simple distributed task system."
+msgstr ""
+
+#: ../../community.rst:10
+msgid "Debugpannel_, a django Debug Toolbar panel for channels."
+msgstr ""
+
+#: ../../community.rst:12
+msgid "If you'd like to add your project, please submit a PR with a link and brief description."
+msgstr ""
+

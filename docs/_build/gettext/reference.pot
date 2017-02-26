@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, test
+# This file is distributed under the same license as the test package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: test 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../reference.rst:2
+msgid "Reference"
+msgstr ""
+
+#: ../../reference.rst:7
+msgid "Consumers"
+msgstr ""
+
+#: ../../reference.rst:9
+msgid "When you configure channel routing, the object assigned to a channel should be a callable that takes exactly one positional argument, here called ``message``, which is a :ref:`message object <ref-message>`. A consumer is any callable that fits this definition."
+msgstr ""
+
+#: ../../reference.rst:14
+msgid "Consumers are not expected to return anything, and if they do, it will be ignored. They may raise ``channels.exceptions.ConsumeLater`` to re-insert their current message at the back of the channel it was on, but be aware you can only do this so many time (10 by default) until the message is dropped to avoid deadlocking."
+msgstr ""
+
+#: ../../reference.rst:24
+msgid "Message"
+msgstr ""
+
+#: ../../reference.rst:26
+msgid "Message objects are what consumers get passed as their only argument. They encapsulate the basic :doc:`ASGI <asgi>` message, which is a ``dict``, with extra information. They have the following attributes:"
+msgstr ""
+
+#: ../../reference.rst:30
+msgid "``content``: The actual message content, as a dict. See the :doc:`ASGI spec <asgi>` or protocol message definition document for how this is structured."
+msgstr ""
+
+#: ../../reference.rst:34
+msgid "``channel``: A :ref:`Channel <ref-channel>` object, representing the channel this message was received on. Useful if one consumer handles multiple channels."
+msgstr ""
+
+#: ../../reference.rst:37
+msgid "``reply_channel``: A :ref:`Channel <ref-channel>` object, representing the unique reply channel for this message, or ``None`` if there isn't one."
+msgstr ""
+
+#: ../../reference.rst:40
+msgid "``channel_layer``: A :ref:`ChannelLayer <ref-channellayer>` object, representing the underlying channel layer this was received on. This can be useful in projects that have more than one layer to identify where to send messages the consumer generates (you can pass it to the constructor of :ref:`Channel <ref-channel>` or :ref:`Group <ref-group>`)"
+msgstr ""
+
+#: ../../reference.rst:50
+msgid "Channel"
+msgstr ""
+
+#: ../../reference.rst:52
+msgid "Channel objects are a simple abstraction around ASGI channels, which by default are unicode strings. The constructor looks like this::"
+msgstr ""
+
+#: ../../reference.rst:57
+msgid "Normally, you'll just call ``Channel(\"my.channel.name\")`` and it'll make the right thing, but if you're in a project with multiple channel layers set up, you can pass in either the layer alias or the layer object and it'll send onto that one instead. They have the following attributes:"
+msgstr ""
+
+#: ../../reference.rst:62
+msgid "``name``: The unicode string representing the channel name."
+msgstr ""
+
+#: ../../reference.rst:64
+#: ../../reference.rst:87
+msgid "``channel_layer``: A :ref:`ChannelLayer <ref-channellayer>` object, representing the underlying channel layer to send messages on."
+msgstr ""
+
+#: ../../reference.rst:67
+msgid "``send(content)``: Sends the ``dict`` provided as *content* over the channel. The content should conform to the relevant ASGI spec or protocol definition."
+msgstr ""
+
+#: ../../reference.rst:74
+msgid "Group"
+msgstr ""
+
+#: ../../reference.rst:76
+msgid "Groups represent the underlying :doc:`ASGI <asgi>` group concept in an object-oriented way. The constructor looks like this::"
+msgstr ""
+
+#: ../../reference.rst:81
+msgid "Like :ref:`Channel <ref-channel>`, you would usually just pass a ``name``, but can pass a layer alias or object if you want to send on a non-default one. They have the following attributes:"
+msgstr ""
+
+#: ../../reference.rst:85
+msgid "``name``: The unicode string representing the group name."
+msgstr ""
+
+#: ../../reference.rst:90
+msgid "``send(content)``: Sends the ``dict`` provided as *content* to all members of the group."
+msgstr ""
+
+#: ../../reference.rst:93
+msgid "``add(channel)``: Adds the given channel (as either a :ref:`Channel <ref-channel>` object or a unicode string name) to the group. If the channel is already in the group, does nothing."
+msgstr ""
+
+#: ../../reference.rst:97
+msgid "``discard(channel)``: Removes the given channel (as either a :ref:`Channel <ref-channel>` object or a unicode string name) from the group, if it's in the group. Does nothing otherwise."
+msgstr ""
+
+#: ../../reference.rst:105
+msgid "Channel Layer"
+msgstr ""
+
+#: ../../reference.rst:107
+msgid "These are a wrapper around the underlying :doc:`ASGI <asgi>` channel layers that supplies a routing system that maps channels to consumers, as well as aliases to help distinguish different layers in a project with multiple layers."
+msgstr ""
+
+#: ../../reference.rst:111
+msgid "You shouldn't make these directly; instead, get them by alias (``default`` is the default alias)::"
+msgstr ""
+
+#: ../../reference.rst:117
+msgid "They have the following attributes:"
+msgstr ""
+
+#: ../../reference.rst:119
+msgid "``alias``: The alias of this layer."
+msgstr ""
+
+#: ../../reference.rst:121
+msgid "``router``: An object which represents the layer's mapping of channels to consumers. Has the following attributes:"
+msgstr ""
+
+#: ../../reference.rst:124
+msgid "``channels``: The set of channels this router can handle, as unicode strings"
+msgstr ""
+
+#: ../../reference.rst:126
+msgid "``match(message)``: Takes a :ref:`Message <ref-message>` and returns either a (consumer, kwargs) tuple specifying the consumer to run and the keyword argument to pass that were extracted via routing patterns, or None, meaning there's no route available."
+msgstr ""
+
+#: ../../reference.rst:135
+msgid "AsgiRequest"
+msgstr ""
+
+#: ../../reference.rst:137
+msgid "This is a subclass of ``django.http.HttpRequest`` that provides decoding from ASGI requests, and a few extra methods for ASGI-specific info. The constructor is::"
+msgstr ""
+
+#: ../../reference.rst:142
+msgid "``message`` must be an :doc:`ASGI <asgi>` ``http.request`` format message."
+msgstr ""
+
+#: ../../reference.rst:144
+msgid "Additional attributes are:"
+msgstr ""
+
+#: ../../reference.rst:146
+msgid "``reply_channel``, a :ref:`Channel <ref-channel>` object that represents the ``http.response.?`` reply channel for this request."
+msgstr ""
+
+#: ../../reference.rst:149
+msgid "``message``, the raw ASGI message passed in the constructor."
+msgstr ""
+
+#: ../../reference.rst:155
+msgid "AsgiHandler"
+msgstr ""
+
+#: ../../reference.rst:157
+msgid "This is a class in ``channels.handler`` that's designed to handle the workflow of HTTP requests via ASGI messages. You likely don't need to interact with it directly, but there are two useful ways you can call it:"
+msgstr ""
+
+#: ../../reference.rst:161
+msgid "``AsgiHandler(message)`` will process the message through the Django view layer and yield one or more response messages to send back to the client, encoded from the Django ``HttpResponse``."
+msgstr ""
+
+#: ../../reference.rst:165
+msgid "``encode_response(response)`` is a classmethod that can be called with a Django ``HttpResponse`` and will yield one or more ASGI messages that are the encoded response."
+msgstr ""
+

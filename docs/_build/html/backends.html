@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Channel Layer Types &#8212; test 0.0.1 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="channel-layer-types">
+<h1>Channel Layer Types<a class="headerlink" href="#channel-layer-types" title="本標題的永久連結">¶</a></h1>
+<p>Multiple choices of backend are available, to fill different tradeoffs of
+complexity, throughput and scalability. You can also write your own backend if
+you wish; the spec they confirm to is called <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a>. Any
+ASGI-compliant channel layer can be used.</p>
+<div class="section" id="redis">
+<h2>Redis<a class="headerlink" href="#redis" title="本標題的永久連結">¶</a></h2>
+<p>The Redis layer is the recommended backend to run Channels with, as it
+supports both high throughput on a single Redis server as well as the ability
+to run against a set of Redis servers in a sharded mode.</p>
+<p>To use the Redis layer, simply install it from PyPI (it lives in a separate
+package, as we didn&#8217;t want to force a dependency on the redis-py for the main
+install):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">asgi_redis</span>
+</pre></div>
+</div>
+<p>By default, it will attempt to connect to a Redis server on <code class="docutils literal"><span class="pre">localhost:6379</span></code>,
+but you can override this with the <code class="docutils literal"><span class="pre">hosts</span></code> key in its config:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;asgi_redis.RedisChannelLayer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ROUTING&quot;</span><span class="p">:</span> <span class="s2">&quot;???&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;redis-channel-1&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;redis-channel-2&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="sharding">
+<h3>Sharding<a class="headerlink" href="#sharding" title="本標題的永久連結">¶</a></h3>
+<p>The sharding model is based on consistent hashing - in particular,
+<a class="reference internal" href="concepts.html#channel-types"><span class="std std-ref">response channels</span></a> are hashed and used to pick a single
+Redis server that both the interface server and the worker will use.</p>
+<p>For normal channels, since any worker can service any channel request, messages
+are simply distributed randomly among all possible servers, and workers will
+pick a single server to listen to. Note that if you run more Redis servers than
+workers, it&#8217;s very likely that some servers will not have workers listening to
+them; we recommend you always have at least ten workers for each Redis server
+to ensure good distribution. Workers will, however, change server periodically
+(every five seconds or so) so queued messages should eventually get a response.</p>
+<p>Note that if you change the set of sharding servers you will need to restart
+all interface servers and workers with the new set before anything works,
+and any in-flight messages will be lost (even with persistence, some will);
+the consistent hashing model relies on all running clients having the same
+settings. Any misconfigured interface server or worker will drop some or all
+messages.</p>
+</div>
+</div>
+<div class="section" id="ipc">
+<h2>IPC<a class="headerlink" href="#ipc" title="本標題的永久連結">¶</a></h2>
+<p>The IPC backend uses POSIX shared memory segments and semaphores in order to
+allow different processes on the same machine to communicate with each other.</p>
+<p>As it uses shared memory, it does not require any additional servers running
+to get working, and is quicker than any network-based channel layer. However,
+it can only run between processes on the same machine.</p>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">The IPC layer only communicates between processes on the same machine,
+and while you might initially be tempted to run a cluster of machines all
+with their own IPC-based set of processes, this will result in groups not
+working properly; events sent to a group will only go to those channels
+that joined the group on the same machine. This backend is for
+single-machine deployments only.</p>
+</div>
+</div>
+<div class="section" id="in-memory">
+<h2>In-memory<a class="headerlink" href="#in-memory" title="本標題的永久連結">¶</a></h2>
+<p>The in-memory layer is only useful when running the protocol server and the
+worker server in a single process; the most common case of this
+is <code class="docutils literal"><span class="pre">runserver</span></code>, where a server thread, this channel layer, and worker thread all
+co-exist inside the same python process.</p>
+<p>Its path is <code class="docutils literal"><span class="pre">asgiref.inmemory.ChannelLayer</span></code>. If you try and use this channel
+layer with <code class="docutils literal"><span class="pre">runworker</span></code>, it will exit, as it does not support cross-process
+communication.</p>
+</div>
+<div class="section" id="writing-custom-channel-layers">
+<h2>Writing Custom Channel Layers<a class="headerlink" href="#writing-custom-channel-layers" title="本標題的永久連結">¶</a></h2>
+<p>The interface channel layers present to Django and other software that
+communicates over them is codified in a specification called <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a>.</p>
+<p>Any channel layer that conforms to the <a class="reference internal" href="asgi.html"><span class="doc">ASGI spec</span></a> can be used
+by Django; just set <code class="docutils literal"><span class="pre">BACKEND</span></code> to the class to instantiate and <code class="docutils literal"><span class="pre">CONFIG</span></code> to
+a dict of keyword arguments to initialize the class with.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="concepts.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Channel Layer Types</a><ul>
+<li><a class="reference internal" href="#redis">Redis</a><ul>
+<li><a class="reference internal" href="#sharding">Sharding</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ipc">IPC</a></li>
+<li><a class="reference internal" href="#in-memory">In-memory</a></li>
+<li><a class="reference internal" href="#writing-custom-channel-layers">Writing Custom Channel Layers</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="concepts.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/backends.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, test.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/backends.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

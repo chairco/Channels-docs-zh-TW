@@ -1,0 +1,740 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, test
+# This file is distributed under the same license as the test package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: test 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2017\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../getting-started.rst:2
+msgid "Getting Started with Channels"
+msgstr "Getting Started with Channels"
+
+#: ../../getting-started.rst:4
+msgid ""
+"(If you haven't yet, make sure you :doc:`install Channels <installation>`)"
+msgstr " (假如你尚未完成，先確認你  :doc:`install Channels <installation>`)"
+
+#: ../../getting-started.rst:6
+msgid ""
+"Now, let's get to writing some consumers. If you've not read it already, you"
+" should read :doc:`concepts`, as it covers the basic description of what "
+"channels and groups are, and lays out some of the important implementation "
+"patterns and caveats."
+msgstr ""
+"現在，讓我們開始寫一些 consumer。假如尚未讀過 :doc:`concepts` 先研讀過後，它包含最基礎的像是那些是 channels "
+"與群組、重要的實施模式佈局與注意事項。"
+
+#: ../../getting-started.rst:12
+msgid "First Consumers"
+msgstr "First Consumers"
+
+#: ../../getting-started.rst:14
+msgid ""
+"When you first run Django with Channels installed, it will be set up in the "
+"default layout - where all HTTP requests (on the ``http.request`` channel) "
+"are routed to the Django view layer - nothing will be different to how "
+"things worked in the past with a WSGI-based Django, and your views and "
+"static file serving (from ``runserver`` will work as normal)"
+msgstr ""
+"當你第一次執行 Django 並安裝 Channels，將會設定默認的 layout - 所有的 HTTP requests (在 "
+"``http.request`` channel) 如何路由到 Django - 與過去基於 WSGI-based Django "
+"與你的視覺圖與靜態檔案服務 (依然運作如一般 ``runserver`` 不會有任何的不同)"
+
+#: ../../getting-started.rst:20
+msgid ""
+"As a very basic introduction, let's write a consumer that overrides the "
+"built-in handling and handles every HTTP request directly. This isn't "
+"something you'd usually do in a project, but it's a good illustration of how"
+" channels underlie even core Django - it's less of an addition and more "
+"adding a whole new layer under the existing view layer."
+msgstr ""
+"根據一個基礎的介紹，讓我們寫一個 consumer 可以覆寫的內置處理器，並且直接處理每一個 HTTP request "
+"的需求。你不是會經常在項目內這樣做，但是他是一個很棒的說明為什麼 channels 如何成為 Django 的核心 - 他不是增加一個新的 "
+"addtion 而是一個全新的 layer 建築在既有的視覺圖上。"
+
+#: ../../getting-started.rst:26
+msgid ""
+"Make a new project, a new app, and put this in a ``consumers.py`` file in "
+"the app::"
+msgstr "建一個新的專案，一個新的 app， 並且放入這些到一個 ``consumers.py`` 檔案在 app::"
+
+#: ../../getting-started.rst:38
+msgid ""
+"The most important thing to note here is that, because things we send in "
+"messages must be JSON serializable, the request and response messages are in"
+" a key-value format. You can read more about that format in the :doc:`ASGI "
+"specification <asgi>`, but you don't need to worry about it too much; just "
+"know that there's an ``AsgiRequest`` class that translates from ASGI into "
+"Django request objects, and the ``AsgiHandler`` class handles translation of"
+" ``HttpResponse`` into ASGI messages, which you see used above. Usually, "
+"Django's built-in code will do all this for you when you're using normal "
+"views."
+msgstr ""
+"在這裡很重要且必須注意的事，因為我們送出的訊息必須是 JSON 可序列化，這個 request 與 response 訊息是一組 key-value "
+"格式。你可以讀取更多關於這些格式在 :doc:`ASGI specification <asgi>`， 但不需要去擔心關於這些太多;只需要知道這些是一個"
+" ``AsgiRequest`` class 用來轉換來自 ASGI 到 Django request 物件，``AsgiHandler`` class"
+" 負責轉換 ``HttpResponse`` 進入 ASGI 訊息，這些你看見使用上面已經使用。通常當你使用一般的視圖時，Django "
+"的內置處理器程式碼將會完成這些。"
+
+#: ../../getting-started.rst:47
+msgid ""
+"Now we need to do one more thing, and that's tell Django that this consumer "
+"should be tied to the ``http.request`` channel rather than the default "
+"Django view system. This is done in the settings file - in particular, we "
+"need to define our ``default`` channel layer and what its routing is set to."
+msgstr ""
+"現在我們需要做更多事，且要告訴 Django 這是 Consumer 應該要被綁定在 ``http.request`` channel 而不是 "
+"Django 默認的視圖系統。這會透過 settings file 完成 - 較為特別是我們需要定義我們的 ``default`` channel "
+"layer 和路由設置。"
+
+#: ../../getting-started.rst:52
+msgid ""
+"Channel routing is a bit like URL routing, and so it's structured similarly "
+"- you point the setting at a dict mapping channels to consumer callables. "
+"Here's what that looks like::"
+msgstr ""
+"Channel 路由有點像是 URL 路由，因此它的結構類似 - 你指向這個 setting 在 dict 映射 channels "
+"到消費者可調用。他的樣子會像是::"
+
+#: ../../getting-started.rst:73
+msgid ""
+"This example, and most of the examples here, use the \"in memory\" channel "
+"layer. This is the easiest to get started with but provides absolutely no "
+"cross-process channel transportation, and so can only be used with "
+"``runserver``. You'll want to choose another backend (discussed later) to "
+"run things in production."
+msgstr ""
+
+#: ../../getting-started.rst:79
+msgid ""
+"As you can see, this is a little like Django's ``DATABASES`` setting; there "
+"are named channel layers, with a default one called ``default``. Each layer "
+"needs a channel layer class, some options (if the channel layer needs them),"
+" and a routing scheme, which points to a list containing the routing "
+"settings. It's recommended you call this ``routing.py`` and put it alongside"
+" ``urls.py`` in your project, but you can put it wherever you like, as long "
+"as the path is correct."
+msgstr ""
+"如同你所見，這個有點像是 Django 的 `DATABASES` 設定; 這些稱為 channel layers, 有命名的通道默認為 "
+"`default`. 其他 layer 需要一個 channel layer 類別, 一些選項（假如 channel layer 需要他們）"
+
+#: ../../getting-started.rst:87
+msgid ""
+"If you start up ``python manage.py runserver`` and go to "
+"``http://localhost:8000``, you'll see that, rather than a default Django "
+"page, you get the Hello World response, so things are working. If you don't "
+"see a response, check you :doc:`installed Channels correctly "
+"<installation>`."
+msgstr ""
+
+#: ../../getting-started.rst:92
+msgid ""
+"Now, that's not very exciting - raw HTTP responses are something Django has "
+"been able to do for a long time. Let's try some WebSockets, and make a basic"
+" chat server!"
+msgstr ""
+
+#: ../../getting-started.rst:96
+msgid ""
+"We'll start with a simple server that just echoes every message it gets sent"
+" back to the same client - no cross-client communication. It's not terribly "
+"useful, but it's a good way to start out writing Channels consumers."
+msgstr ""
+
+#: ../../getting-started.rst:100
+msgid ""
+"Delete that previous consumer and its routing - we'll want the normal Django"
+" view layer to serve HTTP requests from now on, which happens if you don't "
+"specify a consumer for ``http.request`` - and make this WebSocket consumer "
+"instead::"
+msgstr ""
+
+#: ../../getting-started.rst:113
+msgid "Hook it up to the ``websocket.receive`` channel like this::"
+msgstr ""
+
+#: ../../getting-started.rst:123
+msgid ""
+"Now, let's look at what this is doing. It's tied to the "
+"``websocket.receive`` channel, which means that it'll get a message whenever"
+" a WebSocket packet is sent to us by a client."
+msgstr ""
+
+#: ../../getting-started.rst:127
+msgid ""
+"When it gets that message, it takes the ``reply_channel`` attribute from it,"
+" which is the unique response channel for that client, and sends the same "
+"content back to the client using its ``send()`` method."
+msgstr ""
+
+#: ../../getting-started.rst:131
+msgid ""
+"Let's test it! Run ``runserver``, open a browser, navigate to a page on the "
+"server (you can't use any page's console because of origin restrictions), "
+"and put the following into the JavaScript console to open a WebSocket and "
+"send some data down it (you might need to change the socket address if "
+"you're using a development VM or similar)::"
+msgstr ""
+
+#: ../../getting-started.rst:149
+msgid ""
+"You should see an alert come back immediately saying \"hello world\" - your "
+"message has round-tripped through the server and come back to trigger the "
+"alert."
+msgstr ""
+
+#: ../../getting-started.rst:153
+msgid "Groups"
+msgstr ""
+
+#: ../../getting-started.rst:155
+msgid ""
+"Now, let's make our echo server into an actual chat server, so people can "
+"talk to each other. To do this, we'll use Groups, one of the :doc:`core "
+"concepts <concepts>` of Channels, and our fundamental way of doing multi-"
+"cast messaging."
+msgstr ""
+
+#: ../../getting-started.rst:159
+msgid ""
+"To do this, we'll hook up the ``websocket.connect`` and "
+"``websocket.disconnect`` channels to add and remove our clients from the "
+"Group as they connect and disconnect, like this::"
+msgstr ""
+
+#: ../../getting-started.rst:175
+msgid ""
+"Of course, if you've read through :doc:`concepts`, you'll know that channels"
+" added to groups expire out if their messages expire (every channel layer "
+"has a message expiry time, usually between 30 seconds and a few minutes, and"
+" it's often configurable) - but the ``disconnect`` handler will get called "
+"nearly all of the time anyway."
+msgstr ""
+
+#: ../../getting-started.rst:182
+msgid ""
+"Channels' design is predicated on expecting and working around failure; it "
+"assumes that some small percentage of messages will never get delivered, and"
+" so all the core functionality is designed to *expect failure* so that when "
+"a message doesn't get delivered, it doesn't ruin the whole system."
+msgstr ""
+
+#: ../../getting-started.rst:187
+msgid ""
+"We suggest you design your applications the same way - rather than relying "
+"on 100% guaranteed delivery, which Channels won't give you, look at each "
+"failure case and program something to expect and handle it - be that retry "
+"logic, partial content handling, or just having something not work that one "
+"time. HTTP requests are just as fallible, and most people's response to that"
+" is a generic error page!"
+msgstr ""
+
+#: ../../getting-started.rst:196
+msgid ""
+"Now, that's taken care of adding and removing WebSocket send channels for "
+"the ``chat`` group; all we need to do now is take care of message sending. "
+"Instead of echoing the message back to the client like we did above, we'll "
+"instead send it to the whole ``Group``, which means any client who's been "
+"added to it will get the message. Here's all the code::"
+msgstr ""
+
+#: ../../getting-started.rst:220
+msgid "And what our routing should look like in ``routing.py``::"
+msgstr ""
+
+#: ../../getting-started.rst:231
+msgid ""
+"Note that the ``http.request`` route is no longer present - if we leave it "
+"out, then Django will route HTTP requests to the normal view system by "
+"default, which is probably what you want. Even if you have a "
+"``http.request`` route that matches just a subset of paths or methods, the "
+"ones that don't match will still fall through to the default handler, which "
+"passes it into URL routing and the views."
+msgstr ""
+
+#: ../../getting-started.rst:238
+msgid ""
+"With all that code, you now have a working set of a logic for a chat server."
+" Test time! Run ``runserver``, open a browser and use that same JavaScript "
+"code in the developer console as before::"
+msgstr ""
+
+#: ../../getting-started.rst:254
+msgid ""
+"You should see an alert come back immediately saying \"hello world\" - but "
+"this time, you can open another tab and do the same there, and both tabs "
+"will receive the message and show an alert. Any incoming message is sent to "
+"the ``chat`` group by the ``ws_message`` consumer, and both your tabs will "
+"have been put into the ``chat`` group when they connected."
+msgstr ""
+
+#: ../../getting-started.rst:260
+msgid ""
+"Feel free to put some calls to ``print`` in your handler functions too, if "
+"you like, so you can understand when they're called. You can also use "
+"``pdb`` and other similar methods you'd use to debug normal Django projects."
+msgstr ""
+
+#: ../../getting-started.rst:266
+msgid "Running with Channels"
+msgstr ""
+
+#: ../../getting-started.rst:268
+msgid ""
+"Because Channels takes Django into a multi-process model, you no longer run "
+"everything in one process along with a WSGI server (of course, you're still "
+"free to do that if you don't want to use Channels). Instead, you run one or "
+"more *interface servers*, and one or more *worker servers*, connected by "
+"that *channel layer* you configured earlier."
+msgstr ""
+
+#: ../../getting-started.rst:274
+msgid ""
+"There are multiple kinds of \"interface servers\", and each one will service"
+" a different type of request - one might do both WebSocket and HTTP "
+"requests, while another might act as an SMS message gateway, for example."
+msgstr ""
+
+#: ../../getting-started.rst:278
+msgid ""
+"These are separate from the \"worker servers\" where Django will run actual "
+"logic, though, and so the *channel layer* transports the content of channels"
+" across the network. In a production scenario, you'd usually run *worker "
+"servers* as a separate cluster from the *interface servers*, though of "
+"course you can run both as separate processes on one machine too."
+msgstr ""
+
+#: ../../getting-started.rst:284
+msgid ""
+"By default, Django doesn't have a channel layer configured - it doesn't need"
+" one to run normal WSGI requests, after all. As soon as you try to add some "
+"consumers, though, you'll need to configure one."
+msgstr ""
+
+#: ../../getting-started.rst:288
+msgid ""
+"In the example above we used the in-memory channel layer implementation as "
+"our default channel layer. This just stores all the channel data in a dict "
+"in memory, and so isn't actually cross-process; it only works inside "
+"``runserver``, as that runs the interface and worker servers in different "
+"threads inside the same process. When you deploy to production, you'll need "
+"to use a channel layer like the Redis backend ``asgi_redis`` that works "
+"cross-process; see :doc:`backends` for more."
+msgstr ""
+
+#: ../../getting-started.rst:296
+msgid ""
+"The second thing, once we have a networked channel backend set up, is to "
+"make sure we're running an interface server that's capable of serving "
+"WebSockets. To solve this, Channels comes with ``daphne``, an interface "
+"server that can handle both HTTP and WebSockets at the same time, and then "
+"ties this in to run when you run ``runserver`` - you shouldn't notice any "
+"difference from the normal Django ``runserver``, though some of the options "
+"may be a little different."
+msgstr ""
+
+#: ../../getting-started.rst:304
+msgid ""
+"*(Under the hood, runserver is now running Daphne in one thread and a worker"
+" with autoreload in another - it's basically a miniature version of a "
+"deployment, but all in one process)*"
+msgstr ""
+
+#: ../../getting-started.rst:308
+msgid ""
+"Let's try out the Redis backend - Redis runs on pretty much every machine, "
+"and has a very small overhead, which makes it perfect for this kind of "
+"thing. Install the ``asgi_redis`` package using ``pip``. ::"
+msgstr ""
+
+#: ../../getting-started.rst:314
+msgid "and set up your channel layer like this::"
+msgstr ""
+
+#: ../../getting-started.rst:327
+msgid ""
+"Fire up ``runserver``, and it'll work as before - unexciting, like good "
+"infrastructure should be. You can also try out the cross-process nature; run"
+" these two commands in two terminals:"
+msgstr ""
+
+#: ../../getting-started.rst:331
+msgid "``manage.py runserver --noworker``"
+msgstr ""
+
+#: ../../getting-started.rst:332
+msgid "``manage.py runworker``"
+msgstr ""
+
+#: ../../getting-started.rst:334
+msgid ""
+"As you can probably guess, this disables the worker threads in ``runserver``"
+" and handles them in a separate process. You can pass ``-v 2`` to "
+"``runworker`` if you want to see logging as it runs the consumers."
+msgstr ""
+
+#: ../../getting-started.rst:338
+msgid ""
+"If Django is in debug mode (``DEBUG=True``), then ``runworker`` will serve "
+"static files, as ``runserver`` does. Just like a normal Django setup, you'll"
+" have to set up your static file serving for when ``DEBUG`` is turned off."
+msgstr ""
+
+#: ../../getting-started.rst:343
+msgid "Persisting Data"
+msgstr ""
+
+#: ../../getting-started.rst:345
+msgid ""
+"Echoing messages is a nice simple example, but it's ignoring the real need "
+"for a system like this - persistent state for connections. Let's consider a "
+"basic chat site where a user requests a chat room upon initial connection, "
+"as part of the query string (e.g. ``wss://host/websocket?room=abc``)."
+msgstr ""
+
+#: ../../getting-started.rst:350
+msgid ""
+"The ``reply_channel`` attribute you've seen before is our unique pointer to "
+"the open WebSocket - because it varies between different clients, it's how "
+"we can keep track of \"who\" a message is from. Remember, Channels is "
+"network-transparent and can run on multiple workers, so you can't just store"
+" things locally in global variables or similar."
+msgstr ""
+
+#: ../../getting-started.rst:356
+msgid ""
+"Instead, the solution is to persist information keyed by the "
+"``reply_channel`` in some other data store - sound familiar? This is what "
+"Django's session framework does for HTTP requests, using a cookie as the "
+"key. Wouldn't it be useful if we could get a session using the "
+"``reply_channel`` as a key?"
+msgstr ""
+
+#: ../../getting-started.rst:361
+msgid ""
+"Channels provides a ``channel_session`` decorator for this purpose - it "
+"provides you with an attribute called ``message.channel_session`` that acts "
+"just like a normal Django session."
+msgstr ""
+
+#: ../../getting-started.rst:365
+msgid ""
+"Let's use it now to build a chat server that expects you to pass a chatroom "
+"name in the path of your WebSocket request (we'll ignore auth for now - "
+"that's next)::"
+msgstr ""
+
+#: ../../getting-started.rst:395
+msgid "Update ``routing.py`` as well::"
+msgstr ""
+
+#: ../../getting-started.rst:407
+msgid ""
+"If you play around with it from the console (or start building a simple "
+"JavaScript chat client that appends received messages to a div), you'll see "
+"that you can set a chat room with the initial request."
+msgstr ""
+
+#: ../../getting-started.rst:413
+msgid "Authentication"
+msgstr ""
+
+#: ../../getting-started.rst:415
+msgid ""
+"Now, of course, a WebSocket solution is somewhat limited in scope without "
+"the ability to live with the rest of your website - in particular, we want "
+"to make sure we know what user we're talking to, in case we have things like"
+" private chat channels (we don't want a solution where clients just ask for "
+"the right channels, as anyone could change the code and just put in private "
+"channel names)"
+msgstr ""
+
+#: ../../getting-started.rst:421
+msgid ""
+"It can also save you having to manually make clients ask for what they want "
+"to see; if I see you open a WebSocket to my \"updates\" endpoint, and I know"
+" which user you are, I can just auto-add that channel to all the relevant "
+"groups (mentions of that user, for example)."
+msgstr ""
+
+#: ../../getting-started.rst:426
+msgid ""
+"Handily, as WebSockets start off using the HTTP protocol, they have a lot of"
+" familiar features, including a path, GET parameters, and cookies. We'd like"
+" to use these to hook into the familiar Django session and authentication "
+"systems; after all, WebSockets are no good unless we can identify who they "
+"belong to and do things securely."
+msgstr ""
+
+#: ../../getting-started.rst:432
+msgid ""
+"In addition, we don't want the interface servers storing data or trying to "
+"run authentication; they're meant to be simple, lean, fast processes without"
+" much state, and so we'll need to do our authentication inside our consumer "
+"functions."
+msgstr ""
+
+#: ../../getting-started.rst:436
+msgid ""
+"Fortunately, because Channels has an underlying spec for WebSockets and "
+"other messages (:doc:`ASGI <asgi>`), it ships with decorators that help you "
+"with both authentication and getting the underlying Django session (which is"
+" what Django authentication relies on)."
+msgstr ""
+
+#: ../../getting-started.rst:441
+msgid ""
+"Channels can use Django sessions either from cookies (if you're running your"
+" websocket server on the same domain as your main site, using something like"
+" Daphne), or from a ``session_key`` GET parameter, which works if you want "
+"to keep running your HTTP requests through a WSGI server and offload "
+"WebSockets to a second server process on another domain."
+msgstr ""
+
+#: ../../getting-started.rst:447
+msgid ""
+"You get access to a user's normal Django session using the ``http_session`` "
+"decorator - that gives you a ``message.http_session`` attribute that behaves"
+" just like ``request.session``. You can go one further and use "
+"``http_session_user`` which will provide a ``message.user`` attribute as "
+"well as the session attribute."
+msgstr ""
+
+#: ../../getting-started.rst:452
+msgid ""
+"Now, one thing to note is that you only get the detailed HTTP information "
+"during the ``connect`` message of a WebSocket connection (you can read more "
+"about that in the :doc:`ASGI spec <asgi>`) - this means we're not wasting "
+"bandwidth sending the same information over the wire needlessly."
+msgstr ""
+
+#: ../../getting-started.rst:457
+msgid ""
+"This also means we'll have to grab the user in the connection handler and "
+"then store it in the session; thankfully, Channels ships with both a "
+"``channel_session_user`` decorator that works like the ``http_session_user``"
+" decorator we mentioned above but loads the user from the *channel* session "
+"rather than the *HTTP* session, and a function called ``transfer_user`` "
+"which replicates a user from one session to another. Even better, it "
+"combines all of these into a ``channel_session_user_from_http`` decorator."
+msgstr ""
+
+#: ../../getting-started.rst:465
+msgid ""
+"Bringing that all together, let's make a chat server where users can only "
+"chat to people with the same first letter of their username::"
+msgstr ""
+
+#: ../../getting-started.rst:493
+msgid ""
+"If you're just using ``runserver`` (and so Daphne), you can just connect and"
+" your cookies should transfer your auth over. If you were running WebSockets"
+" on a separate domain, you'd have to remember to provide the Django session "
+"ID as part of the URL, like this::"
+msgstr ""
+
+#: ../../getting-started.rst:500
+msgid ""
+"You can get the current session key in a template with ``{{ "
+"request.session.session_key }}``. Note that this can't work with signed "
+"cookie sessions - since only HTTP responses can set cookies, it needs a "
+"backend it can write to to separately store state."
+msgstr ""
+
+#: ../../getting-started.rst:507
+msgid "Routing"
+msgstr ""
+
+#: ../../getting-started.rst:509
+msgid ""
+"The ``routing.py`` file acts very much like Django's ``urls.py``, including "
+"the ability to route things to different consumers based on ``path``, or any"
+" other message attribute that's a string (for example, ``http.request`` "
+"messages have a ``method`` key you could route based on)."
+msgstr ""
+
+#: ../../getting-started.rst:514
+msgid ""
+"Much like urls, you route using regular expressions; the main difference is "
+"that because the ``path`` is not special-cased - Channels doesn't know that "
+"it's a URL - you have to start patterns with the root ``/``, and end "
+"includes without a ``/`` so that when the patterns combine, they work "
+"correctly."
+msgstr ""
+
+#: ../../getting-started.rst:519
+msgid ""
+"Finally, because you're matching against message contents using keyword "
+"arguments, you can only use named groups in your regular expressions! Here's"
+" an example of routing our chat from above::"
+msgstr ""
+
+#: ../../getting-started.rst:538
+msgid ""
+"The routing is resolved in order, short-circuiting around the includes if "
+"one or more of their matches fails. You don't have to start with the ``^`` "
+"symbol - we use Python's ``re.match`` function, which starts at the start of"
+" a line anyway - but it's considered good practice."
+msgstr ""
+
+#: ../../getting-started.rst:543
+msgid ""
+"When an include matches part of a message value, it chops off the bit of the"
+" value it matched before passing it down to its routes or sub-includes, so "
+"you can put the same routing under multiple includes with different prefixes"
+" if you like."
+msgstr ""
+
+#: ../../getting-started.rst:548
+msgid ""
+"Because these matches come through as keyword arguments, we could modify our"
+" consumer above to use a room based on URL rather than username::"
+msgstr ""
+
+#: ../../getting-started.rst:557
+msgid ""
+"In the next section, we'll change to sending the ``room`` as a part of the "
+"WebSocket message - which you might do if you had a multiplexing client - "
+"but you could use routing there as well."
+msgstr ""
+
+#: ../../getting-started.rst:563
+msgid "Models"
+msgstr ""
+
+#: ../../getting-started.rst:565
+msgid ""
+"So far, we've just been taking incoming messages and rebroadcasting them to "
+"other clients connected to the same group, but this isn't that great; "
+"really, we want to persist messages to a datastore, and we'd probably like "
+"to be able to inject messages into chatrooms from things other than "
+"WebSocket client connections (perhaps a built-in bot, or server status "
+"messages)."
+msgstr ""
+
+#: ../../getting-started.rst:571
+msgid ""
+"Thankfully, we can just use Django's ORM to handle persistence of messages "
+"and easily integrate the send into the save flow of the model, rather than "
+"the message receive - that way, any new message saved will be broadcast to "
+"all the appropriate clients, no matter where it's saved from."
+msgstr ""
+
+#: ../../getting-started.rst:576
+msgid ""
+"We'll even take some performance considerations into account: We'll make our"
+" own custom channel for new chat messages and move the model save and the "
+"chat broadcast into that, meaning the sending process/consumer can move on "
+"immediately and not spend time waiting for the database save and the (slow "
+"on some backends) ``Group.send()`` call."
+msgstr ""
+
+#: ../../getting-started.rst:582
+msgid ""
+"Let's see what that looks like, assuming we have a ChatMessage model with "
+"``message`` and ``room`` fields::"
+msgstr ""
+
+#: ../../getting-started.rst:626
+msgid ""
+"Note that we could add messages onto the ``chat-messages`` channel from "
+"anywhere; inside a View, inside another model's ``post_save`` signal, inside"
+" a management command run via ``cron``. If we wanted to write a bot, too, we"
+" could put its listening logic inside the ``chat-messages`` consumer, as "
+"every message would pass through it."
+msgstr ""
+
+#: ../../getting-started.rst:636
+msgid "Enforcing Ordering"
+msgstr ""
+
+#: ../../getting-started.rst:638
+msgid ""
+"There's one final concept we want to introduce you to before you go on to "
+"build sites with Channels - consumer ordering."
+msgstr ""
+
+#: ../../getting-started.rst:641
+msgid ""
+"Because Channels is a distributed system that can have many workers, by "
+"default it just processes messages in the order the workers get them off the"
+" queue. It's entirely feasible for a WebSocket interface server to send out "
+"two ``receive`` messages close enough together that a second worker will "
+"pick up and start processing the second message before the first worker has "
+"finished processing the first."
+msgstr ""
+
+#: ../../getting-started.rst:648
+msgid ""
+"This is particularly annoying if you're storing things in the session in the"
+" one consumer and trying to get them in the other consumer - because the "
+"``connect`` consumer hasn't exited, its session hasn't saved. You'd get the "
+"same effect if someone tried to request a view before the login view had "
+"finished processing, of course, but HTTP requests usually come in a bit "
+"slower from clients."
+msgstr ""
+
+#: ../../getting-started.rst:654
+msgid ""
+"Channels has a solution - the ``enforce_ordering`` decorator. All WebSocket "
+"messages contain an ``order`` key, and this decorator uses that to make sure"
+" that messages are consumed in the right order. In addition, the ``connect``"
+" message blocks the socket opening until it's responded to, so you are "
+"always guaranteed that ``connect`` will run before any ``receives`` even "
+"without the decorator."
+msgstr ""
+
+#: ../../getting-started.rst:660
+msgid ""
+"The decorator uses ``channel_session`` to keep track of what numbered "
+"messages have been processed, and if a worker tries to run a consumer on an "
+"out-of-order message, it raises the ``ConsumeLater`` exception, which puts "
+"the message back on the channel it came from and tells the worker to work on"
+" another message."
+msgstr ""
+
+#: ../../getting-started.rst:665
+msgid ""
+"There's a high cost to using ``enforce_ordering``, which is why it's an "
+"optional decorator. Here's an example of it being used::"
+msgstr ""
+
+#: ../../getting-started.rst:698
+msgid ""
+"Generally, the performance (and safety) of your ordering is tied to your "
+"session backend's performance. Make sure you choose a session backend wisely"
+" if you're going to rely heavily on ``enforce_ordering``."
+msgstr ""
+
+#: ../../getting-started.rst:704
+msgid "Next Steps"
+msgstr ""
+
+#: ../../getting-started.rst:706
+msgid ""
+"That covers the basics of using Channels; you've seen not only how to use "
+"basic channels, but also seen how they integrate with WebSockets, how to use"
+" groups to manage logical sets of channels, and how Django's session and "
+"authentication systems easily integrate with WebSockets."
+msgstr ""
+
+#: ../../getting-started.rst:711
+msgid ""
+"We recommend you read through the rest of the reference documentation to see"
+" more about what you can do with channels; in particular, you may want to "
+"look at our :doc:`deploying` documentation to get an idea of how to design "
+"and run apps in production environments."
+msgstr ""

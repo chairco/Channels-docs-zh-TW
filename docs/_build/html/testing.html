@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Testing Consumers &#8212; test 0.0.1 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="testing-consumers">
+<h1>Testing Consumers<a class="headerlink" href="#testing-consumers" title="本標題的永久連結">¶</a></h1>
+<p>When you want to write unit tests for your new Channels consumers, you&#8217;ll
+realize that you can&#8217;t use the standard Django test client to submit fake HTTP
+requests - instead, you&#8217;ll need to submit fake Messages to your consumers,
+and inspect what Messages they send themselves.</p>
+<p>We provide a <code class="docutils literal"><span class="pre">TestCase</span></code> subclass that sets all of this up for you,
+however, so you can easily write tests and check what your consumers are sending.</p>
+<div class="section" id="channeltestcase">
+<h2>ChannelTestCase<a class="headerlink" href="#channeltestcase" title="本標題的永久連結">¶</a></h2>
+<p>If your tests inherit from the <code class="docutils literal"><span class="pre">channels.test.ChannelTestCase</span></code> base class,
+whenever you run tests your channel layer will be swapped out for a captive
+in-memory layer, meaning you don&#8217;t need an external server running to run tests.</p>
+<p>Moreover, you can inject messages onto this layer and inspect ones sent to it
+to help test your consumers.</p>
+<p>To inject a message onto the layer, simply call <code class="docutils literal"><span class="pre">Channel.send()</span></code> inside
+any test method on a <code class="docutils literal"><span class="pre">ChannelTestCase</span></code> subclass, like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Channel</span>
+<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span>
+
+<span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_a_thing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This goes onto an in-memory channel, not the real backend.</span>
+        <span class="n">Channel</span><span class="p">(</span><span class="s2">&quot;some-channel-name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>To receive a message from the layer, you can use <code class="docutils literal"><span class="pre">self.get_next_message(channel)</span></code>,
+which handles receiving the message and converting it into a Message object for
+you (if you want, you can call <code class="docutils literal"><span class="pre">receive_many</span></code> on the underlying channel layer,
+but you&#8217;ll get back a raw dict and channel name, which is not what consumers want).</p>
+<p>You can use this both to get Messages to send to consumers as their primary
+argument, as well as to get Messages from channels that consumers are supposed
+to send on to verify that they did.</p>
+<p>You can even pass <code class="docutils literal"><span class="pre">require=True</span></code> to <code class="docutils literal"><span class="pre">get_next_message</span></code> to make the test
+fail if there is no message on the channel (by default, it will return you
+<code class="docutils literal"><span class="pre">None</span></code> instead).</p>
+<p>Here&#8217;s an extended example testing a consumer that&#8217;s supposed to take a value
+and post the square of it to the <code class="docutils literal"><span class="pre">&quot;result&quot;</span></code> channel:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Channel</span>
+<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span>
+
+<span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_a_thing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Inject a message onto the channel to use in a consumer</span>
+        <span class="n">Channel</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">33</span><span class="p">})</span>
+        <span class="c1"># Run the consumer with the new Message object</span>
+        <span class="n">my_consumer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_next_message</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># Verify there&#39;s a result and that it&#39;s accurate</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_message</span><span class="p">(</span><span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="mi">1089</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generic-consumers">
+<h2>Generic Consumers<a class="headerlink" href="#generic-consumers" title="本標題的永久連結">¶</a></h2>
+<p>You can use <code class="docutils literal"><span class="pre">ChannelTestCase</span></code> to test generic consumers as well. Just pass the message
+object from <code class="docutils literal"><span class="pre">get_next_message</span></code> to the constructor of the class. To test replies to a specific channel,
+use the <code class="docutils literal"><span class="pre">reply_channel</span></code> property on the <code class="docutils literal"><span class="pre">Message</span></code> object. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Channel</span>
+<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span>
+
+<span class="kn">from</span> <span class="nn">myapp.consumers</span> <span class="k">import</span> <span class="n">MyConsumer</span>
+
+<span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_a_thing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Inject a message onto the channel to use in a consumer</span>
+        <span class="n">Channel</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">33</span><span class="p">})</span>
+        <span class="c1"># Run the consumer with the new Message object</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_message</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">MyConsumer</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="c1"># Verify there&#39;s a reply and that it&#39;s accurate</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_message</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="mi">1089</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="groups">
+<h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<p>You can test Groups in the same way as Channels inside a <code class="docutils literal"><span class="pre">ChannelTestCase</span></code>;
+the entire channel layer is flushed each time a test is run, so it&#8217;s safe to
+do group adds and sends during a test. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Group</span>
+<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span>
+
+<span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_a_thing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Add a test channel to a test group</span>
+        <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;test-group&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;test-channel&quot;</span><span class="p">)</span>
+        <span class="c1"># Send to the group</span>
+        <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;test-group&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">})</span>
+        <span class="c1"># Verify the message got into the destination channel</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_message</span><span class="p">(</span><span class="s2">&quot;test-channel&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="clients">
+<h2>Clients<a class="headerlink" href="#clients" title="本標題的永久連結">¶</a></h2>
+<p>For more complicated test suites you can use the <code class="docutils literal"><span class="pre">Client</span></code> abstraction that
+provides an easy way to test the full life cycle of messages with a couple of methods:
+<code class="docutils literal"><span class="pre">send</span></code> to sending message with given content to the given channel, <code class="docutils literal"><span class="pre">consume</span></code>
+to run appointed consumer for the next message, <code class="docutils literal"><span class="pre">receive</span></code> to getting replies for client.
+Very often you may need to <code class="docutils literal"><span class="pre">send</span></code> and than call a consumer one by one, for this
+purpose use <code class="docutils literal"><span class="pre">send_and_consume</span></code> method:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">Client</span>
+
+<span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_my_consumer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;my_internal_channel&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;my_value&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">(),</span> <span class="p">{</span><span class="s1">&#39;all is&#39;</span><span class="p">:</span> <span class="s1">&#39;done&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>You can use <code class="docutils literal"><span class="pre">HttpClient</span></code> for websocket related consumers. It automatically serializes JSON content,
+manage cookies and headers, give easy access to the session and add ability to authorize your requests.
+For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># consumers.py</span>
+<span class="k">class</span> <span class="nc">RoomConsumer</span><span class="p">(</span><span class="n">JsonWebsocketConsumer</span><span class="p">):</span>
+    <span class="n">http_user</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rooms_watchers&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s1">&#39;rooms&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">http_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rooms&quot;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="n">Channel</span><span class="p">(</span><span class="s2">&quot;rooms_receive&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                       <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">content</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]}</span>
+
+
+<span class="c1"># tests.py</span>
+<span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Group</span>
+<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">HttpClient</span>
+
+
+<span class="k">class</span> <span class="nc">RoomsTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s1">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;123456&#39;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;123456&#39;</span><span class="p">)</span>
+
+        <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="s1">&#39;/rooms/&#39;</span><span class="p">)</span>
+        <span class="c1"># check that there is nothing to receive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+
+        <span class="c1"># test that the client in the group</span>
+        <span class="n">Group</span><span class="p">(</span><span class="n">RoomConsumer</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;ok&#39;</span><span class="p">},</span> <span class="n">immediately</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">json</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="s1">&#39;ok&#39;</span><span class="p">)</span>
+
+        <span class="n">client</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;rooms&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">]</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span>
+                                <span class="n">text</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;hey&#39;</span><span class="p">},</span>
+                                <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/rooms/&#39;</span><span class="p">)</span>
+        <span class="c1"># test &#39;response&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">(),</span> <span class="p">{</span><span class="s1">&#39;rooms&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">]})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_next_message</span><span class="p">(</span><span class="s1">&#39;rooms_receive&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                         <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;hey&#39;</span><span class="p">})</span>
+
+        <span class="c1"># There is nothing to receive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Instead of <code class="docutils literal"><span class="pre">HttpClient.login</span></code> method with credentials at arguments you
+may call <code class="docutils literal"><span class="pre">HttpClient.force_login</span></code> (like at django client) with the user object.</p>
+<p><code class="docutils literal"><span class="pre">receive</span></code> method by default trying to deserialize json text content of a message,
+so if you need to pass decoding use <code class="docutils literal"><span class="pre">receive(json=False)</span></code>, like in the example.</p>
+</div>
+<div class="section" id="applying-routes">
+<h2>Applying routes<a class="headerlink" href="#applying-routes" title="本標題的永久連結">¶</a></h2>
+<p>When you need to testing you consumers without routes in settings or you
+want to testing your consumers in more isolate and atomic way, it will be
+simpler with <code class="docutils literal"><span class="pre">apply_routes</span></code> contextmanager and decorator for your <code class="docutils literal"><span class="pre">ChannelTestCase</span></code>.
+It takes list of routes that you want to use and overwrite existing routes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">HttpClient</span><span class="p">,</span> <span class="n">apply_routes</span>
+
+<span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_myconsumer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">apply_routes</span><span class="p">([</span><span class="n">MyConsumer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/new&#39;</span><span class="p">)]):</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="s1">&#39;/new&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">(),</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="test-data-binding-with-httpclient">
+<h2>Test Data binding with <code class="docutils literal"><span class="pre">HttpClient</span></code><a class="headerlink" href="#test-data-binding-with-httpclient" title="本標題的永久連結">¶</a></h2>
+<p>As you know data binding in channels works in outbound and inbound ways,
+so that ways tests in different ways and <code class="docutils literal"><span class="pre">HttpClient</span></code> and <code class="docutils literal"><span class="pre">apply_routes</span></code>
+will help to do this.
+When you testing outbound consumers you need just import your <code class="docutils literal"><span class="pre">Binding</span></code>
+subclass with specified <code class="docutils literal"><span class="pre">group_names</span></code>. At test you can  join to one of them,
+make some changes with target model and check received message.
+Lets test <code class="docutils literal"><span class="pre">IntegerValueBinding</span></code> from <a class="reference internal" href="binding.html"><span class="doc">data binding</span></a>
+with creating:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">HttpClient</span>
+<span class="kn">from</span> <span class="nn">channels.signals</span> <span class="k">import</span> <span class="n">consumer_finished</span>
+
+<span class="k">class</span> <span class="nc">TestIntegerValueBinding</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_outbound_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># We use HttpClient because of json encoding messages</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">join_group</span><span class="p">(</span><span class="s2">&quot;intval-updates&quot;</span><span class="p">)</span>  <span class="c1"># join outbound binding</span>
+
+        <span class="c1"># create target entity</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">IntegerValue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fifty&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="n">consumer_finished</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">received</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>  <span class="c1"># receive outbound binding message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">received</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span> <span class="ow">in</span> <span class="n">received</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;action&#39;</span> <span class="ow">in</span> <span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;action&#39;</span><span class="p">],</span> <span class="s1">&#39;create&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">],</span> <span class="s1">&#39;values.integervalue&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;pk&#39;</span><span class="p">],</span> <span class="n">value</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;fifty&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">received</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># assert that is nothing to receive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>There is another situation with inbound binding. It is used with <a class="reference internal" href="generics.html#multiplexing"><span class="std std-ref">WebSocket Multiplexing</span></a>,
+So we apply two routes: websocket route for demultiplexer and route with internal
+consumer for binding itself, connect to websocket entrypoint and test different actions.
+For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestIntegerValueBinding</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_inbound_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># check that initial state is empty</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">IntegerValue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">apply_routes</span><span class="p">([</span><span class="n">Demultiplexer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">),</span>
+                          <span class="n">route</span><span class="p">(</span><span class="s2">&quot;binding.intval&quot;</span><span class="p">,</span> <span class="n">IntegerValueBinding</span><span class="o">.</span><span class="n">consumer</span><span class="p">)]):</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;stream&#39;</span><span class="p">:</span> <span class="s1">&#39;intval&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;payload&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">CREATE</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}</span>
+            <span class="p">})</span>
+            <span class="c1"># our Demultiplexer route message to the inbound consumer,</span>
+            <span class="c1"># so we need to call this consumer</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;binding.users&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">IntegerValue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">IntegerValue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;one&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-channel-layers">
+<h2>Multiple Channel Layers<a class="headerlink" href="#multiple-channel-layers" title="本標題的永久連結">¶</a></h2>
+<p>If you want to test code that uses multiple channel layers, specify the alias
+of the layers you want to mock as the <code class="docutils literal"><span class="pre">test_channel_aliases</span></code> attribute on
+the <code class="docutils literal"><span class="pre">ChannelTestCase</span></code> subclass; by default, only the <code class="docutils literal"><span class="pre">default</span></code> layer is
+mocked.</p>
+<p>You can pass an <code class="docutils literal"><span class="pre">alias</span></code> argument to <code class="docutils literal"><span class="pre">get_next_message</span></code>, <code class="docutils literal"><span class="pre">Client</span></code> and <code class="docutils literal"><span class="pre">Channel</span></code>
+to use a different layer too.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="concepts.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Testing Consumers</a><ul>
+<li><a class="reference internal" href="#channeltestcase">ChannelTestCase</a></li>
+<li><a class="reference internal" href="#generic-consumers">Generic Consumers</a></li>
+<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#clients">Clients</a></li>
+<li><a class="reference internal" href="#applying-routes">Applying routes</a></li>
+<li><a class="reference internal" href="#test-data-binding-with-httpclient">Test Data binding with <code class="docutils literal"><span class="pre">HttpClient</span></code></a></li>
+<li><a class="reference internal" href="#multiple-channel-layers">Multiple Channel Layers</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="concepts.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/testing.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, test.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/testing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
