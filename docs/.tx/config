@@ -7,3 +7,8 @@ file_filter = locale/<lang>/LC_MESSAGES/concepts.po
 source_file = _build/gettext/concepts.pot
 source_lang = en
 
+[django-channels-tw-docs.indexpo]
+file_filter = locale/<lang>/LC_MESSAGES/index.po
+source_file = _build/gettext/index.pot
+source_lang = en
+
