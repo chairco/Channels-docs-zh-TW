@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Channels Concepts &#8212; test 0.0.1 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="channels-concepts">
+<h1>Channels Concepts<a class="headerlink" href="#channels-concepts" title="本標題的永久連結">¶</a></h1>
+<p>Django 的傳統視圖看法圍繞著請求與回應；一個請求進來，Django 被觸發接著服務它，產生一個回應並送出，接著 Django 離開並且等待下一個請求。</p>
+<p>當互聯網是透過簡單的瀏覽器交互驅動時，這是好的方法，但現代的 Web 包括 WebSockets 和 HTTP2 服務器推送，它們允許網站在傳統的周期外通信。</p>
+<p>除此之外，還有許多非關鍵任務像是應用程序可以輕鬆的卸載直到一個回應被送出之後 - 例如保存東西到緩存空間或是新生成縮圖-上傳圖像。</p>
+<p>這些都改變了 Django 執行 &#8220;事件導向&#8221; 的方式 - 而非單純回應給請求，相反的 Django 回應各種事件並傳送到 channel 上。這些仍然沒有無法保持持久的狀態 - 每一種事件標頭，或是 <em>消費者</em> 我們稱之，是一種像是各自獨立呼叫的視圖方式。</p>
+<p>讓我們先看看什麼是 <em>channels</em>。</p>
+<div class="section" id="what-is-a-channel">
+<span id="what-are-channels"></span><h2>什麼是 channel?<a class="headerlink" href="#what-is-a-channel" title="本標題的永久連結">¶</a></h2>
+<p>不令人意外的，核心系統必須是一個稱為資料結構的 <em>channel</em>。什麼是 channel? 它是一個有序列的，先進先出佇列，其中消息到期並且一次只向一個 listener 傳送。</p>
+<p>你可以想像類似一個任務的佇列 - <em>生產者</em> 將訊息傳到 channel，接著提供一個只能給某一位 <em>消費者</em> 監聽的 channel。</p>
+<p>我們可以說 <em>至少一次</em> 一個消費者或是沒有人得到訊息 (我們這樣說，是假設這個 channel 發生 crash)。這個備選方案是 <em>至少一次</em>，會有一個消費者獲得消息，但它則會被發送到多個，當發生 crash 時。這不是我們想要的權衡方式。</p>
+<p>這裡還有一些其它的限制 - 訊息通常被建立為序列的型態，保持在一定大小的限制 - 當你有高優先權的使用時你不需要擔心這些實行的細解。</p>
+<p>channels 是具備容量的，所以許多生產者可以將大量消息寫入沒有消費者的 channel 中，消費者可以隨後再開始取得這些服務與佇列的訊息。</p>
+<p>假如你使用 <a class="reference external" href="https://gobyexample.com/channels">channels in Go</a>: GO channels 和 Django 相似。但關鍵不同之處在 Django channels 是一種 network-transparent; 我們提供一種 channels 實現存取網路讓消費者與生產者可以執行在不同的行程或是不同的機器。</p>
+<p>在網路內，我們定義名稱字串定義 channels 唯一性 - 你可以從任何機器連結同樣的 channel 後台然後傳送給任何名稱的 channel。假設兩個不同機器同時寫入 <code class="docutils literal"><span class="pre">http.request</span></code> channel，他們會寫入同樣 channel。</p>
+</div>
+<div class="section" id="how-do-we-use-channels">
+<h2>我們如何使用 channels?<a class="headerlink" href="#how-do-we-use-channels" title="本標題的永久連結">¶</a></h2>
+<p>所以如何讓 Django 使用這些 channels? 在 Django 內你可以寫一個 consume to channel 的函式:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_consumer</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>接著在 channel 路由內指派一個 channel 給他:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">channel_routing</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;some-channel&quot;</span><span class="p">:</span> <span class="s2">&quot;myapp.consumers.my_consumer&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>這裡指對於所有在 channel 上訊息，Django 將會呼叫一個伴隨訊息勿件的消費者函式(訊息物件會有一個&#8221;內容&#8221;屬性，這個物件會一直是 dict 的資料，另一個 &#8220;channel&#8221; 屬性則是從哪裡來的 channel，以可以是同樣的)。</p>
+<p>並不是讓 Django 運作在傳統的 request-response 模式，Channels 改變 Django 使其可以運作在一個 worker mode - 它可以透過消費指的指派去監聽所有的 channels，當訊息抵達時，相關消費者才執行。因此和在 WSGI server 上單一行程不同，Django 分在三個獨立的 layer 中執行:</p>
+<ul class="simple">
+<li><p class="first">介面服務，做為 Django 與外面世界的溝通。它包含一個 WSGI adapter 像是一個 separate WebSocket server - 在後面介紹。</p>
+</li>
+<li><p class="first">channel 後端，用來組合插入的 python 程式碼和一個資料庫 (e.g. Redis, or shared memory segment) 負責傳輸消息。</p>
+</li>
+<li><p class="first">workers，監聽所有相關的 channels，當訊息準備好時執行消費者程式碼。</p>
+</li>
+</ul>
+<p>這看起來相對簡單，但這是設計的一部分; 而不是嘗試並擁有完整的異步架構，我們只是引入了一個比 Django 視圖呈現的更複雜的抽象。</p>
+<p>一個視圖提供一個請求與回傳一個回應；一個消費者帶來一個 channel 訊息與寫出一個 0 到 其他更多的 channel 訊息。</p>
+<p>現在讓我們針對 requests 建立一個 channel (稱為 <code class="docutils literal"><span class="pre">http.request</span></code>)，與一個針對每一個客戶端回應的 channel (e.g. <code class="docutils literal"><span class="pre">http.response.04F2h2Fd</span></code>)，其中回應 channel 是一個請求訊息的屬性(<code class="docutils literal"><span class="pre">reply_channel</span></code>)。馬上，一個視圖僅為其他消費者的一例:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Listens on http.request</span>
+<span class="k">def</span> <span class="nf">my_consumer</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Decode the request from message format to a Request object</span>
+    <span class="n">django_request</span> <span class="o">=</span> <span class="n">AsgiRequest</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="c1"># Run view</span>
+    <span class="n">django_response</span> <span class="o">=</span> <span class="n">view</span><span class="p">(</span><span class="n">django_request</span><span class="p">)</span>
+    <span class="c1"># Encode the response into message format</span>
+    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">AsgiHandler</span><span class="o">.</span><span class="n">encode_response</span><span class="p">(</span><span class="n">django_response</span><span class="p">):</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>實際上，這是 Channels 如何運作。界面服務會將對應的介面(HTTP, WebSocket, etc.)轉換連結到對應訊息，接著你會編寫 worker 處理這些訊息。通常你離開一個正常 HTTP 升級成 Django 的內置消費者並且嵌入視圖/模板系統，但你可以用複寫方式去增加功能假如你願意。</p>
+<p>然而，關鍵的部分是你可以在任何 event 回應時執行程式碼(接著可以在 channels 送出) - 且包含你自己所創建的。你可以在 model 儲存，在其他訊息進入時或是當其他從程式碼路徑進入 views 或是 forms 時觸發。這個方法對於 push-style 的程式碼很有用 -在那使用 WebSockets 或 HTTP long-polling 時通知客戶的更改(聊天中的消息，或者在管理員的實時更新作為另一個用戶編輯的東西)。</p>
+</div>
+<div class="section" id="channel-types">
+<span id="id1"></span><h2>Channel 類型<a class="headerlink" href="#channel-types" title="本標題的永久連結">¶</a></h2>
+<p>這裡有兩個 channels 實際上的主要有兩種用途。第一，且是比較明顯的一種是分派工作給消費者 - 一個訊息被得到與新增到 channel, 接著任何一個 worker 可以取得並且執行消費者。</p>
+<p>第二種通道用途是用於回覆。值得注意是他們只有做一件事就是監聽 -介面服務。每一個回應的 channel 是各自獨立的名稱且當其 client 端被終止，必須路由回界面服務。</p>
+<p>這不是巨大差異 - 他們能然根據核心定義 <em>channel</em> 行為 - 但當我們想擴大規模時會出現一些問題。我們可以愉快的根據叢集隨機附載平衡服務正常的 channels 和 workers - 最終，任何 worker 可以處理訊息 - 但回應 channels 必須傳送訊息到它們正在監聽的 channel 服務。</p>
+<p>對於這個理由，Channels 對此區分出兩種不同類型的 <em>channel 型態</em>，且通過一個包含 <code class="docutils literal"><span class="pre">!</span></code> 的字符名稱來表示一個 <em>回應 channel</em>。 -e.g. <code class="docutils literal"><span class="pre">http.response!f5G3fE21f</span></code>。<em>一般 channels</em> 不會包含它，但是會與其他休息中的回覆 channel 名稱一起，它們通常包含字符 <code class="docutils literal"><span class="pre">a-z</span> <span class="pre">A-Z</span> <span class="pre">0-9</span> <span class="pre">-</span> <span class="pre">_</span></code>，且必須少於 200 字符的長度。</p>
+<p>這裡可以用選擇後端實現來理解他 - 畢竟，這只對於 Scale 重要，因為這邊你想要分割兩種不同類型 — 但是它仍然存在。假如你是撰寫後端或是介面服務想要更多彈性與掌控 channel types 可以參考 <span class="xref std std-ref">scaling-up</span>。</p>
+</div>
+<div class="section" id="groups">
+<h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<p>因為 channels 只能傳送到單一個 listener 無法做廣播；假如你希望傳送一個訊息給任意的終端群組，你需要對發送的 channels 的回覆保持追蹤。</p>
+<p>假設我有一個實況部落格，當有一個新的 post 儲存了，我希望推送出去更新，我可以針對 <code class="docutils literal"><span class="pre">post_save</span></code> 訊號註冊一個標頭並且保持一組 channels (這裡，使用 Redis) 去送出一個更新:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">redis_conn</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)</span>
+
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">BlogUpdate</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">send_update</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># Loop through all reply channels and send the update</span>
+    <span class="k">for</span> <span class="n">reply_channel</span> <span class="ow">in</span> <span class="n">redis_conn</span><span class="o">.</span><span class="n">smembers</span><span class="p">(</span><span class="s2">&quot;readers&quot;</span><span class="p">):</span>
+        <span class="n">Channel</span><span class="p">(</span><span class="n">reply_channel</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="n">content</span>
+            <span class="p">})</span>
+        <span class="p">})</span>
+
+<span class="c1"># Connected to websocket.connect</span>
+<span class="k">def</span> <span class="nf">ws_connect</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Add to reader set</span>
+    <span class="n">redis_conn</span><span class="o">.</span><span class="n">sadd</span><span class="p">(</span><span class="s2">&quot;readers&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>雖然這樣可以運作，但有一個小的問題 - 當他們斷線時我們無法從這個 <code class="docutils literal"><span class="pre">readers</span></code> 設定移除連接。我們可以增加一個消費者，它可以透過監聽 <code class="docutils literal"><span class="pre">websocket.disconnect</span></code> 來處理，但我們也會需要在介面服務有一些到期類別被迫退出或失去電源，然後才能發送斷開信號 - 你的程式碼將永遠不會看見任何斷線的提示，但 reply channel 是一個完全無效的訊息，你發送到那邊的東西將會停留直到過期。</p>
+<p>因為這個 channels 的基礎設計是無狀態的，假設 channel 的介面服務消失 channel server 沒有任何 &#8220;closing&#8221; 概念 - 畢竟，channel 意味著保留訊息直到一個消費者來臨(某些介面服務的類別， e.g. 一個 SMS 閘道，理論上可以服務從任意的介面服務的任何終端)。</p>
+<p>我們不特別關心一個斷線的 client 沒有取得發送群組的訊息 - 畢竟它已經斷線 - 但是我們關心睹塞通道後端追蹤那些已經不再存在的 client (也可能在回覆 channel 發生衝突和發送不具意義的訊息，雖然有可能是在幾週之後)</p>
+<p>現在，我們可以回到上面的範例並且添加一個過期的集合並且持續追蹤直到一個到期時間，但什麼才是一個讓你增加程式碼到 boilerplate 的模板架構呢？ 相反，Channels 改善這個一個核心的抽象概念稱為 Goups:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">BlogUpdate</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">send_update</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;liveblog&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="n">content</span>
+        <span class="p">})</span>
+    <span class="p">})</span>
+
+<span class="c1"># Connected to websocket.connect</span>
+<span class="k">def</span> <span class="nf">ws_connect</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Add to reader group</span>
+    <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;liveblog&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
+
+<span class="c1"># Connected to websocket.disconnect</span>
+<span class="k">def</span> <span class="nf">ws_disconnect</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Remove from reader group on clean disconnect</span>
+    <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;liveblog&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>現在 do groups 不僅有他們自己的 <code class="docutils literal"><span class="pre">send()</span></code> 方法(後端可以提供有效的實現)，它們同樣可以自動化的管理到期的群組成員 - 當這個 channel 開始有訊息時直到未被消費且到期時，我們進入所有群組並且移除這些訊息。當然，假如可以你仍然應該移除群組在斷開連線時; 因為某些原因，斷線時訊息沒有辦法成功傳送，斷開連線的程式碼是抓取這個例外。</p>
+<p>Groups 一般來說對於回應 channels 是有用的(包含字符 <code class="docutils literal"><span class="pre">！</span></code>), 假如你想將他們使用於一般的 channels 是可行的，因為它們都是唯一的客戶端。</p>
+</div>
+<div class="section" id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="本標題的永久連結">¶</a></h2>
+<p>這是一個高級的 channels 和 groups 概覽與如何開始思考它。記住，Django 提供一些 channels 但你自由的使用與消費，所有的 channels 都是 network-transparent</p>
+<p>有件事是 channels 不是保證渠道的交付。假如你需要確定是一個將被完成任務，使用一個為此設計的系統設定去重試與保持(e.g. Celery)，或是做出一個管理命令，假如檢查沒有完成，會重新送出一個訊息給 channel (自己動手去重試這個邏輯)。</p>
+<p>我們將在文檔的其餘部分更詳細地介紹什麼樣的任務適合用在 Channels 中，但現在讓我們進入 <span class="xref doc">getting-started</span> 並編寫一些程式碼。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Channels Concepts</a><ul>
+<li><a class="reference internal" href="#what-is-a-channel">什麼是 channel?</a></li>
+<li><a class="reference internal" href="#how-do-we-use-channels">我們如何使用 channels?</a></li>
+<li><a class="reference internal" href="#channel-types">Channel 類型</a></li>
+<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/concepts.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, test.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/concepts.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

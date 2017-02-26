@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+type = PO
+
+[django-channels-tw-docs.conceptspo]
+file_filter = locale/<lang>/LC_MESSAGES/concepts.po
+source_file = _build/gettext/concepts.pot
+source_lang = en
+
