@@ -46,9 +46,9 @@ source_suffix = '.rst'
 master_doc = 'concepts'
 
 # General information about the project.
-project = 'test'
-copyright = '2017, test'
-author = 'test'
+project = 'django-channels-tw-docs'
+copyright = '2017, chairco(Jason)'
+author = 'chairco(Jason)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -100,7 +100,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'testdoc'
+htmlhelp_basename = 'django-channels-tw-docsdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -152,8 +152,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'test', 'test Documentation',
-     author, 'test', 'One line description of project.',
+    (master_doc, 'django-channels-tw-docs', 'django-channels-tw-docs Documentation',
+     author, 'django-channels-tw-docs', 'One line description of project.',
      'Miscellaneous'),
 ]
 
