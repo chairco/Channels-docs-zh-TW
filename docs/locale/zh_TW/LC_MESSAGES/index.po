@@ -48,62 +48,72 @@ msgstr "首先，讀我們  :doc:`concepts` 文件先得到一個 Channels 數�
 msgid ""
 "Then, read :doc:`getting-started` to see how to get up and running with "
 "WebSockets with only 30 lines of code."
-msgstr ""
+msgstr "接著，研讀 :doc:`getting-started` 開始了解如何只需要 30 行的程式碼透過 WebSockets 啟動與執行。"
 
 #: ../../index.rst:18
 msgid "If you want a quick overview, start with :doc:`inshort`."
-msgstr ""
+msgstr "假如你希望快速的導覽，從 :doc:`inshort` 開始吧。"
 
 #: ../../index.rst:20
 msgid ""
 "If you are interested in contributing, please read our :doc:`contributing` "
 "docs!"
-msgstr ""
+msgstr "假如你有興趣做出些貢獻，請研讀我們的 :doc:`contributing` docs！"
 
 #: ../../index.rst:24
 msgid "Projects"
-msgstr ""
+msgstr "專案"
 
 #: ../../index.rst:26
 msgid "Channels is comprised of five packages:"
-msgstr ""
+msgstr "Channels 來自於五個套件："
 
 #: ../../index.rst:28
 msgid ""
 "`Channels <https://github.com/django/channels/>`_, the Django integration "
 "layer"
 msgstr ""
+"`Channels <https://github.com/django/channels/>`_，the Django integration "
+"layer"
 
 #: ../../index.rst:29
 msgid ""
 "`Daphne <https://github.com/django/daphne/>`_, the HTTP and Websocket "
 "termination server"
 msgstr ""
+"`Daphne <https://github.com/django/daphne/>`_, the HTTP and Websocket "
+"termination server"
 
 #: ../../index.rst:30
 msgid ""
 "`asgiref <https://github.com/django/asgiref/>`_, the base ASGI "
 "library/memory backend"
 msgstr ""
+"`asgiref <https://github.com/django/asgiref/>`_, the base ASGI "
+"library/memory backend"
 
 #: ../../index.rst:31
 msgid ""
 "`asgi_redis <https://github.com/django/asgi_redis/>`_, the Redis channel "
 "backend"
 msgstr ""
+"`asgi_redis <https://github.com/django/asgi_redis/>`_, the Redis channel "
+"backend"
 
 #: ../../index.rst:32
 msgid ""
 "`asgi_ipc <https://github.com/django/asgi_ipc/>`_, the POSIX IPC channel "
 "backend"
 msgstr ""
+"`asgi_ipc <https://github.com/django/asgi_ipc/>`_, the POSIX IPC channel "
+"backend"
 
 #: ../../index.rst:34
 msgid ""
 "This documentation covers the system as a whole; individual release notes "
 "and instructions can be found in the individual repositories."
-msgstr ""
+msgstr "這份文件包含系統得整體；可以從個別的儲藏褲找到個別發佈紀錄與說明。"
 
 #: ../../index.rst:39
 msgid "Topics"
-msgstr ""
+msgstr "主題"

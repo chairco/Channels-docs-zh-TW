@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Django Channels &#8212; test 0.0.1 說明文件</title>
+    <title>Django Channels &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,6 +27,7 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
+    <link rel="next" title="In Short" href="inshort.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -47,25 +48,24 @@
 <p>Channels 是一個讓  Django 能夠處理更多 HTTP 請求的專案，包含 WebSockets 和 HTTP2, 及有能力在回應已經被送出時去執行程式碼類似縮圖或是背景計算。</p>
 <p>這是一個很容易透過 Django 視圖模型去延伸理解，也很容易去整合與發佈。</p>
 <p>首先，讀我們  <a class="reference internal" href="concepts.html"><span class="doc">Channels Concepts</span></a> 文件先得到一個 Channels 數據底層模型的觀念與他們如何在 Django 內使用。</p>
-<p>Then, read <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> to see how to get up and running with
-WebSockets with only 30 lines of code.</p>
-<p>If you want a quick overview, start with <a class="reference internal" href="inshort.html"><span class="doc">In Short</span></a>.</p>
-<p>If you are interested in contributing, please read our <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> docs!</p>
+<p>接著，研讀 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 開始了解如何只需要 30 行的程式碼透過 WebSockets 啟動與執行。</p>
+<p>假如你希望快速的導覽，從 <a class="reference internal" href="inshort.html"><span class="doc">In Short</span></a> 開始吧。</p>
+<p>假如你有興趣做出些貢獻，請研讀我們的 <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> docs！</p>
 <div class="section" id="projects">
-<h2>Projects<a class="headerlink" href="#projects" title="本標題的永久連結">¶</a></h2>
-<p>Channels is comprised of five packages:</p>
+<h2>專案<a class="headerlink" href="#projects" title="本標題的永久連結">¶</a></h2>
+<p>Channels 來自於五個套件：</p>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/django/channels/">Channels</a>, the Django integration layer</li>
+<li><p class="first"><a class="reference external" href="https://github.com/django/channels/">Channels</a>，the Django integration layer</p>
+</li>
 <li><a class="reference external" href="https://github.com/django/daphne/">Daphne</a>, the HTTP and Websocket termination server</li>
 <li><a class="reference external" href="https://github.com/django/asgiref/">asgiref</a>, the base ASGI library/memory backend</li>
 <li><a class="reference external" href="https://github.com/django/asgi_redis/">asgi_redis</a>, the Redis channel backend</li>
 <li><a class="reference external" href="https://github.com/django/asgi_ipc/">asgi_ipc</a>, the POSIX IPC channel backend</li>
 </ul>
-<p>This documentation covers the system as a whole; individual release notes and
-instructions can be found in the individual repositories.</p>
+<p>這份文件包含系統得整體；可以從個別的儲藏褲找到個別發佈紀錄與說明。</p>
 </div>
 <div class="section" id="topics">
-<h2>Topics<a class="headerlink" href="#topics" title="本標題的永久連結">¶</a></h2>
+<h2>主題<a class="headerlink" href="#topics" title="本標題的永久連結">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="inshort.html">In Short</a><ul>
@@ -217,18 +217,19 @@ instructions can be found in the individual repositories.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="concepts.html">目錄</a></h3>
+  <h3><a href="#">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Django Channels</a><ul>
-<li><a class="reference internal" href="#projects">Projects</a></li>
-<li><a class="reference internal" href="#topics">Topics</a></li>
+<li><a class="reference internal" href="#projects">專案</a></li>
+<li><a class="reference internal" href="#topics">主題</a></li>
 </ul>
 </li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
-  <li><a href="concepts.html">Documentation overview</a><ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="inshort.html" title="下一章">In Short</a></li>
   </ul></li>
 </ul>
 </div>
@@ -254,7 +255,7 @@ instructions can be found in the individual repositories.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, test.
+      &copy;2017, chairco(Jason).
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
