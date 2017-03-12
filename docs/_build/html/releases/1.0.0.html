@@ -27,8 +27,8 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜尋" href="../search.html" />
-    <link rel="next" title="1.0.1 Release Notes" href="1.0.1.html" />
-    <link rel="prev" title="Release Notes" href="index.html" />
+    <link rel="next" title="1.0.1 發布說明" href="1.0.1.html" />
+    <link rel="prev" title="發行版本說明" href="index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -58,16 +58,16 @@ generally quite easy.</p>
 <p>You <strong>must also update Daphne</strong> to at least 1.0.0 to have this release of
 Channels work correctly.</p>
 <div class="section" id="major-features">
-<h2>Major Features<a class="headerlink" href="#major-features" title="本標題的永久連結">¶</a></h2>
+<h2>主要特徵<a class="headerlink" href="#major-features" title="本標題的永久連結">¶</a></h2>
 <p>Channels 1.0 introduces a couple of new major features.</p>
 <div class="section" id="websocket-accept-reject-flow">
-<h3>WebSocket accept/reject flow<a class="headerlink" href="#websocket-accept-reject-flow" title="本標題的永久連結">¶</a></h3>
+<h3>WebSocket 接受/拒絕 流量<a class="headerlink" href="#websocket-accept-reject-flow" title="本標題的永久連結">¶</a></h3>
 <p>Rather than be immediately accepted, WebSockets now pause during the handshake
 while they send over a message on <code class="docutils literal"><span class="pre">websocket.connect</span></code>, and your application
 must either accept or reject the connection before the handshake is completed
 and messages can be received.</p>
 <p>You <strong>must</strong> update Daphne to at least 1.0.0 to make this work correctly.</p>
-<p>This has several advantages:</p>
+<p>這有幾項優點:</p>
 <ul class="simple">
 <li>You can now reject WebSockets before they even finish connecting, giving
 appropriate error codes to browsers and not letting the browser-side socket
@@ -129,7 +129,7 @@ together from code that also works outside the context of multiplexing.</p>
 <h3>Delay Server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h3>
 <p>A built-in delay server, launched with <cite>manage.py rundelay</cite>, now ships if you
 wish to use it. It needs some extra initial setup and uses a database for
-persistance; see <a class="reference internal" href="../delay.html"><span class="doc">Delay Server</span></a> for more information.</p>
+persistance; see <a class="reference internal" href="../delay.html"><span class="doc">延遲伺服器</span></a> for more information.</p>
 </div>
 </div>
 <div class="section" id="minor-changes">
@@ -233,8 +233,8 @@ disconnection handling into their own methods.</p>
   <h3><a href="../index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">1.0.0 Release Notes</a><ul>
-<li><a class="reference internal" href="#major-features">Major Features</a><ul>
-<li><a class="reference internal" href="#websocket-accept-reject-flow">WebSocket accept/reject flow</a></li>
+<li><a class="reference internal" href="#major-features">主要特徵</a><ul>
+<li><a class="reference internal" href="#websocket-accept-reject-flow">WebSocket 接受/拒絕 流量</a></li>
 <li><a class="reference internal" href="#consumer-atomicity">Consumer Atomicity</a></li>
 <li><a class="reference internal" href="#databinding-group-action-overhaul">Databinding Group/Action Overhaul</a></li>
 <li><a class="reference internal" href="#demultiplexer-overhaul">Demultiplexer Overhaul</a></li>
@@ -255,9 +255,9 @@ disconnection handling into their own methods.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Release Notes</a><ul>
-      <li>Previous: <a href="index.html" title="上一章">Release Notes</a></li>
-      <li>Next: <a href="1.0.1.html" title="下一章">1.0.1 Release Notes</a></li>
+  <li><a href="index.html">發行版本說明</a><ul>
+      <li>Previous: <a href="index.html" title="上一章">發行版本說明</a></li>
+      <li>Next: <a href="1.0.1.html" title="下一章">1.0.1 發布說明</a></li>
   </ul></li>
   </ul></li>
 </ul>

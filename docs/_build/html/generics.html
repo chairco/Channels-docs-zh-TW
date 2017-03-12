@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Generic Consumers &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>一般消費者 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Routing" href="routing.html" />
-    <link rel="prev" title="Deploying" href="deploying.html" />
+    <link rel="next" title="路由" href="routing.html" />
+    <link rel="prev" title="配置" href="deploying.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,7 +45,7 @@
           <div class="body" role="main">
             
   <div class="section" id="generic-consumers">
-<h1>Generic Consumers<a class="headerlink" href="#generic-consumers" title="本標題的永久連結">¶</a></h1>
+<h1>一般消費者<a class="headerlink" href="#generic-consumers" title="本標題的永久連結">¶</a></h1>
 <p>Much like Django&#8217;s class-based views, Channels has class-based consumers.
 They provide a way for you to arrange code so it&#8217;s highly modifiable and
 inheritable, at the slight cost of it being harder to figure out the execution
@@ -62,7 +62,7 @@ group management for the connection.</p>
 to use <code class="docutils literal"><span class="pre">route_class</span></code> rather than <code class="docutils literal"><span class="pre">route</span></code>; <code class="docutils literal"><span class="pre">route_class</span></code> knows how to
 talk to the class-based consumer and extract the list of channels it needs
 to listen on from it directly, rather than making you pass it in explicitly.</p>
-<p>Here&#8217;s a routing example:</p>
+<p>這是一個路由案例:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">route_class</span>
 
 <span class="n">channel_routing</span> <span class="o">=</span> <span class="p">[</span>
@@ -104,7 +104,7 @@ two instance variables on the class:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">self.message</span></code>, the <a class="reference internal" href="reference.html#ref-message"><span class="std std-ref">Message object</span></a> representing the
 message the consumer was called for.</li>
-<li><code class="docutils literal"><span class="pre">self.kwargs</span></code>, keyword arguments from the <a class="reference internal" href="routing.html"><span class="doc">Routing</span></a></li>
+<li><code class="docutils literal"><span class="pre">self.kwargs</span></code>, keyword arguments from the <a class="reference internal" href="routing.html"><span class="doc">路由</span></a></li>
 </ul>
 </div>
 <div class="section" id="websockets">
@@ -292,7 +292,7 @@ for more high-level methods, like <code class="docutils literal"><span class="pr
 <div class="section" id="as-route">
 <h2>As route<a class="headerlink" href="#as-route" title="本標題的永久連結">¶</a></h2>
 <p>Instead of making routes using <code class="docutils literal"><span class="pre">route_class</span></code> you may use the <code class="docutils literal"><span class="pre">as_route</span></code> shortcut.
-This function takes route filters (<a class="reference internal" href="routing.html#filters"><span class="std std-ref">Filters</span></a>) as kwargs and returns
+This function takes route filters (<a class="reference internal" href="routing.html#filters"><span class="std std-ref">過濾器</span></a>) as kwargs and returns
 <code class="docutils literal"><span class="pre">route_class</span></code>. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">consumers</span>
 
@@ -334,7 +334,7 @@ like so:</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Generic Consumers</a><ul>
+<li><a class="reference internal" href="#">一般消費者</a><ul>
 <li><a class="reference internal" href="#base">Base</a></li>
 <li><a class="reference internal" href="#websockets">WebSockets</a></li>
 <li><a class="reference internal" href="#websocket-multiplexing">WebSocket Multiplexing</a></li>
@@ -348,8 +348,8 @@ like so:</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="deploying.html" title="上一章">Deploying</a></li>
-      <li>Next: <a href="routing.html" title="下一章">Routing</a></li>
+      <li>Previous: <a href="deploying.html" title="上一章">配置</a></li>
+      <li>Next: <a href="routing.html" title="下一章">路由</a></li>
   </ul></li>
 </ul>
 </div>

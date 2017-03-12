@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Delay Server &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>延遲伺服器 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Testing Consumers" href="testing.html" />
-    <link rel="prev" title="Channel Layer Types" href="backends.html" />
+    <link rel="next" title="測試消費者" href="testing.html" />
+    <link rel="prev" title="通道層類型" href="backends.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,13 +45,12 @@
           <div class="body" role="main">
             
   <div class="section" id="delay-server">
-<h1>Delay Server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h1>
-<p>Channels has an optional app <code class="docutils literal"><span class="pre">channels.delay</span></code> that implements the <span class="xref doc">ASGI Delay Protocol</span>.</p>
-<p>The server is exposed through a custom management command <code class="docutils literal"><span class="pre">rundelay</span></code> which listens to
-the <cite>asgi.delay</cite> channel for messages to delay.</p>
+<h1>延遲伺服器<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h1>
+<p>Channels 裡面的一個選擇性 app <code class="docutils literal"><span class="pre">channels.delay</span></code> 實做了 <span class="xref doc">ASGI Delay Protocol</span>.</p>
+<p>Server 透過一個自訂的 <code class="docutils literal"><span class="pre">rundelay</span></code> 指令，which listens to the <cite>asgi.delay</cite> channel for messages to delay.</p>
 <div class="section" id="getting-started-with-delay">
-<h2>Getting Started with Delay<a class="headerlink" href="#getting-started-with-delay" title="本標題的永久連結">¶</a></h2>
-<p>To Install the app add <cite>channels.delay</cite> to <cite>INSTALLED_APPS</cite>:</p>
+<h2>從延遲入門開始<a class="headerlink" href="#getting-started-with-delay" title="本標題的永久連結">¶</a></h2>
+<p>安裝app加&#8217;channels.delay&#8217;到&#8217;INSTALLED_APPS&#8217;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="o">...</span>
     <span class="s1">&#39;channels&#39;</span><span class="p">,</span>
@@ -91,8 +90,8 @@ the <cite>asgi.delay</cite> channel for messages to delay.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Delay Server</a><ul>
-<li><a class="reference internal" href="#getting-started-with-delay">Getting Started with Delay</a></li>
+<li><a class="reference internal" href="#">延遲伺服器</a><ul>
+<li><a class="reference internal" href="#getting-started-with-delay">從延遲入門開始</a></li>
 <li><a class="reference internal" href="#delaying-messages">Delaying Messages</a></li>
 </ul>
 </li>
@@ -101,8 +100,8 @@ the <cite>asgi.delay</cite> channel for messages to delay.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="backends.html" title="上一章">Channel Layer Types</a></li>
-      <li>Next: <a href="testing.html" title="下一章">Testing Consumers</a></li>
+      <li>Previous: <a href="backends.html" title="上一章">通道層類型</a></li>
+      <li>Next: <a href="testing.html" title="下一章">測試消費者</a></li>
   </ul></li>
 </ul>
 </div>

@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Deploying" href="deploying.html" />
-    <link rel="prev" title="Installation" href="installation.html" />
+    <link rel="next" title="配置" href="deploying.html" />
+    <link rel="prev" title="安裝" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -47,12 +47,12 @@
   <div class="section" id="getting-started-with-channels">
 <h1>Getting Started with Channels<a class="headerlink" href="#getting-started-with-channels" title="本標題的永久連結">¶</a></h1>
 <p>(If you haven&#8217;t yet, make sure you <a class="reference internal" href="installation.html"><span class="doc">install Channels</span></a>)</p>
-<p>現在，讓我們開始寫一些 consumer。假如尚未讀過 <a class="reference internal" href="concepts.html"><span class="doc">Channels Concepts</span></a> 先研讀過後，它包含最基礎的像是那些是 channels 與群組、重要的實施模式佈局與注意事項。</p>
+<p>現在，讓我們開始寫一些 consumer。假如尚未讀過 <a class="reference internal" href="concepts.html"><span class="doc">路徑概念</span></a> 先研讀過後，它包含最基礎的像是那些是 channels 與群組、重要的實施模式佈局與注意事項。</p>
 <div class="section" id="first-consumers">
 <h2>First Consumers<a class="headerlink" href="#first-consumers" title="本標題的永久連結">¶</a></h2>
 <p>當你第一次執行 Django 並安裝 Channels，將會設定默認的 layout - 所有的 HTTP requests (在 <code class="docutils literal"><span class="pre">http.request</span></code> channel) 如何路由到 Django - 與過去基於 WSGI-based Django 與你的視覺圖與靜態檔案服務 (依然運作如一般 <code class="docutils literal"><span class="pre">runserver</span></code> 不會有任何的不同)</p>
-<p>根據一個基礎的介紹，讓我們寫一個 consumer 可以覆寫的內置處理器，並且直接處理每一個 HTTP request 的需求。你不是會經常在項目內這樣做，但是他是一個很棒的說明為什麼 channels 如何成為 Django 的核心 - 他不是增加一個新的 addtion 而是一個全新的 layer 建築在既有的視覺圖上。</p>
-<p>建一個新的專案，一個新的 app， 並且放入這些到一個 <code class="docutils literal"><span class="pre">consumers.py</span></code> 檔案在 app:</p>
+<p>做為一個非常基礎的介紹，我們即將撰寫一個 consumer 覆寫的內置處理器，直接處理每一個 HTTP request 的需求。你不會經常在專案內這樣做，但是這很棒的說明 channels 如何成為 Django 的核心 - 他不是增加一個新的 addition 而是一個全新的 layer 建築在既有的視圖 view 上。</p>
+<p>現在，建一個新的專案以及一個新的 app， 並將這些放到一個 app:: 裡的 <code class="docutils literal"><span class="pre">consumers.py</span></code> 檔案。</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
 <span class="kn">from</span> <span class="nn">channels.handler</span> <span class="k">import</span> <span class="n">AsgiHandler</span>
 
@@ -64,9 +64,9 @@
         <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>在這裡很重要且必須注意的事，因為我們送出的訊息必須是 JSON 可序列化，這個 request 與 response 訊息是一組 key-value 格式。你可以讀取更多關於這些格式在 <a class="reference internal" href="asgi.html"><span class="doc">ASGI specification</span></a>， 但不需要去擔心關於這些太多;只需要知道這些是一個 <code class="docutils literal"><span class="pre">AsgiRequest</span></code> class 用來轉換來自 ASGI 到 Django request 物件，<code class="docutils literal"><span class="pre">AsgiHandler</span></code> class 負責轉換 <code class="docutils literal"><span class="pre">HttpResponse</span></code> 進入 ASGI 訊息，這些你看見使用上面已經使用。通常當你使用一般的視圖時，Django 的內置處理器程式碼將會完成這些。</p>
-<p>現在我們需要做更多事，且要告訴 Django 這是 Consumer 應該要被綁定在 <code class="docutils literal"><span class="pre">http.request</span></code> channel 而不是 Django 默認的視圖系統。這會透過 settings file 完成 - 較為特別是我們需要定義我們的 <code class="docutils literal"><span class="pre">default</span></code> channel layer 和路由設置。</p>
-<p>Channel 路由有點像是 URL 路由，因此它的結構類似 - 你指向這個 setting 在 dict 映射 channels 到消費者可調用。他的樣子會像是:</p>
+<p>在這裡很重要且必須注意的事，因為我們送出的訊息必須是 JSON 可序列化，這個 request 與 response 訊息是一組鍵值對的形式。你可以讀取更多關於這些格式在 <a class="reference internal" href="asgi.html"><span class="doc">ASGI specification</span></a>， 但不需要擔心太多;只需要知道這些是一個 <code class="docutils literal"><span class="pre">AsgiRequest</span></code> class 用來轉換 ASGI 到 Django request 物件，<code class="docutils literal"><span class="pre">AsgiHandler</span></code> class 負責轉換 <code class="docutils literal"><span class="pre">HttpResponse</span></code> 進入 ASGI 訊息，這一切就如你所見到上面使用的。通常當你使用一般的視圖時，Django 的內置處理器程式碼將會完成這些。</p>
+<p>現在我們需要再做一件事，那就是告訴 Django 這是 Consumer 應該要被綁定在 <code class="docutils literal"><span class="pre">http.request</span></code> channel 而不是 Django 預設的視圖系統。這透過修改 settings 檔案完成 - 較為特別是我們需要定義我們的 <code class="docutils literal"><span class="pre">預設</span></code> channel layer 和路由設置。</p>
+<p>Channel 路由有點像是 URL 路由，因此它的結構類似 - 你透過  dict 指定這個映射的設定，映射 channels 到 Consumer 的可調用。他的樣子會像是:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># In settings.py</span>
 <span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -85,26 +85,13 @@
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">警告</p>
-<p class="last">This example, and most of the examples here, use the &#8220;in memory&#8221; channel
-layer. This is the easiest to get started with but provides absolutely no
-cross-process channel transportation, and so can only be used with
-<code class="docutils literal"><span class="pre">runserver</span></code>. You&#8217;ll want to choose another backend (discussed later)
-to run things in production.</p>
+<p class="last">這裡的範例，和大部分這邊的範例，使用 &#8220;In memory&#8221; channel layer。這是簡單的開始與提供絕對沒有跨進程的通道傳輸，所以只能使用在 <code class="docutils literal"><span class="pre">runserver</span></code> 環境下。在佈署環境下，你需要選擇另一個後端 (稍後討論) 來運行。</p>
 </div>
-<p>如同你所見，這個有點像是 Django 的 <cite>DATABASES</cite> 設定; 這些稱為 channel layers, 有命名的通道默認為 <cite>default</cite>. 其他 layer 需要一個 channel layer 類別, 一些選項（假如 channel layer 需要他們）</p>
-<p>If you start up <code class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">runserver</span></code> and go to
-<code class="docutils literal"><span class="pre">http://localhost:8000</span></code>, you&#8217;ll see that, rather than a default Django page,
-you get the Hello World response, so things are working. If you don&#8217;t see
-a response, check you <a class="reference internal" href="installation.html"><span class="doc">installed Channels correctly</span></a>.</p>
-<p>Now, that&#8217;s not very exciting - raw HTTP responses are something Django has
-been able to do for a long time. Let&#8217;s try some WebSockets, and make a basic
-chat server!</p>
-<p>We&#8217;ll start with a simple server that just echoes every message it gets sent
-back to the same client - no cross-client communication. It&#8217;s not terribly
-useful, but it&#8217;s a good way to start out writing Channels consumers.</p>
-<p>Delete that previous consumer and its routing - we&#8217;ll want the normal Django view layer to
-serve HTTP requests from now on, which happens if you don&#8217;t specify a consumer
-for <code class="docutils literal"><span class="pre">http.request</span></code> - and make this WebSocket consumer instead:</p>
+<p>如你所見，這有點像是 Django 的 <code class="docutils literal"><span class="pre">DATABASES</span></code> 設定; 被命名的 channel layers 有個預設通道被命名為 <code class="docutils literal"><span class="pre">default</span></code>。 每一個 layer 需要一個 channel layer 類別，一些選項 ( 假如 channel layer 需要他們的話 ) 以及然後一個路由方案，其指向包含路由設置的列表。建議你在項目中稱這個檔案為 <code class="docutils literal"><span class="pre">routing.py</span></code> 並把它和 <code class="docutils literal"><span class="pre">urls.py</span></code> 放在一起，但是只要路徑是正確的，你可以把它放在任何你喜歡的地方。</p>
+<p>假如你透過 <code class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">runserver</span></code> 來啟動然後連接到 <code class="docutils literal"><span class="pre">http://localhost:8000</span></code> 就可以成功的瀏覽到 Hello World 頁面而不是預設的 Django 回應頁面，代表可以運作。假如你沒有得到回應，請參考 <a class="reference internal" href="installation.html"><span class="doc">installed Channels correctly</span></a> 。</p>
+<p>現在，這還不夠酷 - Django 本來就以已經能夠處理原生的 HTTP 回覆。讓我們嘗試一些 WebSockets 並且做一些基礎的聊天服務。</p>
+<p>我們將啟動一個簡單的服務，只用來是回覆它發送回同一個客戶端的每條消息 - 沒有跨客戶通信。 他不一定非常實用，但它是一個好可開始去撰寫 Channels consumers。</p>
+<p>刪除之前的消費者與他的路由 - 從現在開始我們希望是一個一般的 Django 視圖層去服務 HTTP 請求，會有狀況發生假如你沒有指定一個針對 <code class="docutils literal"><span class="pre">http.request</span></code> 給消費者 - 並且建立一個 WebSocket 顧客替代:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># In consumers.py</span>
 
 <span class="k">def</span> <span class="nf">ws_message</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
@@ -115,7 +102,7 @@ for <code class="docutils literal"><span class="pre">http.request</span></code> 
     <span class="p">})</span>
 </pre></div>
 </div>
-<p>Hook it up to the <code class="docutils literal"><span class="pre">websocket.receive</span></code> channel like this:</p>
+<p>掛勾它到 <code class="docutils literal"><span class="pre">websocket.receive</span></code> channel 如下</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># In routing.py</span>
 <span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">route</span>
 <span class="kn">from</span> <span class="nn">myapp.consumers</span> <span class="k">import</span> <span class="n">ws_message</span>
@@ -125,17 +112,9 @@ for <code class="docutils literal"><span class="pre">http.request</span></code> 
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>Now, let&#8217;s look at what this is doing. It&#8217;s tied to the
-<code class="docutils literal"><span class="pre">websocket.receive</span></code> channel, which means that it&#8217;ll get a message
-whenever a WebSocket packet is sent to us by a client.</p>
-<p>When it gets that message, it takes the <code class="docutils literal"><span class="pre">reply_channel</span></code> attribute from it, which
-is the unique response channel for that client, and sends the same content
-back to the client using its <code class="docutils literal"><span class="pre">send()</span></code> method.</p>
-<p>Let&#8217;s test it! Run <code class="docutils literal"><span class="pre">runserver</span></code>, open a browser, navigate to a page on the server
-(you can&#8217;t use any page&#8217;s console because of origin restrictions), and put the
-following into the JavaScript console to open a WebSocket and send some data
-down it (you might need to change the socket address if you&#8217;re using a
-development VM or similar):</p>
+<p>現在讓我們看看它們在做些什麼。它綑綁在 <code class="docutils literal"><span class="pre">websocket.receice</span></code> channel，這意味著從 WebSocket packet 由客戶端發送給我們時它將收到一個訊息。</p>
+<p>當它得到這個訊息時，他會得從而到 <code class="docutils literal"><span class="pre">reply_channel</span></code> 屬性，他是從 client 端得到唯一的 channel 回應，接著使用 <code class="docutils literal"><span class="pre">send()</span></code> 方法送出一些內容返回 client。</p>
+<p>讓我們開始測試它！執行 <code class="docutils literal"><span class="pre">runserver</span></code>，開啟一個瀏覽器，跳到伺服器上的一個頁面(你不可使用任何控制台頁面)，並將以下內容放到 JavaScript 控制台中以打開WebSocket 並向其發送一些數據 (假如在 VM 上或是相似的地方開發你可能需要改變 socket 地址):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Note</span> <span class="n">that</span> <span class="n">the</span> <span class="n">path</span> <span class="n">doesn</span><span class="s1">&#39;t matter for routing; any WebSocket</span>
 <span class="o">//</span> <span class="n">connection</span> <span class="n">gets</span> <span class="n">bumped</span> <span class="n">over</span> <span class="n">to</span> <span class="n">WebSocket</span> <span class="n">consumers</span>
 <span class="n">socket</span> <span class="o">=</span> <span class="n">new</span> <span class="n">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://&quot;</span> <span class="o">+</span> <span class="n">window</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">host</span> <span class="o">+</span> <span class="s2">&quot;/chat/&quot;</span><span class="p">);</span>
@@ -149,17 +128,12 @@ development VM or similar):</p>
 <span class="k">if</span> <span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">readyState</span> <span class="o">==</span> <span class="n">WebSocket</span><span class="o">.</span><span class="n">OPEN</span><span class="p">)</span> <span class="n">socket</span><span class="o">.</span><span class="n">onopen</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>You should see an alert come back immediately saying &#8220;hello world&#8221; - your
-message has round-tripped through the server and come back to trigger the alert.</p>
+<p>你應該看到一個提示立刻回傳並且說 &#8220;hello world&#8221; - 你的訊息已經被往返透過伺服器並且回覆去觸發這個提示。</p>
 </div>
 <div class="section" id="groups">
 <h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
-<p>Now, let&#8217;s make our echo server into an actual chat server, so people can talk
-to each other. To do this, we&#8217;ll use Groups, one of the <a class="reference internal" href="concepts.html"><span class="doc">core concepts</span></a>
-of Channels, and our fundamental way of doing multi-cast messaging.</p>
-<p>To do this, we&#8217;ll hook up the <code class="docutils literal"><span class="pre">websocket.connect</span></code> and <code class="docutils literal"><span class="pre">websocket.disconnect</span></code>
-channels to add and remove our clients from the Group as they connect and
-disconnect, like this:</p>
+<p>現在讓我們建立我們的 echo 伺服器進入一個實際的聊天伺服器，所以人們可以和其他人彼此交談。要完成這個我們將使用 Groups，其中一個 :doc&#8221;<cite>core concepts&lt;concepts&gt;</cite> of Channels，接著我們的基本方式是做多播消息。</p>
+<p>要完成這個，我們將 hook up <code class="docutils literal"><span class="pre">websocket.connect</span></code> 與 <code class="docutils literal"><span class="pre">websocket.disconnect</span></code> channels 去新增與移除我們的 clients 從 Group 當他們連接或是中斷，像是:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># In consumers.py</span>
 <span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Group</span>
 
@@ -173,17 +147,10 @@ disconnect, like this:</p>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Of course, if you&#8217;ve read through <a class="reference internal" href="concepts.html"><span class="doc">Channels Concepts</span></a>, you&#8217;ll know that channels
-added to groups expire out if their messages expire (every channel layer has
-a message expiry time, usually between 30 seconds and a few minutes, and it&#8217;s
-often configurable) - but the <code class="docutils literal"><span class="pre">disconnect</span></code> handler will get called nearly all
-of the time anyway.</p>
+<p>當然，如果你已經讀完 <a class="reference internal" href="concepts.html"><span class="doc">路徑概念</span></a> ，則你知道加到 groups 中的 channels 只要他們的訊息過期，則 channel 也跟著過期。 ( 每一個 channel layer 都有訊息的過期時限，通常是 30 秒至數分鐘，通常可以設定。 ) - 但是 <code class="docutils literal"><span class="pre">disconnect</span></code> handler 在任何時間都可以被呼叫。</p>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
-<p>Channels&#8217; design is predicated on expecting and working around failure;
-it assumes that some small percentage of messages will never get delivered,
-and so all the core functionality is designed to <em>expect failure</em> so that
-when a message doesn&#8217;t get delivered, it doesn&#8217;t ruin the whole system.</p>
+<p>Channel 的設計會期望他可以在傳訊息失敗時繼續工作。它假設少數的訊息可能不會被成功的發送出去，因此，其核心的功能在設計上會預期有失敗的發生，所以當訊息沒有被送出去的時候，不會造成系統崩潰。</p>
 <p class="last">We suggest you design your applications the same way - rather than relying
 on 100% guaranteed delivery, which Channels won&#8217;t give you, look at each
 failure case and program something to expect and handle it - be that retry
@@ -281,7 +248,7 @@ in memory, and so isn&#8217;t actually cross-process; it only works inside
 <code class="docutils literal"><span class="pre">runserver</span></code>, as that runs the interface and worker servers in different threads
 inside the same process. When you deploy to production, you&#8217;ll need to
 use a channel layer like the Redis backend <code class="docutils literal"><span class="pre">asgi_redis</span></code> that works cross-process;
-see <a class="reference internal" href="backends.html"><span class="doc">Channel Layer Types</span></a> for more.</p>
+see <a class="reference internal" href="backends.html"><span class="doc">通道層類型</span></a> for more.</p>
 <p>The second thing, once we have a networked channel backend set up, is to make
 sure we&#8217;re running an interface server that&#8217;s capable of serving WebSockets.
 To solve this, Channels comes with <code class="docutils literal"><span class="pre">daphne</span></code>, an interface server
@@ -657,7 +624,7 @@ to manage logical sets of channels, and how Django&#8217;s session and authentic
 systems easily integrate with WebSockets.</p>
 <p>We recommend you read through the rest of the reference documentation to see
 more about what you can do with channels; in particular, you may want to look at
-our <a class="reference internal" href="deploying.html"><span class="doc">Deploying</span></a> documentation to get an idea of how to
+our <a class="reference internal" href="deploying.html"><span class="doc">配置</span></a> documentation to get an idea of how to
 design and run apps in production environments.</p>
 </div>
 </div>
@@ -687,8 +654,8 @@ design and run apps in production environments.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="installation.html" title="上一章">Installation</a></li>
-      <li>Next: <a href="deploying.html" title="下一章">Deploying</a></li>
+      <li>Previous: <a href="installation.html" title="上一章">安裝</a></li>
+      <li>Next: <a href="deploying.html" title="下一章">配置</a></li>
   </ul></li>
 </ul>
 </div>

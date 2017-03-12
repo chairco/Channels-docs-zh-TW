@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Frequently Asked Questions &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>常見問題 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="ASGI (Asynchronous Server Gateway Interface) Draft Spec" href="asgi.html" />
-    <link rel="prev" title="Reference" href="reference.html" />
+    <link rel="next" title="ASGI (異步伺服器網關介面) 規劃規格" href="asgi.html" />
+    <link rel="prev" title="參考" href="reference.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,9 +45,9 @@
           <div class="body" role="main">
             
   <div class="section" id="frequently-asked-questions">
-<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="本標題的永久連結">¶</a></h1>
+<h1>常見問題<a class="headerlink" href="#frequently-asked-questions" title="本標題的永久連結">¶</a></h1>
 <div class="section" id="why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">
-<h2>Why are you doing this rather than just using Tornado/gevent/asyncio/etc.?<a class="headerlink" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc" title="本標題的永久連結">¶</a></h2>
+<h2>為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?<a class="headerlink" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc" title="本標題的永久連結">¶</a></h2>
 <p>They&#8217;re kind of solving different problems. Tornado, gevent and other
 in-process async solutions are a way of making a single Python process act
 asynchronously - doing other things while a HTTP request is going on, or
@@ -155,7 +155,7 @@ global variable won&#8217;t work outside of development.</p>
 a few choices:</p>
 <ul class="simple">
 <li>If it&#8217;s a Python program, and you&#8217;ve made an <code class="docutils literal"><span class="pre">asgi.py</span></code> file for your project
-(see <a class="reference internal" href="deploying.html"><span class="doc">Deploying</span></a>), you can import the channel layer directly as
+(see <a class="reference internal" href="deploying.html"><span class="doc">配置</span></a>), you can import the channel layer directly as
 <code class="docutils literal"><span class="pre">yourproject.asgi.channel_layer</span></code> and call <code class="docutils literal"><span class="pre">send()</span></code> and <code class="docutils literal"><span class="pre">receive_many()</span></code>
 on it directly. See the <a class="reference internal" href="asgi.html"><span class="doc">ASGI spec</span></a> for the API the channel layer
 presents.</li>
@@ -197,8 +197,8 @@ long polls terminate early).</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
-<li><a class="reference internal" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">Why are you doing this rather than just using Tornado/gevent/asyncio/etc.?</a></li>
+<li><a class="reference internal" href="#">常見問題</a><ul>
+<li><a class="reference internal" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?</a></li>
 <li><a class="reference internal" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django">Why aren&#8217;t you using node/go/etc. to proxy to Django?</a></li>
 <li><a class="reference internal" href="#why-isn-t-there-guaranteed-delivery-a-retry-mechanism">Why isn&#8217;t there guaranteed delivery/a retry mechanism?</a></li>
 <li><a class="reference internal" href="#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking">Can I run HTTP requests/service calls/etc. in parallel from Django without blocking?</a></li>
@@ -213,8 +213,8 @@ long polls terminate early).</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="reference.html" title="上一章">Reference</a></li>
-      <li>Next: <a href="asgi.html" title="下一章">ASGI (Asynchronous Server Gateway Interface) Draft Spec</a></li>
+      <li>Previous: <a href="reference.html" title="上一章">參考</a></li>
+      <li>Next: <a href="asgi.html" title="下一章">ASGI (異步伺服器網關介面) 規劃規格</a></li>
   </ul></li>
 </ul>
 </div>

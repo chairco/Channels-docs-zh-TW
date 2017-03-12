@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Routing &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>路由 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Data Binding" href="binding.html" />
-    <link rel="prev" title="Generic Consumers" href="generics.html" />
+    <link rel="next" title="資料綁定" href="binding.html" />
+    <link rel="prev" title="一般消費者" href="generics.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,10 +45,8 @@
           <div class="body" role="main">
             
   <div class="section" id="routing">
-<h1>Routing<a class="headerlink" href="#routing" title="本標題的永久連結">¶</a></h1>
-<p>Routing in Channels is done using a system similar to that in core Django;
-a list of possible routes is provided, and Channels goes through all routes
-until a match is found, and then runs the resulting consumer.</p>
+<h1>路由<a class="headerlink" href="#routing" title="本標題的永久連結">¶</a></h1>
+<p>Channels 中的路由是使用一個較 Django 核心簡單的系統來達成的。給予一個所有可能路由的序列，Channels 將會遍歷所有的可能直到發現一個相符的路由，然後該路由的 consumer 將會被執行。</p>
 <p>The difference comes, however, in the fact that Channels has to route based
 on more than just URL; channel name is the main thing routed on, and URL
 path is one of many other optional things you can route on, depending on
@@ -60,10 +58,10 @@ that implements the routing interface will work:</p>
 <ul class="simple">
 <li>A method called <code class="docutils literal"><span class="pre">match</span></code>, taking a single <code class="docutils literal"><span class="pre">message</span></code> as an argument and
 returning <code class="docutils literal"><span class="pre">None</span></code> for no match or a tuple of <code class="docutils literal"><span class="pre">(consumer,</span> <span class="pre">kwargs)</span></code> if matched.</li>
-<li>A method called <code class="docutils literal"><span class="pre">channel_names</span></code>, which returns a set of channel names that
-will match, which is fed to the channel layer to listen on them.</li>
+<li><p class="first">有個功能鍵叫&#8221;channel_names&#8221;可回覆一組可搭配的 channel 名稱，這使 channel 層可以管控他們</p>
+</li>
 </ul>
-<p>The three default routing objects are:</p>
+<p>以下是三個預設的路由物件:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">route</span></code>: Takes a channel name, a consumer function, and optional filter
 keyword arguments.</li>
@@ -74,7 +72,7 @@ keyword arguments. Channel names are taken from the consumer&#8217;s
 and optional filter keyword arguments.</li>
 </ul>
 <div class="section" id="filters">
-<span id="id1"></span><h2>Filters<a class="headerlink" href="#filters" title="本標題的永久連結">¶</a></h2>
+<span id="id1"></span><h2>過濾器<a class="headerlink" href="#filters" title="本標題的永久連結">¶</a></h2>
 <p>Filtering is how you limit matches based on, for example, URLs; you use regular
 expressions, like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">ws_connect</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/chat/$&quot;</span><span class="p">)</span>
@@ -86,7 +84,7 @@ expressions, like so:</p>
 neatness, Channels includes the first slash, as the routing system is
 generic and not designed just for URLs.</p>
 </div>
-<p>You can have multiple filters:</p>
+<p>你可以使用多重過濾器:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;email.receive&quot;</span><span class="p">,</span> <span class="n">comment_response</span><span class="p">,</span> <span class="n">to_address</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*@example.com$&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;^reply&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -128,8 +126,8 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Routing</a><ul>
-<li><a class="reference internal" href="#filters">Filters</a></li>
+<li><a class="reference internal" href="#">路由</a><ul>
+<li><a class="reference internal" href="#filters">過濾器</a></li>
 </ul>
 </li>
 </ul>
@@ -137,8 +135,8 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="generics.html" title="上一章">Generic Consumers</a></li>
-      <li>Next: <a href="binding.html" title="下一章">Data Binding</a></li>
+      <li>Previous: <a href="generics.html" title="上一章">一般消費者</a></li>
+      <li>Next: <a href="binding.html" title="下一章">資料綁定</a></li>
   </ul></li>
 </ul>
 </div>

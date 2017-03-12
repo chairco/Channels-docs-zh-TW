@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Binding &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>資料綁定 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Channel Layer Types" href="backends.html" />
-    <link rel="prev" title="Routing" href="routing.html" />
+    <link rel="next" title="通道層類型" href="backends.html" />
+    <link rel="prev" title="路由" href="routing.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,47 +45,32 @@
           <div class="body" role="main">
             
   <div class="section" id="data-binding">
-<h1>Data Binding<a class="headerlink" href="#data-binding" title="本標題的永久連結">¶</a></h1>
-<p>The Channels data binding framework automates the process of tying Django
-models into frontend views, such as javascript-powered website UIs. It provides
-a quick and flexible way to generate messages on Groups for model changes
-and to accept messages that change models themselves.</p>
-<p>The main target for the moment is WebSockets, but the framework is flexible
-enough to be used over any protocol.</p>
+<h1>資料綁定<a class="headerlink" href="#data-binding" title="本標題的永久連結">¶</a></h1>
+<p>Channel 的資料綁定架構會自動處理 Django 的 model 寫入前端 view 中，例如使用 javascript 強化的網站。它提供了一個快速且彈性的方式來產生 Group 的 model 改變 message，以及接收 model 發生變化時的 message。</p>
+<p>當前主要的目標是 WebSocket，但此架構有相當的彈性可以支援任何通訊協定。</p>
 <div class="section" id="what-does-data-binding-allow">
-<h2>What does data binding allow?<a class="headerlink" href="#what-does-data-binding-allow" title="本標題的永久連結">¶</a></h2>
-<p>Data binding in Channels works two ways:</p>
+<h2>資料綁定可以接受什麼？<a class="headerlink" href="#what-does-data-binding-allow" title="本標題的永久連結">¶</a></h2>
+<p>Channel 的資料綁定以兩種方式運作:</p>
 <ul class="simple">
-<li>Outbound, where model changes made through Django are sent out to listening
-clients. This includes creation, updates and deletion of instances.</li>
-<li>Inbound, where a standardised message format allows creation, update and
-deletion of instances to be made by clients sending messages.</li>
+<li><p class="first">發送，當 model 透過 Django 發生變化時，訊息會發送到監聽的客戶端。這包含了事例的建立、更新與刪除。</p>
+</li>
+<li><p class="first">接收，標準化的訊息格式，允許客戶端發送訊息來建立、更新與刪除事例。</p>
+</li>
 </ul>
-<p>Combined, these allow a UI to be designed that automatically updates to
-reflect new values and reflects across clients. A live blog is easily done
-using data binding against the post object, for example, or an edit interface
-can show data live as it&#8217;s edited by other users.</p>
+<p>收發，允許 UI 可以設計成自動更新反映客戶端更新的數值。例如，網誌的即時更新可以藉由 PO 文物件的資料綁定來達成，而編輯介面也可以藉此同步顯示其他使用者的修改。</p>
 <p>It has some limitations:</p>
 <ul class="simple">
-<li>Signals are used to power outbound binding, so if you change the values of
-a model outside of Django (or use the <code class="docutils literal"><span class="pre">.update()</span></code> method on a QuerySet),
-the signals are not triggered and the change will not be sent out. You
-can trigger changes yourself, but you&#8217;ll need to source the events from the
-right place for your system.</li>
-<li>The built-in serializers are based on the built-in Django ones and can only
-handle certain field types; for more flexibility, you can plug in something
-like the Django REST Framework serializers.</li>
+<li><p class="first">發送的資料綁定是藉由 signal 來達成的，所以假使 model 的資料更新不是透過 Django (或是使用 QuerySet 的 <code class="docutils literal"><span class="pre">.update()</span></code> 函式)，就沒有觸發的 signal，改變的訊息就不會被送出。你可以自己觸發改變，但是你會需要從系統中正確的來源來送出這個 signal。</p>
+</li>
+<li><p class="first">內建的序列化是來自 Django 的內建功能，它只能處理特定的資料型態。如果需要有更大的彈性，你可以透過像是 Django REST 架構的序列化函式庫來達成。</p>
+</li>
 </ul>
 </div>
 <div class="section" id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="本標題的永久連結">¶</a></h2>
-<p>A single Binding subclass will handle outbound and inbound binding for a model,
-and you can have multiple bindings per model (if you want different formats
-or permission checks, for example).</p>
-<p>You can inherit from the base Binding and provide all the methods needed, but
-we&#8217;ll focus on the WebSocket JSON variant here, as it&#8217;s the easiest thing to
-get started and likely close to what you want.</p>
-<p>Start off like this:</p>
+<h2>入門<a class="headerlink" href="#getting-started" title="本標題的永久連結">¶</a></h2>
+<p>單一的綁定子類別用來處理 model 發送與接收的綁定，你也可以在每個 model 使用多個綁定 (例如如果你想使用不同的格式或權限檢查)。</p>
+<p>你可以自底層的 Binding 實作所有需要的函式，但我們這裡把重點放在 WebSocket JSON 變形上，因著這是最簡單的入手點而且最接近你可能需要的部分。</p>
+<p>從這裡開始:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">channels.binding.websockets</span> <span class="k">import</span> <span class="n">WebsocketBinding</span>
 
@@ -108,14 +93,10 @@ get started and likely close to what you want.</p>
         <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 </div>
-<p>This defines a WebSocket binding - so it knows to send outgoing messages
-formatted as JSON WebSocket frames - and provides the three things you must
-always provide:</p>
+<p>這裡定義一個 WebSocket 的綁定 - 如此就知道如何送出 JSON WebSocket 格式的頁框 - 並且提供三件你必須提供的部分:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">fields</span></code> is a whitelist of fields to return in the serialized request.
-Channels does not default to all fields for security concerns; if you want
-this, set it to the value <code class="docutils literal"><span class="pre">[&quot;__all__&quot;]</span></code>. As an alternative, <code class="docutils literal"><span class="pre">exclude</span></code>
-acts as a blacklist of fields.</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">fields</span></code> 是一個序列化請求可傳回欄位的白名單。Channel 預設不開啟所有的欄位，主要是基於安全性的考量。如果你想全部開啟的話，把該列表設為 <code class="docutils literal"><span class="pre">[&quot;__all__&quot;]</span></code> 即可。另一方便，也可以使用 <code class="docutils literal"><span class="pre">exclude</span></code> 來建立黑名單。</p>
+</li>
 <li><code class="docutils literal"><span class="pre">group_names</span></code> returns a list of groups to send outbound updates to based
 on the instance. For example, you could dispatch posts on different
 liveblogs to groups that included the parent blog ID in the name; here, we
@@ -155,7 +136,7 @@ This should match the logic of <code class="docutils literal"><span class="pre">
 our fixed group name again. Notice that the binding has a <code class="docutils literal"><span class="pre">.consumer</span></code> attribute;
 this is a standard WebSocket-JSON consumer, that the demultiplexer can pass
 demultiplexed <code class="docutils literal"><span class="pre">websocket.receive</span></code> messages to.</p>
-<p>Tie that into your routing, and you&#8217;re ready to go:</p>
+<p>綁到你的路由，這樣子就完成了:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">route_class</span><span class="p">,</span> <span class="n">route</span>
 <span class="kn">from</span> <span class="nn">.consumers</span> <span class="k">import</span> <span class="n">Demultiplexer</span>
 <span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">IntegerValueBinding</span>
@@ -167,33 +148,20 @@ demultiplexed <code class="docutils literal"><span class="pre">websocket.receive
 </div>
 </div>
 <div class="section" id="frontend-considerations">
-<h2>Frontend Considerations<a class="headerlink" href="#frontend-considerations" title="本標題的永久連結">¶</a></h2>
-<p>You can use the standard Channels WebSocket wrapper <strong>(not yet available)</strong>
-to automatically run demultiplexing, and then tie the events you receive into
-your frontend framework of choice based on <code class="docutils literal"><span class="pre">action</span></code>, <code class="docutils literal"><span class="pre">pk</span></code> and <code class="docutils literal"><span class="pre">data</span></code>.</p>
+<h2>前端的考量點<a class="headerlink" href="#frontend-considerations" title="本標題的永久連結">¶</a></h2>
+<p>你可以使用 Channel 標準的 WebSocket 包裹 <strong>(尚未提供)</strong> 來自動反解多工，然後將接收的事例綁到你選定之前端架構的 <code class="docutils literal"><span class="pre">action</span></code>, <code class="docutils literal"><span class="pre">pk</span></code> 與 <code class="docutils literal"><span class="pre">data</span></code> 上。</p>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
-<p class="last">Common plugins for data binding against popular JavaScript frameworks are
-wanted; if you&#8217;re interested, please get in touch.</p>
+<p class="last">我們需要熱門 JavaScript 架構的資料綁定插件，如果你有興趣提供，請和我們聯絡。</p>
 </div>
 </div>
 <div class="section" id="custom-serialization-protocols">
-<h2>Custom Serialization/Protocols<a class="headerlink" href="#custom-serialization-protocols" title="本標題的永久連結">¶</a></h2>
-<p>Rather than inheriting from the <code class="docutils literal"><span class="pre">WebsocketBinding</span></code>, you can inherit directly
-from the base <code class="docutils literal"><span class="pre">Binding</span></code> class and implement serialization and deserialization
-yourself. Until proper reference documentation for this is written, we
-recommend looking at the source code in <code class="docutils literal"><span class="pre">channels/bindings/base.py</span></code>; it&#8217;s
-reasonably well-commented.</p>
+<h2>客製序列化/通訊協定<a class="headerlink" href="#custom-serialization-protocols" title="本標題的永久連結">¶</a></h2>
+<p>不同於繼承自 <code class="docutils literal"><span class="pre">WebsocketBinding</span></code>，你可以直接繼承自底層的 <code class="docutils literal"><span class="pre">Binding</span></code> 類別，然後自己實作序列化與反序列化。在這部分的參考文件完成之前，我們建議參考 <code class="docutils literal"><span class="pre">channels/bindings/base.py</span></code> 原始碼，程式中有相當完整的註解。</p>
 </div>
 <div class="section" id="dealing-with-disconnection">
-<h2>Dealing with Disconnection<a class="headerlink" href="#dealing-with-disconnection" title="本標題的永久連結">¶</a></h2>
-<p>Because the data binding Channels ships with has no history of events,
-it means that when a disconnection happens you may miss events that happen
-during your offline time. For this reason, it&#8217;s recommended you reload
-data directly using an API call once connection has been re-established,
-don&#8217;t rely on the live updates for critical functionality, or have UI designs
-that cope well with missing data (e.g. ones where it&#8217;s all updates and no
-creates, so the next update will correct everything).</p>
+<h2>斷線的處理<a class="headerlink" href="#dealing-with-disconnection" title="本標題的永久連結">¶</a></h2>
+<p>由於 Channel 的資料綁定沒有包含事件的歷史，也就是說當網路連線斷開，你會遺失這段時間發生的事例訊息。因此，建議當連線恢復之後，直接透過 API 來重新載入資料，而不要依賴即時更新在關鍵的功能，或是設計 UI 來處理資料遺失的問題。(例如只有更新沒有新建時，下個更新會修正全部的遺失資料)</p>
 </div>
 </div>
 
@@ -205,12 +173,12 @@ creates, so the next update will correct everything).</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Data Binding</a><ul>
-<li><a class="reference internal" href="#what-does-data-binding-allow">What does data binding allow?</a></li>
-<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
-<li><a class="reference internal" href="#frontend-considerations">Frontend Considerations</a></li>
-<li><a class="reference internal" href="#custom-serialization-protocols">Custom Serialization/Protocols</a></li>
-<li><a class="reference internal" href="#dealing-with-disconnection">Dealing with Disconnection</a></li>
+<li><a class="reference internal" href="#">資料綁定</a><ul>
+<li><a class="reference internal" href="#what-does-data-binding-allow">資料綁定可以接受什麼？</a></li>
+<li><a class="reference internal" href="#getting-started">入門</a></li>
+<li><a class="reference internal" href="#frontend-considerations">前端的考量點</a></li>
+<li><a class="reference internal" href="#custom-serialization-protocols">客製序列化/通訊協定</a></li>
+<li><a class="reference internal" href="#dealing-with-disconnection">斷線的處理</a></li>
 </ul>
 </li>
 </ul>
@@ -218,8 +186,8 @@ creates, so the next update will correct everything).</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="routing.html" title="上一章">Routing</a></li>
-      <li>Next: <a href="backends.html" title="下一章">Channel Layer Types</a></li>
+      <li>Previous: <a href="routing.html" title="上一章">路由</a></li>
+      <li>Next: <a href="backends.html" title="下一章">通道層類型</a></li>
   </ul></li>
 </ul>
 </div>

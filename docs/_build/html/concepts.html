@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Channels Concepts &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>路徑概念 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="In Short" href="inshort.html" />
+    <link rel="next" title="安裝" href="installation.html" />
+    <link rel="prev" title="簡短說明" href="inshort.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,7 +45,7 @@
           <div class="body" role="main">
             
   <div class="section" id="channels-concepts">
-<h1>Channels Concepts<a class="headerlink" href="#channels-concepts" title="本標題的永久連結">¶</a></h1>
+<h1>路徑概念<a class="headerlink" href="#channels-concepts" title="本標題的永久連結">¶</a></h1>
 <p>Django 的傳統視圖看法圍繞著請求與回應；一個請求進來，Django 被觸發接著服務它，產生一個回應並送出，接著 Django 離開並且等待下一個請求。</p>
 <p>當互聯網是透過簡單的瀏覽器交互驅動時，這是好的方法，但現代的 Web 包括 WebSockets 和 HTTP2 服務器推送，它們允許網站在傳統的周期外通信。</p>
 <p>除此之外，還有許多非關鍵任務像是應用程序可以輕鬆的卸載直到一個回應被送出之後 - 例如保存東西到緩存空間或是新生成縮圖-上傳圖像。</p>
@@ -110,7 +110,7 @@
 <p>這裡可以用選擇後端實現來理解他 - 畢竟，這只對於 Scale 重要，因為這邊你想要分割兩種不同類型 — 但是它仍然存在。假如你是撰寫後端或是介面服務想要更多彈性與掌控 channel types 可以參考 <a class="reference internal" href="deploying.html#scaling-up"><span class="std std-ref">Scaling Up</span></a>。</p>
 </div>
 <div class="section" id="groups">
-<h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<h2>群組<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
 <p>因為 channels 只能傳送到單一個 listener 無法做廣播；假如你希望傳送一個訊息給任意的終端群組，你需要對發送的 channels 的回覆保持追蹤。</p>
 <p>假設我有一個實況部落格，當有一個新的 post 儲存了，我希望推送出去更新，我可以針對 <code class="docutils literal"><span class="pre">post_save</span></code> 訊號註冊一個標頭並且保持一組 channels (這裡，使用 Redis) 去送出一個更新:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">redis_conn</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)</span>
@@ -160,7 +160,7 @@
 <p>Groups 一般來說對於回應 channels 是有用的(包含字符 <code class="docutils literal"><span class="pre">！</span></code>), 假如你想將他們使用於一般的 channels 是可行的，因為它們都是唯一的客戶端。</p>
 </div>
 <div class="section" id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="本標題的永久連結">¶</a></h2>
+<h2>下一步<a class="headerlink" href="#next-steps" title="本標題的永久連結">¶</a></h2>
 <p>這是一個高級的 channels 和 groups 概覽與如何開始思考它。記住，Django 提供一些 channels 但你自由的使用與消費，所有的 channels 都是 network-transparent</p>
 <p>有件事是 channels 不是保證渠道的交付。假如你需要確定是一個將被完成任務，使用一個為此設計的系統設定去重試與保持(e.g. Celery)，或是做出一個管理命令，假如檢查沒有完成，會重新送出一個訊息給 channel (自己動手去重試這個邏輯)。</p>
 <p>我們將在文檔的其餘部分更詳細地介紹什麼樣的任務適合用在 Channels 中，但現在讓我們進入 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 並編寫一些程式碼。</p>
@@ -175,12 +175,12 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Channels Concepts</a><ul>
+<li><a class="reference internal" href="#">路徑概念</a><ul>
 <li><a class="reference internal" href="#what-is-a-channel">什麼是 channel?</a></li>
 <li><a class="reference internal" href="#how-do-we-use-channels">我們如何使用 channels?</a></li>
 <li><a class="reference internal" href="#channel-types">Channel 類型</a></li>
-<li><a class="reference internal" href="#groups">Groups</a></li>
-<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+<li><a class="reference internal" href="#groups">群組</a></li>
+<li><a class="reference internal" href="#next-steps">下一步</a></li>
 </ul>
 </li>
 </ul>
@@ -188,8 +188,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="inshort.html" title="上一章">In Short</a></li>
-      <li>Next: <a href="installation.html" title="下一章">Installation</a></li>
+      <li>Previous: <a href="inshort.html" title="上一章">簡短說明</a></li>
+      <li>Next: <a href="installation.html" title="下一章">安裝</a></li>
   </ul></li>
 </ul>
 </div>
