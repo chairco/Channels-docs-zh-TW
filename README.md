@@ -38,7 +38,7 @@ git clone https://github.com/django/channels.git
 進入專案的 docs 底下，不過要先確認你的環境目前有安裝兩個套件，一個是 [sphinx](https://github.com/sphinx-doc/sphinx), 一個是 [sphinx_intl](https://github.com/sphinx-doc/sphinx-intl) 然後執行
 
 ```
-make gettex
+make gettext
 ```
 
 接著會在 `/_build/locale` 底下建立對應的 .pot 檔案。這些 .pot 檔案要讓我們用來轉換成 .po 檔。轉 .po 檔案的方式也很簡單，執行指令如下：
