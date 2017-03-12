@@ -47,7 +47,7 @@
   <div class="section" id="getting-started-with-channels">
 <h1>Getting Started with Channels<a class="headerlink" href="#getting-started-with-channels" title="本標題的永久連結">¶</a></h1>
 <p>(If you haven&#8217;t yet, make sure you <a class="reference internal" href="installation.html"><span class="doc">install Channels</span></a>)</p>
-<p>現在，讓我們開始寫一些 consumer。假如尚未讀過 <a class="reference internal" href="concepts.html"><span class="doc">路徑概念</span></a> 先研讀過後，它包含最基礎的像是那些是 channels 與群組、重要的實施模式佈局與注意事項。</p>
+<p>現在，讓我們開始寫一些 consumer。假如尚未讀過 <a class="reference internal" href="concepts.html"><span class="doc">Channels 的概念</span></a> 先研讀過後，它包含最基礎的像是那些是 channels 與群組、重要的實施模式佈局與注意事項。</p>
 <div class="section" id="first-consumers">
 <h2>First Consumers<a class="headerlink" href="#first-consumers" title="本標題的永久連結">¶</a></h2>
 <p>當你第一次執行 Django 並安裝 Channels，將會設定默認的 layout - 所有的 HTTP requests (在 <code class="docutils literal"><span class="pre">http.request</span></code> channel) 如何路由到 Django - 與過去基於 WSGI-based Django 與你的視覺圖與靜態檔案服務 (依然運作如一般 <code class="docutils literal"><span class="pre">runserver</span></code> 不會有任何的不同)</p>
@@ -131,7 +131,7 @@
 <p>你應該看到一個提示立刻回傳並且說 &#8220;hello world&#8221; - 你的訊息已經被往返透過伺服器並且回覆去觸發這個提示。</p>
 </div>
 <div class="section" id="groups">
-<h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<h2>群組<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
 <p>現在讓我們建立我們的 echo 伺服器進入一個實際的聊天伺服器，所以人們可以和其他人彼此交談。要完成這個我們將使用 Groups，其中一個 :doc&#8221;<cite>core concepts&lt;concepts&gt;</cite> of Channels，接著我們的基本方式是做多播消息。</p>
 <p>要完成這個，我們將 hook up <code class="docutils literal"><span class="pre">websocket.connect</span></code> 與 <code class="docutils literal"><span class="pre">websocket.disconnect</span></code> channels 去新增與移除我們的 clients 從 Group 當他們連接或是中斷，像是:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># In consumers.py</span>
@@ -147,7 +147,7 @@
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>當然，如果你已經讀完 <a class="reference internal" href="concepts.html"><span class="doc">路徑概念</span></a> ，則你知道加到 groups 中的 channels 只要他們的訊息過期，則 channel 也跟著過期。 ( 每一個 channel layer 都有訊息的過期時限，通常是 30 秒至數分鐘，通常可以設定。 ) - 但是 <code class="docutils literal"><span class="pre">disconnect</span></code> handler 在任何時間都可以被呼叫。</p>
+<p>當然，如果你已經讀完 <a class="reference internal" href="concepts.html"><span class="doc">Channels 的概念</span></a> ，則你知道加到 groups 中的 channels 只要他們的訊息過期，則 channel 也跟著過期。 ( 每一個 channel layer 都有訊息的過期時限，通常是 30 秒至數分鐘，通常可以設定。 ) - 但是 <code class="docutils literal"><span class="pre">disconnect</span></code> handler 在任何時間都可以被呼叫。</p>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
 <p>Channel 的設計會期望他可以在傳訊息失敗時繼續工作。它假設少數的訊息可能不會被成功的發送出去，因此，其核心的功能在設計上會預期有失敗的發生，所以當訊息沒有被送出去的時候，不會造成系統崩潰。</p>
@@ -639,7 +639,7 @@ design and run apps in production environments.</p>
   <ul>
 <li><a class="reference internal" href="#">Getting Started with Channels</a><ul>
 <li><a class="reference internal" href="#first-consumers">First Consumers</a></li>
-<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#groups">群組</a></li>
 <li><a class="reference internal" href="#running-with-channels">Running with Channels</a></li>
 <li><a class="reference internal" href="#persisting-data">Persisting Data</a></li>
 <li><a class="reference internal" href="#authentication">Authentication</a></li>

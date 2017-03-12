@@ -1,0 +1,229 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, test
+# This file is distributed under the same license as the test package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: test 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../inshort.rst:2
+msgid "In Short"
+msgstr "簡短說明"
+
+#: ../../inshort.rst:6
+msgid "What is Channels?"
+msgstr "什麼是 Channels?"
+
+#: ../../inshort.rst:8
+msgid ""
+"Channels extends Django to add :ref:`a new layer <what-are-channels>` that "
+"allows two important features:"
+msgstr ""
+
+#: ../../inshort.rst:11
+msgid ""
+"WebSocket handling, in a way very :ref:`similar to normal views <websocket-"
+"example>`"
+msgstr ""
+
+#: ../../inshort.rst:12
+msgid "Background tasks, running in the same servers as the rest of Django"
+msgstr "背景測試，像其它的Django一樣在相同伺服器執行"
+
+#: ../../inshort.rst:14
+msgid ""
+"It allows other things too, but these are the ones you'll use to start with."
+msgstr "這也允許其它物件，但你要從這些物件開始"
+
+#: ../../inshort.rst:18
+msgid "How?"
+msgstr ""
+
+#: ../../inshort.rst:20
+msgid "It separates Django into two process types:"
+msgstr "這將Django分成2種運行類型:"
+
+#: ../../inshort.rst:22
+msgid "One that handles HTTP and WebSockets"
+msgstr "一個處理HTTP 和 WebSockets"
+
+#: ../../inshort.rst:23
+msgid ""
+"One that runs views, websocket handlers and background tasks (*consumers*)"
+msgstr ""
+
+#: ../../inshort.rst:25
+msgid ""
+"They communicate via a protocol called :doc:`ASGI <asgi>`, which is similar "
+"to WSGI but runs over a network and allows for more protocol types."
+msgstr ""
+
+#: ../../inshort.rst:28
+msgid ""
+"Channels does not introduce asyncio, gevent, or any other async code to your"
+" Django code; all of your business logic runs synchronously in a worker "
+"process or thread."
+msgstr ""
+
+#: ../../inshort.rst:34
+msgid "I have to change how I run Django?"
+msgstr "我必須改變我使用Django的方法？"
+
+#: ../../inshort.rst:36
+msgid ""
+"No, all the new stuff is entirely optional. If you want it, however, you'll "
+"change from running Django under a WSGI server, to running:"
+msgstr ""
+
+#: ../../inshort.rst:39
+msgid "An ASGI server, probably `Daphne <http://github.com/django/daphne/>`_"
+msgstr ""
+
+#: ../../inshort.rst:40
+msgid "Django worker servers, using ``manage.py runworker``"
+msgstr ""
+
+#: ../../inshort.rst:41
+msgid "Something to route ASGI requests over, like Redis."
+msgstr ""
+
+#: ../../inshort.rst:43
+msgid ""
+"Even when you're running on Channels, it routes all HTTP requests to the "
+"Django view system by default, so it works like before."
+msgstr ""
+
+#: ../../inshort.rst:48
+msgid "What else does Channels give me?"
+msgstr "Channels還給會給我什麼？"
+
+#: ../../inshort.rst:50
+msgid "Other features include:"
+msgstr "其他特徵包括："
+
+#: ../../inshort.rst:52
+msgid "Easy HTTP long-poll support for thousands of clients at once"
+msgstr ""
+
+#: ../../inshort.rst:53
+msgid "Full session and auth support for WebSockets"
+msgstr ""
+
+#: ../../inshort.rst:54
+msgid "Automatic user login for WebSockets based on site cookies"
+msgstr "自動用戶登入主要應用於WebSockets的網站cookies"
+
+#: ../../inshort.rst:55
+msgid ""
+"Built-in primitives for mass triggering of events (chat, live blogs, etc.)"
+msgstr ""
+
+#: ../../inshort.rst:56
+msgid ""
+"Zero-downtime deployment with browsers paused while new workers spin up"
+msgstr ""
+
+#: ../../inshort.rst:57
+msgid "Optional low-level HTTP control on a per-URL basis"
+msgstr ""
+
+#: ../../inshort.rst:58
+msgid ""
+"Extendability to other protocols or event sources (e.g. WebRTC, raw UDP, "
+"SMS)"
+msgstr ""
+
+#: ../../inshort.rst:62
+msgid "Does it scale?"
+msgstr "這可以縮放嗎？"
+
+#: ../../inshort.rst:64
+msgid ""
+"Yes, you can run any number of *protocol servers* (ones that serve HTTP and "
+"WebSockets) and *worker servers* (ones that run your Django code) to fit "
+"your use case."
+msgstr ""
+
+#: ../../inshort.rst:68
+msgid ""
+"The ASGI spec allows a number of different *channel layers* to be plugged in"
+" between these two components, with different performance characteristics, "
+"and it's designed to allow both easy sharding as well as the ability to run "
+"separate clusters with their own protocol and worker servers."
+msgstr ""
+
+#: ../../inshort.rst:75
+msgid "Why doesn't it use my favourite message queue?"
+msgstr "為什麼它不使用我的喜好排序訊息？"
+
+#: ../../inshort.rst:77
+msgid ""
+"Channels is deliberately designed to prefer low latency (goal is a few "
+"milliseconds) and high throughput over guaranteed delivery, which doesn't "
+"match some message queue designs."
+msgstr ""
+
+#: ../../inshort.rst:81
+msgid ""
+"Some features, like :ref:`guaranteed ordering of messages <enforcing-"
+"ordering>`, are opt-in as they incur a performance hit, but make it more "
+"message queue like."
+msgstr ""
+
+#: ../../inshort.rst:86
+msgid "Do I need to worry about making all my code async-friendly?"
+msgstr ""
+
+#: ../../inshort.rst:88
+msgid ""
+"No, all your code runs synchronously without any sockets or event loops to "
+"block. You can use async code within a Django view or channel consumer if "
+"you like - for example, to fetch lots of URLs in parallel - but it doesn't "
+"affect the overall deployed site."
+msgstr ""
+
+#: ../../inshort.rst:95
+msgid "What version of Django does it work with?"
+msgstr ""
+
+#: ../../inshort.rst:97
+msgid ""
+"You can install Channels as a library for Django >= 1.8. It has a few extra "
+"dependencies, but these will all be installed if you use ``pip``."
+msgstr ""
+
+#: ../../inshort.rst:102
+msgid "Official project"
+msgstr ""
+
+#: ../../inshort.rst:104
+msgid ""
+"Channels is not in the Django core as initially planned, but it's an "
+"official Django project since September 2016. More information about "
+"Channels being adopted as an official project are available on the `Django "
+"blog <https://www.djangoproject.com/weblog/2016/sep/09/channels-adopted-"
+"official-django-project/>`_."
+msgstr ""
+
+#: ../../inshort.rst:111
+msgid "What do I read next?"
+msgstr ""
+
+#: ../../inshort.rst:113
+msgid ""
+"Start off by reading about the :doc:`concepts underlying Channels "
+"<concepts>`, and then move on to read our example-laden :doc:`Getting "
+"Started guide <getting-started>`."
+msgstr ""

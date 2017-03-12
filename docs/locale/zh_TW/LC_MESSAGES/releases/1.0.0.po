@@ -184,7 +184,7 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:105
 msgid "For more, read the updated :doc:`/generic` docs."
-msgstr ""
+msgstr "更多資訊，請詳閱更新文件：doc:`/generic` "
 
 #: ../../releases/1.0.0.rst:109
 msgid "Delay Server"
@@ -199,7 +199,7 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:117
 msgid "Minor Changes"
-msgstr ""
+msgstr "次要修正"
 
 #: ../../releases/1.0.0.rst:119
 msgid ""

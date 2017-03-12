@@ -71,7 +71,7 @@ the traffic up, you&#8217;ll need to configure a webserver or layer 7 loadbalanc
 in front of the two servers to route requests to the correct place based on
 path or domain. Both methods are covered below.</p>
 <div class="section" id="setting-up-a-channel-backend">
-<h2>Setting up a channel backend<a class="headerlink" href="#setting-up-a-channel-backend" title="本標題的永久連結">¶</a></h2>
+<h2>設定一個 channel 後端<a class="headerlink" href="#setting-up-a-channel-backend" title="本標題的永久連結">¶</a></h2>
 <p>The first step is to set up a channel backend. If you followed the
 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> guide, you will have ended up using the in-memory
 backend, which is useful for <code class="docutils literal"><span class="pre">runserver</span></code>, but as it only works inside the
@@ -96,7 +96,7 @@ here&#8217;s an example for a remote Redis server:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>To use the Redis backend you have to install it:</p>
+<p>使用Redis後端，你必須安裝它：</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">asgi_redis</span>
 </pre></div>
 </div>
@@ -150,7 +150,7 @@ of configuring a worker to only serve HTTP and WebSocket requests:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runworker</span> <span class="o">--</span><span class="n">only</span><span class="o">-</span><span class="n">channels</span><span class="o">=</span><span class="n">http</span><span class="o">.*</span> <span class="o">--</span><span class="n">only</span><span class="o">-</span><span class="n">channels</span><span class="o">=</span><span class="n">websocket</span><span class="o">.*</span>
 </pre></div>
 </div>
-<p>Or telling a worker to ignore all messages on the &#8220;thumbnail&#8221; channel:</p>
+<p>或是告訴工作者忽略 &#8220;thumbnail&#8221; channel 上的所有訊息</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runworker</span> <span class="o">--</span><span class="n">exclude</span><span class="o">-</span><span class="n">channels</span><span class="o">=</span><span class="n">thumbnail</span>
 </pre></div>
 </div>
@@ -306,7 +306,7 @@ of new ones.</p>
   <h3><a href="index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">配置</a><ul>
-<li><a class="reference internal" href="#setting-up-a-channel-backend">Setting up a channel backend</a></li>
+<li><a class="reference internal" href="#setting-up-a-channel-backend">設定一個 channel 後端</a></li>
 <li><a class="reference internal" href="#run-worker-servers">執行使用者伺服器</a></li>
 <li><a class="reference internal" href="#run-interface-servers">Run interface servers</a></li>
 <li><a class="reference internal" href="#deploying-new-versions-of-code">Deploying new versions of code</a></li>

@@ -98,7 +98,7 @@ The content should conform to the relevant ASGI spec or protocol definition.</li
 </ul>
 </div>
 <div class="section" id="group">
-<span id="ref-group"></span><h2>Group<a class="headerlink" href="#group" title="本標題的永久連結">¶</a></h2>
+<span id="ref-group"></span><h2>群組<a class="headerlink" href="#group" title="本標題的永久連結">¶</a></h2>
 <p>Groups represent the underlying <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a> group concept in an
 object-oriented way. The constructor looks like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">DEFAULT_CHANNEL_LAYER</span><span class="p">,</span> <span class="n">channel_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -122,7 +122,7 @@ if it&#8217;s in the group. Does nothing otherwise.</li>
 </ul>
 </div>
 <div class="section" id="channel-layer">
-<span id="ref-channellayer"></span><h2>Channel Layer<a class="headerlink" href="#channel-layer" title="本標題的永久連結">¶</a></h2>
+<span id="ref-channellayer"></span><h2>Channel 層<a class="headerlink" href="#channel-layer" title="本標題的永久連結">¶</a></h2>
 <p>These are a wrapper around the underlying <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a> channel layers
 that supplies a routing system that maps channels to consumers, as well as
 aliases to help distinguish different layers in a project with multiple layers.</p>
@@ -132,7 +132,7 @@ the default alias):</p>
 <span class="n">layer</span> <span class="o">=</span> <span class="n">channel_layers</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>They have the following attributes:</p>
+<p>他們有以下屬性：</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">alias</span></code>: The alias of this layer.</li>
 <li><code class="docutils literal"><span class="pre">router</span></code>: An object which represents the layer&#8217;s mapping of channels
@@ -189,8 +189,8 @@ the encoded response.</li>
 <li><a class="reference internal" href="#consumers">消費者</a></li>
 <li><a class="reference internal" href="#message">訊息</a></li>
 <li><a class="reference internal" href="#channel">Channel</a></li>
-<li><a class="reference internal" href="#group">Group</a></li>
-<li><a class="reference internal" href="#channel-layer">Channel Layer</a></li>
+<li><a class="reference internal" href="#group">群組</a></li>
+<li><a class="reference internal" href="#channel-layer">Channel 層</a></li>
 <li><a class="reference internal" href="#asgirequest">AsgiRequest</a></li>
 <li><a class="reference internal" href="#asgihandler">AsgiHandler</a></li>
 </ul>

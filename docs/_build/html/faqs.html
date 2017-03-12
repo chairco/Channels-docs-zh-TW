@@ -73,7 +73,7 @@ workers with infinite loops, of course they&#8217;ll all stop working, but that&
 better than a single thread of execution stopping the entire site.</p>
 </div>
 <div class="section" id="why-aren-t-you-using-node-go-etc-to-proxy-to-django">
-<h2>Why aren&#8217;t you using node/go/etc. to proxy to Django?<a class="headerlink" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django" title="本標題的永久連結">¶</a></h2>
+<h2>為什麼你不用node/go/等去取代Django?<a class="headerlink" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django" title="本標題的永久連結">¶</a></h2>
 <p>There are a couple of solutions where you can use a more &#8220;async-friendly&#8221;
 language (or Python framework) to bridge things like WebSockets to Django -
 terminate them in (say) a Node process, and then bridge it to Django using
@@ -140,7 +140,7 @@ consumer on a new channel that will do the second half.</li>
 </ul>
 </div>
 <div class="section" id="how-do-i-associate-data-with-incoming-connections">
-<h2>How do I associate data with incoming connections?<a class="headerlink" href="#how-do-i-associate-data-with-incoming-connections" title="本標題的永久連結">¶</a></h2>
+<h2>我該如何與傳入的連接和數據做關聯？<a class="headerlink" href="#how-do-i-associate-data-with-incoming-connections" title="本標題的永久連結">¶</a></h2>
 <p>Channels provides full integration with Django&#8217;s session and auth system for its
 WebSockets support, as well as per-websocket sessions for persisting data, so
 you can easily persist data on a per-connection or per-user basis.</p>
@@ -199,10 +199,10 @@ long polls terminate early).</p>
   <ul>
 <li><a class="reference internal" href="#">常見問題</a><ul>
 <li><a class="reference internal" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?</a></li>
-<li><a class="reference internal" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django">Why aren&#8217;t you using node/go/etc. to proxy to Django?</a></li>
+<li><a class="reference internal" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django">為什麼你不用node/go/等去取代Django?</a></li>
 <li><a class="reference internal" href="#why-isn-t-there-guaranteed-delivery-a-retry-mechanism">Why isn&#8217;t there guaranteed delivery/a retry mechanism?</a></li>
 <li><a class="reference internal" href="#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking">Can I run HTTP requests/service calls/etc. in parallel from Django without blocking?</a></li>
-<li><a class="reference internal" href="#how-do-i-associate-data-with-incoming-connections">How do I associate data with incoming connections?</a></li>
+<li><a class="reference internal" href="#how-do-i-associate-data-with-incoming-connections">我該如何與傳入的連接和數據做關聯？</a></li>
 <li><a class="reference internal" href="#how-do-i-talk-to-channels-from-my-non-django-application">How do I talk to Channels from my non-Django application?</a></li>
 <li><a class="reference internal" href="#are-channels-python-2-3-or-2-3">Are channels Python 2, 3 or 2+3?</a></li>
 <li><a class="reference internal" href="#why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback">Why isn&#8217;t there support for socket.io/SockJS/long poll fallback?</a></li>

@@ -123,17 +123,17 @@ messages, and directly dispatch these to the relevant consumer.</p>
 <p>They also now forward all <code class="docutils literal"><span class="pre">websocket.connect</span></code> and <code class="docutils literal"><span class="pre">websocket.disconnect</span></code>
 messages to all of their sub-consumers, so it&#8217;s much easier to compose things
 together from code that also works outside the context of multiplexing.</p>
-<p>For more, read the updated <span class="xref doc">/generic</span> docs.</p>
+<p>更多資訊，請詳閱更新文件：doc:<cite>/generic</cite></p>
 </div>
 <div class="section" id="delay-server">
 <h3>Delay Server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h3>
 <p>A built-in delay server, launched with <cite>manage.py rundelay</cite>, now ships if you
 wish to use it. It needs some extra initial setup and uses a database for
-persistance; see <a class="reference internal" href="../delay.html"><span class="doc">延遲伺服器</span></a> for more information.</p>
+persistance; see <a class="reference internal" href="../delay.html"><span class="doc">Delay Server</span></a> for more information.</p>
 </div>
 </div>
 <div class="section" id="minor-changes">
-<h2>Minor Changes<a class="headerlink" href="#minor-changes" title="本標題的永久連結">¶</a></h2>
+<h2>次要修正<a class="headerlink" href="#minor-changes" title="本標題的永久連結">¶</a></h2>
 <ul class="simple">
 <li>Serializers can now specify fields as <code class="docutils literal"><span class="pre">__all__</span></code> to auto-include all fields,
 and <code class="docutils literal"><span class="pre">exclude</span></code> to remove certain unwanted fields.</li>
@@ -241,7 +241,7 @@ disconnection handling into their own methods.</p>
 <li><a class="reference internal" href="#delay-server">Delay Server</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minor-changes">Minor Changes</a></li>
+<li><a class="reference internal" href="#minor-changes">次要修正</a></li>
 <li><a class="reference internal" href="#backwards-incompatible-changes">Backwards Incompatible Changes</a><ul>
 <li><a class="reference internal" href="#connect-consumers">Connect Consumers</a></li>
 <li><a class="reference internal" href="#databinding-group-names">Databinding group_names</a></li>

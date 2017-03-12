@@ -250,7 +250,7 @@ servers will not need to use groups.</p>
 </div>
 <div class="section" id="linearization">
 <h3>線性化<a class="headerlink" href="#linearization" title="本標題的永久連結">¶</a></h3>
-<p>ASGI的設計目的為在實現無共享架構下，其中訊息可以藉由一組線索，流程或機器其中的任何一個來處理運行的應用程序代碼。</p>
+<p>ASGI 的設計目的為在實現無共享架構下，其中訊息可以藉由一組 threads，processes 或機器其中的任何一個來處理運行的應用程序代碼。</p>
 <p>This, of course, means that several different copies of the application
 could be handling messages simultaneously, and those messages could even
 be from the same client; in the worst case, two packets from a client

@@ -97,26 +97,13 @@
 <ul class="simple">
 <li><p class="first"><code class="docutils literal"><span class="pre">fields</span></code> 是一個序列化請求可傳回欄位的白名單。Channel 預設不開啟所有的欄位，主要是基於安全性的考量。如果你想全部開啟的話，把該列表設為 <code class="docutils literal"><span class="pre">[&quot;__all__&quot;]</span></code> 即可。另一方便，也可以使用 <code class="docutils literal"><span class="pre">exclude</span></code> 來建立黑名單。</p>
 </li>
-<li><code class="docutils literal"><span class="pre">group_names</span></code> returns a list of groups to send outbound updates to based
-on the instance. For example, you could dispatch posts on different
-liveblogs to groups that included the parent blog ID in the name; here, we
-just use a fixed group name. Based on how <code class="docutils literal"><span class="pre">group_names</span></code> changes as the
-instance changes, Channels will work out if clients need <code class="docutils literal"><span class="pre">create</span></code>,
-<code class="docutils literal"><span class="pre">update</span></code> or <code class="docutils literal"><span class="pre">delete</span></code> messages (or if the change is hidden from them).</li>
-<li><code class="docutils literal"><span class="pre">has_permission</span></code> returns if an inbound binding update is allowed to actually
-be carried out on the model. We&#8217;ve been very unsafe and made it always return
-<code class="docutils literal"><span class="pre">True</span></code>, but here is where you would check against either Django&#8217;s or your
-own permission system to see if the user is allowed that action.</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">group_names</span></code> 傳回一個基於該事例的外送更新群組列表。例如，你可以發送PO文到名稱包含父網誌 ID 的不同即時網誌中。這裡我們只用一個固定的群組名稱。基於 <code class="docutils literal"><span class="pre">group_names</span></code> 如何隨著事例的改變，Channels 將會處理客戶端需要的 <code class="docutils literal"><span class="pre">create</span></code>, <code class="docutils literal"><span class="pre">update</span></code> 或 <code class="docutils literal"><span class="pre">delete</span></code> 等訊息 (或是改變是對客戶端隱藏的)。</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">has_permission</span></code> 則傳回一個接收綁定更新，是否會被 model 執行的許可與否。我們採取了一個非常不安全的作法，總是回傳 <code class="docutils literal"><span class="pre">True</span></code>。但是這裡就是你可以讓 Django 做檢查或是自行撰寫權限系統的地方。</p>
+</li>
 </ul>
-<p>For reference, <code class="docutils literal"><span class="pre">action</span></code> is always one of the unicode strings <code class="docutils literal"><span class="pre">&quot;create&quot;</span></code>,
-<code class="docutils literal"><span class="pre">&quot;update&quot;</span></code> or <code class="docutils literal"><span class="pre">&quot;delete&quot;</span></code>. You also supply the <a class="reference internal" href="generics.html#multiplexing"><span class="std std-ref">WebSocket Multiplexing</span></a>
-stream name to provide to the client - you must use multiplexing if you
-use WebSocket data binding.</p>
-<p>Just adding the binding like this in a place where it will be imported will
-get outbound messages sending, but you still need a Consumer that will both
-accept incoming binding updates and add people to the right Groups when they
-connect. The WebSocket binding classes use the standard <a class="reference internal" href="generics.html#multiplexing"><span class="std std-ref">WebSocket Multiplexing</span></a>,
-so you just need to use that:</p>
+<p>做為參考， <code class="docutils literal"><span class="pre">action</span></code> 總是以下 <code class="docutils literal"><span class="pre">&quot;create&quot;</span></code>, <code class="docutils literal"><span class="pre">&quot;update&quot;</span></code> 或 <code class="docutils literal"><span class="pre">&quot;delete&quot;</span></code> 之一的萬國碼字串。你也可以提供 <a class="reference internal" href="generics.html#multiplexing"><span class="std std-ref">WebSocket Multiplexing</span></a> 串流名稱給客戶端，如果使用 WebSocket 資料綁定，你必須使用多工化。</p>
+<p>只要如此新增一個綁定在匯入的地方，發送綁定訊息就會被送出，但你仍需要提供一個 Consumer 來接受進來的綁定更新，並且在連線時將人加到正確的群組。WebSocket 綁定類別使用標準的 <a class="reference internal" href="generics.html#multiplexing"><span class="std std-ref">WebSocket Multiplexing</span></a> ，因此你只需要使用它。</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">WebsocketDemultiplexer</span>
 <span class="kn">from</span> <span class="nn">.binding</span> <span class="k">import</span> <span class="n">IntegerValueBinding</span>
 
@@ -130,12 +117,7 @@ so you just need to use that:</p>
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;intval-updates&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>As well as the standard stream-to-consumer mapping, you also need to set
-<code class="docutils literal"><span class="pre">connection_groups</span></code>, a list of groups to put people in when they connect.
-This should match the logic of <code class="docutils literal"><span class="pre">group_names</span></code> on your binding - we&#8217;ve used
-our fixed group name again. Notice that the binding has a <code class="docutils literal"><span class="pre">.consumer</span></code> attribute;
-this is a standard WebSocket-JSON consumer, that the demultiplexer can pass
-demultiplexed <code class="docutils literal"><span class="pre">websocket.receive</span></code> messages to.</p>
+<p>如同標準的串流對消費者映射，你也需要指定 <code class="docutils literal"><span class="pre">connection_groups</span></code>，一個將上線使用者加入群組的列表。這也符合 <code class="docutils literal"><span class="pre">group_names</span></code> 在你的綁定上的邏輯，這裡我們使用一個固定的群組名稱。請注意，綁定有一個 <code class="docutils literal"><span class="pre">.consumer</span></code> 屬性，這是一個標準 WebSocket-JSON consumer，解多工器可以發送解開的 <code class="docutils literal"><span class="pre">websocket.receive</span></code> 訊息給這個 consumer。</p>
 <p>綁到你的路由，這樣子就完成了:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">route_class</span><span class="p">,</span> <span class="n">route</span>
 <span class="kn">from</span> <span class="nn">.consumers</span> <span class="k">import</span> <span class="n">Demultiplexer</span>

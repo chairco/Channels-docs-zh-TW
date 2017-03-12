@@ -1,0 +1,204 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, test
+# This file is distributed under the same license as the test package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: test 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../testing.rst:2
+msgid "Testing Consumers"
+msgstr "測試消費者"
+
+#: ../../testing.rst:4
+msgid ""
+"When you want to write unit tests for your new Channels consumers, you'll "
+"realize that you can't use the standard Django test client to submit fake "
+"HTTP requests - instead, you'll need to submit fake Messages to your "
+"consumers, and inspect what Messages they send themselves."
+msgstr ""
+
+#: ../../testing.rst:9
+msgid ""
+"We provide a ``TestCase`` subclass that sets all of this up for you, "
+"however, so you can easily write tests and check what your consumers are "
+"sending."
+msgstr ""
+
+#: ../../testing.rst:14
+msgid "ChannelTestCase"
+msgstr "Channel 測試案例"
+
+#: ../../testing.rst:16
+msgid ""
+"If your tests inherit from the ``channels.test.ChannelTestCase`` base class,"
+" whenever you run tests your channel layer will be swapped out for a captive"
+" in-memory layer, meaning you don't need an external server running to run "
+"tests."
+msgstr ""
+
+#: ../../testing.rst:20
+msgid ""
+"Moreover, you can inject messages onto this layer and inspect ones sent to "
+"it to help test your consumers."
+msgstr "此外，您可以將訊息放置到此層，並幫助您測試消費者查看訊息發送。"
+
+#: ../../testing.rst:23
+msgid ""
+"To inject a message onto the layer, simply call ``Channel.send()`` inside "
+"any test method on a ``ChannelTestCase`` subclass, like so::"
+msgstr ""
+
+#: ../../testing.rst:34
+msgid ""
+"To receive a message from the layer, you can use "
+"``self.get_next_message(channel)``, which handles receiving the message and "
+"converting it into a Message object for you (if you want, you can call "
+"``receive_many`` on the underlying channel layer, but you'll get back a raw "
+"dict and channel name, which is not what consumers want)."
+msgstr ""
+
+#: ../../testing.rst:39
+msgid ""
+"You can use this both to get Messages to send to consumers as their primary "
+"argument, as well as to get Messages from channels that consumers are "
+"supposed to send on to verify that they did."
+msgstr ""
+
+#: ../../testing.rst:43
+msgid ""
+"You can even pass ``require=True`` to ``get_next_message`` to make the test "
+"fail if there is no message on the channel (by default, it will return you "
+"``None`` instead)."
+msgstr ""
+
+#: ../../testing.rst:47
+msgid ""
+"Here's an extended example testing a consumer that's supposed to take a "
+"value and post the square of it to the ``\"result\"`` channel::"
+msgstr ""
+
+#: ../../testing.rst:66
+msgid "Generic Consumers"
+msgstr ""
+
+#: ../../testing.rst:68
+msgid ""
+"You can use ``ChannelTestCase`` to test generic consumers as well. Just pass"
+" the message object from ``get_next_message`` to the constructor of the "
+"class. To test replies to a specific channel, use the ``reply_channel`` "
+"property on the ``Message`` object. For example::"
+msgstr ""
+
+#: ../../testing.rst:91
+msgid "Groups"
+msgstr "群組"
+
+#: ../../testing.rst:93
+msgid ""
+"You can test Groups in the same way as Channels inside a "
+"``ChannelTestCase``; the entire channel layer is flushed each time a test is"
+" run, so it's safe to do group adds and sends during a test. For example::"
+msgstr ""
+
+#: ../../testing.rst:112
+msgid "Clients"
+msgstr ""
+
+#: ../../testing.rst:114
+msgid ""
+"For more complicated test suites you can use the ``Client`` abstraction that"
+" provides an easy way to test the full life cycle of messages with a couple "
+"of methods: ``send`` to sending message with given content to the given "
+"channel, ``consume`` to run appointed consumer for the next message, "
+"``receive`` to getting replies for client. Very often you may need to "
+"``send`` and than call a consumer one by one, for this purpose use "
+"``send_and_consume`` method::"
+msgstr ""
+
+#: ../../testing.rst:131
+msgid ""
+"You can use ``HttpClient`` for websocket related consumers. It automatically"
+" serializes JSON content, manage cookies and headers, give easy access to "
+"the session and add ability to authorize your requests. For example::"
+msgstr ""
+
+#: ../../testing.rst:184
+msgid ""
+"Instead of ``HttpClient.login`` method with credentials at arguments you may"
+" call ``HttpClient.force_login`` (like at django client) with the user "
+"object."
+msgstr ""
+
+#: ../../testing.rst:187
+msgid ""
+"``receive`` method by default trying to deserialize json text content of a "
+"message, so if you need to pass decoding use ``receive(json=False)``, like "
+"in the example."
+msgstr ""
+
+#: ../../testing.rst:192
+msgid "Applying routes"
+msgstr "應用路由"
+
+#: ../../testing.rst:194
+msgid ""
+"When you need to testing you consumers without routes in settings or you "
+"want to testing your consumers in more isolate and atomic way, it will be "
+"simpler with ``apply_routes`` contextmanager and decorator for your "
+"``ChannelTestCase``. It takes list of routes that you want to use and "
+"overwrite existing routes::"
+msgstr ""
+
+#: ../../testing.rst:212
+msgid "Test Data binding with ``HttpClient``"
+msgstr "數據測試與 \"HttpClient\" 連結"
+
+#: ../../testing.rst:214
+msgid ""
+"As you know data binding in channels works in outbound and inbound ways, so "
+"that ways tests in different ways and ``HttpClient`` and ``apply_routes`` "
+"will help to do this. When you testing outbound consumers you need just "
+"import your ``Binding`` subclass with specified ``group_names``. At test you"
+" can  join to one of them, make some changes with target model and check "
+"received message. Lets test ``IntegerValueBinding`` from :doc:`data binding "
+"<binding>` with creating::"
+msgstr ""
+
+#: ../../testing.rst:257
+msgid ""
+"There is another situation with inbound binding. It is used with "
+":ref:`multiplexing`, So we apply two routes: websocket route for "
+"demultiplexer and route with internal consumer for binding itself, connect "
+"to websocket entrypoint and test different actions. For example::"
+msgstr ""
+
+#: ../../testing.rst:288
+msgid "Multiple Channel Layers"
+msgstr ""
+
+#: ../../testing.rst:290
+msgid ""
+"If you want to test code that uses multiple channel layers, specify the "
+"alias of the layers you want to mock as the ``test_channel_aliases`` "
+"attribute on the ``ChannelTestCase`` subclass; by default, only the "
+"``default`` layer is mocked."
+msgstr ""
+
+#: ../../testing.rst:295
+msgid ""
+"You can pass an ``alias`` argument to ``get_next_message``, ``Client`` and "
+"``Channel`` to use a different layer too."
+msgstr ""

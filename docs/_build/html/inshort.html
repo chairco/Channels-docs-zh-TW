@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="路徑概念" href="concepts.html" />
+    <link rel="next" title="Channels 的概念" href="concepts.html" />
     <link rel="prev" title="Django Channels" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -59,9 +59,10 @@ that allows two important features:</p>
 </div>
 <div class="section" id="how">
 <h2>How?<a class="headerlink" href="#how" title="本標題的永久連結">¶</a></h2>
-<p>It separates Django into two process types:</p>
+<p>這將Django分成2種運行類型:</p>
 <ul class="simple">
-<li>One that handles HTTP and WebSockets</li>
+<li><p class="first">一個處理HTTP 和 WebSockets</p>
+</li>
 <li>One that runs views, websocket handlers and background tasks (<em>consumers</em>)</li>
 </ul>
 <p>They communicate via a protocol called <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a>, which is similar
@@ -71,7 +72,7 @@ your Django code; all of your business logic runs synchronously in a worker
 process or thread.</p>
 </div>
 <div class="section" id="i-have-to-change-how-i-run-django">
-<h2>I have to change how I run Django?<a class="headerlink" href="#i-have-to-change-how-i-run-django" title="本標題的永久連結">¶</a></h2>
+<h2>我必須改變我使用Django的方法？<a class="headerlink" href="#i-have-to-change-how-i-run-django" title="本標題的永久連結">¶</a></h2>
 <p>No, all the new stuff is entirely optional. If you want it, however, you&#8217;ll
 change from running Django under a WSGI server, to running:</p>
 <ul class="simple">
@@ -83,12 +84,13 @@ change from running Django under a WSGI server, to running:</p>
 view system by default, so it works like before.</p>
 </div>
 <div class="section" id="what-else-does-channels-give-me">
-<h2>What else does Channels give me?<a class="headerlink" href="#what-else-does-channels-give-me" title="本標題的永久連結">¶</a></h2>
-<p>Other features include:</p>
+<h2>Channels還給會給我什麼？<a class="headerlink" href="#what-else-does-channels-give-me" title="本標題的永久連結">¶</a></h2>
+<p>其他特徵包括：</p>
 <ul class="simple">
 <li>Easy HTTP long-poll support for thousands of clients at once</li>
 <li>Full session and auth support for WebSockets</li>
-<li>Automatic user login for WebSockets based on site cookies</li>
+<li><p class="first">自動用戶登入主要應用於WebSockets的網站cookies</p>
+</li>
 <li>Built-in primitives for mass triggering of events (chat, live blogs, etc.)</li>
 <li>Zero-downtime deployment with browsers paused while new workers spin up</li>
 <li>Optional low-level HTTP control on a per-URL basis</li>
@@ -96,7 +98,7 @@ view system by default, so it works like before.</p>
 </ul>
 </div>
 <div class="section" id="does-it-scale">
-<h2>Does it scale?<a class="headerlink" href="#does-it-scale" title="本標題的永久連結">¶</a></h2>
+<h2>這可以縮放嗎？<a class="headerlink" href="#does-it-scale" title="本標題的永久連結">¶</a></h2>
 <p>Yes, you can run any number of <em>protocol servers</em> (ones that serve HTTP
 and WebSockets) and <em>worker servers</em> (ones that run your Django code) to
 fit your use case.</p>
@@ -106,7 +108,7 @@ it&#8217;s designed to allow both easy sharding as well as the ability to run
 separate clusters with their own protocol and worker servers.</p>
 </div>
 <div class="section" id="why-doesn-t-it-use-my-favourite-message-queue">
-<h2>Why doesn&#8217;t it use my favourite message queue?<a class="headerlink" href="#why-doesn-t-it-use-my-favourite-message-queue" title="本標題的永久連結">¶</a></h2>
+<h2>為什麼它不使用我的喜好排序訊息？<a class="headerlink" href="#why-doesn-t-it-use-my-favourite-message-queue" title="本標題的永久連結">¶</a></h2>
 <p>Channels is deliberately designed to prefer low latency (goal is a few milliseconds)
 and high throughput over guaranteed delivery, which doesn&#8217;t match some
 message queue designs.</p>
@@ -150,10 +152,10 @@ and then move on to read our example-laden <a class="reference internal" href="g
 <li><a class="reference internal" href="#">簡短說明</a><ul>
 <li><a class="reference internal" href="#what-is-channels">什麼是 Channels?</a></li>
 <li><a class="reference internal" href="#how">How?</a></li>
-<li><a class="reference internal" href="#i-have-to-change-how-i-run-django">I have to change how I run Django?</a></li>
-<li><a class="reference internal" href="#what-else-does-channels-give-me">What else does Channels give me?</a></li>
-<li><a class="reference internal" href="#does-it-scale">Does it scale?</a></li>
-<li><a class="reference internal" href="#why-doesn-t-it-use-my-favourite-message-queue">Why doesn&#8217;t it use my favourite message queue?</a></li>
+<li><a class="reference internal" href="#i-have-to-change-how-i-run-django">我必須改變我使用Django的方法？</a></li>
+<li><a class="reference internal" href="#what-else-does-channels-give-me">Channels還給會給我什麼？</a></li>
+<li><a class="reference internal" href="#does-it-scale">這可以縮放嗎？</a></li>
+<li><a class="reference internal" href="#why-doesn-t-it-use-my-favourite-message-queue">為什麼它不使用我的喜好排序訊息？</a></li>
 <li><a class="reference internal" href="#do-i-need-to-worry-about-making-all-my-code-async-friendly">Do I need to worry about making all my code async-friendly?</a></li>
 <li><a class="reference internal" href="#what-version-of-django-does-it-work-with">What version of Django does it work with?</a></li>
 <li><a class="reference internal" href="#official-project">Official project</a></li>
@@ -166,7 +168,7 @@ and then move on to read our example-laden <a class="reference internal" href="g
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="上一章">Django Channels</a></li>
-      <li>Next: <a href="concepts.html" title="下一章">路徑概念</a></li>
+      <li>Next: <a href="concepts.html" title="下一章">Channels 的概念</a></li>
   </ul></li>
 </ul>
 </div>

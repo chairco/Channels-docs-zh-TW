@@ -76,10 +76,10 @@ so it&#8217;s safe to store things on <code class="docutils literal"><span class
 current message by default, and <code class="docutils literal"><span class="pre">self.kwargs</span></code> are the keyword arguments
 passed in from the routing).</p>
 <div class="section" id="base">
-<h2>Base<a class="headerlink" href="#base" title="本標題的永久連結">¶</a></h2>
+<h2>基礎<a class="headerlink" href="#base" title="本標題的永久連結">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">BaseConsumer</span></code> class is the foundation of class-based consumers, and what
 you can inherit from if you wish to build your own entirely from scratch.</p>
-<p>You use it like this:</p>
+<p>你使用它如這個：</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic</span> <span class="k">import</span> <span class="n">BaseConsumer</span>
 
 <span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">BaseConsumer</span><span class="p">):</span>
@@ -159,7 +159,7 @@ additionally automatically serializes all messages sent and receives using JSON.
 are used to add the socket to when it connects and to remove it from when it
 disconnects; you get keyword arguments too if your URL path, say, affects
 which group to talk to.</p>
-<p>Additionally, the property <code class="docutils literal"><span class="pre">self.path</span></code> is always set to the current URL path.</p>
+<p>另外，&#8221;self.path&#8221;屬性只設於目前的URL路徑</p>
 <p>The JSON-enabled consumer looks slightly different:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">JsonWebsocketConsumer</span>
 
@@ -214,7 +214,7 @@ a single WebSocket, called a <code class="docutils literal"><span class="pre">De
 channel name. It will then forward the message onto that channel while
 preserving <code class="docutils literal"><span class="pre">reply_channel</span></code>, so you can hook consumers up to them directly
 in the <code class="docutils literal"><span class="pre">routing.py</span></code> file, and use authentication decorators as you wish.</p>
-<p>Example using class-based consumer:</p>
+<p>基於消費者的使用案例：</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">WebsocketDemultiplexer</span><span class="p">,</span> <span class="n">JsonWebsocketConsumer</span>
 
 <span class="k">class</span> <span class="nc">EchoConsumer</span><span class="p">(</span><span class="n">JsonWebsocketConsumer</span><span class="p">):</span>
@@ -252,7 +252,7 @@ in the same format, and you can encode things in this format yourself by
 using the <code class="docutils literal"><span class="pre">WebsocketDemultiplexer.encode</span></code> class method.</p>
 </div>
 <div class="section" id="sessions-and-users">
-<h2>Sessions and Users<a class="headerlink" href="#sessions-and-users" title="本標題的永久連結">¶</a></h2>
+<h2>會期和使用者<a class="headerlink" href="#sessions-and-users" title="本標題的永久連結">¶</a></h2>
 <p>If you wish to use <code class="docutils literal"><span class="pre">channel_session</span></code> or <code class="docutils literal"><span class="pre">channel_session_user</span></code> with a
 class-based consumer, simply set one of the variables in the class body:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
@@ -292,7 +292,7 @@ for more high-level methods, like <code class="docutils literal"><span class="pr
 <div class="section" id="as-route">
 <h2>As route<a class="headerlink" href="#as-route" title="本標題的永久連結">¶</a></h2>
 <p>Instead of making routes using <code class="docutils literal"><span class="pre">route_class</span></code> you may use the <code class="docutils literal"><span class="pre">as_route</span></code> shortcut.
-This function takes route filters (<a class="reference internal" href="routing.html#filters"><span class="std std-ref">過濾器</span></a>) as kwargs and returns
+This function takes route filters (<a class="reference internal" href="routing.html#filters"><span class="std std-ref">篩選器</span></a>) as kwargs and returns
 <code class="docutils literal"><span class="pre">route_class</span></code>. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">consumers</span>
 
@@ -335,10 +335,10 @@ like so:</p>
   <h3><a href="index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">一般消費者</a><ul>
-<li><a class="reference internal" href="#base">Base</a></li>
+<li><a class="reference internal" href="#base">基礎</a></li>
 <li><a class="reference internal" href="#websockets">WebSockets</a></li>
 <li><a class="reference internal" href="#websocket-multiplexing">WebSocket Multiplexing</a></li>
-<li><a class="reference internal" href="#sessions-and-users">Sessions and Users</a></li>
+<li><a class="reference internal" href="#sessions-and-users">會期和使用者</a></li>
 <li><a class="reference internal" href="#applying-decorators">Applying Decorators</a></li>
 <li><a class="reference internal" href="#as-route">As route</a></li>
 </ul>

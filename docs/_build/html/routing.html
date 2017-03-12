@@ -72,7 +72,7 @@ keyword arguments. Channel names are taken from the consumer&#8217;s
 and optional filter keyword arguments.</li>
 </ul>
 <div class="section" id="filters">
-<span id="id1"></span><h2>過濾器<a class="headerlink" href="#filters" title="本標題的永久連結">¶</a></h2>
+<span id="id1"></span><h2>篩選器<a class="headerlink" href="#filters" title="本標題的永久連結">¶</a></h2>
 <p>Filtering is how you limit matches based on, for example, URLs; you use regular
 expressions, like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">ws_connect</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/chat/$&quot;</span><span class="p">)</span>
@@ -80,9 +80,7 @@ expressions, like so:</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
-<p class="last">Unlike Django&#8217;s URL routing, which strips the first slash of a URL for
-neatness, Channels includes the first slash, as the routing system is
-generic and not designed just for URLs.</p>
+<p class="last">和Django內建的URL Routing不同。在Django內建的Routing裡，第一個/會被略去，已求簡潔。然而在Channels中，第一個/是被保留的。這是因為Routing是通用的，且不是只為了URL所設計。</p>
 </div>
 <p>你可以使用多重過濾器:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;email.receive&quot;</span><span class="p">,</span> <span class="n">comment_response</span><span class="p">,</span> <span class="n">to_address</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*@example.com$&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;^reply&quot;</span><span class="p">)</span>
@@ -94,7 +92,7 @@ match every filter to have the consumer called.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">connect_blog</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog/(?P&lt;slug&gt;[^/]+)/stream/$&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can also specify filters on an <code class="docutils literal"><span class="pre">include</span></code>:</p>
+<p>你也可以指定過濾&#8221;include&#8221;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">include</span><span class="p">(</span><span class="s2">&quot;blog_includes&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -127,7 +125,7 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
   <h3><a href="index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">路由</a><ul>
-<li><a class="reference internal" href="#filters">過濾器</a></li>
+<li><a class="reference internal" href="#filters">篩選器</a></li>
 </ul>
 </li>
 </ul>

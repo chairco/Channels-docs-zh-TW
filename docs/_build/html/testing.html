@@ -121,7 +121,7 @@ use the <code class="docutils literal"><span class="pre">reply_channel</span></c
 </div>
 </div>
 <div class="section" id="groups">
-<h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<h2>群組<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
 <p>You can test Groups in the same way as Channels inside a <code class="docutils literal"><span class="pre">ChannelTestCase</span></code>;
 the entire channel layer is flushed each time a test is run, so it&#8217;s safe to
 do group adds and sends during a test. For example:</p>
@@ -215,7 +215,7 @@ may call <code class="docutils literal"><span class="pre">HttpClient.force_login
 so if you need to pass decoding use <code class="docutils literal"><span class="pre">receive(json=False)</span></code>, like in the example.</p>
 </div>
 <div class="section" id="applying-routes">
-<h2>Applying routes<a class="headerlink" href="#applying-routes" title="本標題的永久連結">¶</a></h2>
+<h2>應用路由<a class="headerlink" href="#applying-routes" title="本標題的永久連結">¶</a></h2>
 <p>When you need to testing you consumers without routes in settings or you
 want to testing your consumers in more isolate and atomic way, it will be
 simpler with <code class="docutils literal"><span class="pre">apply_routes</span></code> contextmanager and decorator for your <code class="docutils literal"><span class="pre">ChannelTestCase</span></code>.
@@ -234,7 +234,7 @@ It takes list of routes that you want to use and overwrite existing routes:</p>
 </div>
 </div>
 <div class="section" id="test-data-binding-with-httpclient">
-<h2>Test Data binding with <code class="docutils literal"><span class="pre">HttpClient</span></code><a class="headerlink" href="#test-data-binding-with-httpclient" title="本標題的永久連結">¶</a></h2>
+<h2>數據測試與 &#8220;HttpClient&#8221; 連結<a class="headerlink" href="#test-data-binding-with-httpclient" title="本標題的永久連結">¶</a></h2>
 <p>As you know data binding in channels works in outbound and inbound ways,
 so that ways tests in different ways and <code class="docutils literal"><span class="pre">HttpClient</span></code> and <code class="docutils literal"><span class="pre">apply_routes</span></code>
 will help to do this.
@@ -328,10 +328,10 @@ to use a different layer too.</p>
 <li><a class="reference internal" href="#">測試消費者</a><ul>
 <li><a class="reference internal" href="#channeltestcase">Channel 測試案例</a></li>
 <li><a class="reference internal" href="#generic-consumers">Generic Consumers</a></li>
-<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#groups">群組</a></li>
 <li><a class="reference internal" href="#clients">Clients</a></li>
-<li><a class="reference internal" href="#applying-routes">Applying routes</a></li>
-<li><a class="reference internal" href="#test-data-binding-with-httpclient">Test Data binding with <code class="docutils literal"><span class="pre">HttpClient</span></code></a></li>
+<li><a class="reference internal" href="#applying-routes">應用路由</a></li>
+<li><a class="reference internal" href="#test-data-binding-with-httpclient">數據測試與 &#8220;HttpClient&#8221; 連結</a></li>
 <li><a class="reference internal" href="#multiple-channel-layers">Multiple Channel Layers</a></li>
 </ul>
 </li>

@@ -28,7 +28,7 @@
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
     <link rel="next" title="Getting Started with Channels" href="getting-started.html" />
-    <link rel="prev" title="路徑概念" href="concepts.html" />
+    <link rel="prev" title="Channels 的概念" href="concepts.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -46,11 +46,11 @@
             
   <div class="section" id="installation">
 <h1>安裝<a class="headerlink" href="#installation" title="本標題的永久連結">¶</a></h1>
-<p>Channels 包含在 PyPI 中 - 執行以下命令來安裝:</p>
+<p>Channels 可以從 PyPI 上取得，執行以下指令來安裝:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">channels</span>
 </pre></div>
 </div>
-<p>安裝完成之後，您需要新增 <code class="docutils literal"><span class="pre">channels</span></code> 到 <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> 的設定中:</p>
+<p>安裝完成之後，需要新增 <code class="docutils literal"><span class="pre">channels</span></code> 到 <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> 的設定中:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
     <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
@@ -63,8 +63,8 @@
 </div>
 <p>這樣子就完成了！啟用之後， <code class="docutils literal"><span class="pre">channels</span></code> 將會整合到 Django 當中，並且控制 <code class="docutils literal"><span class="pre">runserver</span></code> 指令。詳細請見 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 的說明。</p>
 <div class="section" id="installing-the-latest-development-version">
-<h2>安裝最新的開發版本<a class="headerlink" href="#installing-the-latest-development-version" title="本標題的永久連結">¶</a></h2>
-<p>要安裝 Channels 的最新開發版本，複製該 repo 並切換進該 repo 中來進行修改。然後使用 pip install 來安裝到您目前的虛擬環境之中:</p>
+<h2>安裝最新的開發中版本<a class="headerlink" href="#installing-the-latest-development-version" title="本標題的永久連結">¶</a></h2>
+<p>要安裝 Channels 的最新開發中版本，使用 git clone 將專案複製下來，並切換進該專案目錄，然後使用 pip install 來安裝到您目前的虛擬環境之中:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone git@github.com:django/channels.git
 $ cd channels
 $ &lt;activate your project’s virtual environment&gt;
@@ -83,7 +83,7 @@ $ &lt;activate your project’s virtual environment&gt;
   <h3><a href="index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">安裝</a><ul>
-<li><a class="reference internal" href="#installing-the-latest-development-version">安裝最新的開發版本</a></li>
+<li><a class="reference internal" href="#installing-the-latest-development-version">安裝最新的開發中版本</a></li>
 </ul>
 </li>
 </ul>
@@ -91,7 +91,7 @@ $ &lt;activate your project’s virtual environment&gt;
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="concepts.html" title="上一章">路徑概念</a></li>
+      <li>Previous: <a href="concepts.html" title="上一章">Channels 的概念</a></li>
       <li>Next: <a href="getting-started.html" title="下一章">Getting Started with Channels</a></li>
   </ul></li>
 </ul>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>路徑概念 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>Channels 的概念 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,10 +45,10 @@
           <div class="body" role="main">
             
   <div class="section" id="channels-concepts">
-<h1>路徑概念<a class="headerlink" href="#channels-concepts" title="本標題的永久連結">¶</a></h1>
-<p>Django 的傳統視圖看法圍繞著請求與回應；一個請求進來，Django 被觸發接著服務它，產生一個回應並送出，接著 Django 離開並且等待下一個請求。</p>
-<p>當互聯網是透過簡單的瀏覽器交互驅動時，這是好的方法，但現代的 Web 包括 WebSockets 和 HTTP2 服務器推送，它們允許網站在傳統的周期外通信。</p>
-<p>除此之外，還有許多非關鍵任務像是應用程序可以輕鬆的卸載直到一個回應被送出之後 - 例如保存東西到緩存空間或是新生成縮圖-上傳圖像。</p>
+<h1>Channels 的概念<a class="headerlink" href="#channels-concepts" title="本標題的永久連結">¶</a></h1>
+<p>Django 的傳統做法圍繞著請求與回應；一個請求進來，Django 就被觸發並服務它，產生一個回應並送出，接著 Django 離開並且等待下一個請求。</p>
+<p>當互聯網的運作方式只是簡單的瀏覽器交互，這是個好方法，但現代的網站包括了 WebSockets 和 HTTP2 Server Push 等這類的技術，它們讓網站可以在這種傳統式的循環之外進行溝通。</p>
+<p>除此之外，還有許多非關鍵性的任務，是應用程式可以輕鬆的卸載直到有個回應被送出，例如把東西保存到快取或是為新上傳的圖片產生縮圖。</p>
 <p>這些都改變了 Django 執行 &#8220;事件導向&#8221; 的方式 - 而非單純回應給請求，相反的 Django 回應各種事件並傳送到 channel 上。這些仍然沒有無法保持持久的狀態 - 每一種事件標頭，或是 <em>消費者</em> 我們稱之，是一種像是各自獨立呼叫的視圖方式。</p>
 <p>讓我們先看看什麼是 <em>channels</em>。</p>
 <div class="section" id="what-is-a-channel">
@@ -175,7 +175,7 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">路徑概念</a><ul>
+<li><a class="reference internal" href="#">Channels 的概念</a><ul>
 <li><a class="reference internal" href="#what-is-a-channel">什麼是 channel?</a></li>
 <li><a class="reference internal" href="#how-do-we-use-channels">我們如何使用 channels?</a></li>
 <li><a class="reference internal" href="#channel-types">Channel 類型</a></li>
