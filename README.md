@@ -1,9 +1,9 @@
 # django-channel-tw-docs
 
-* 網址 [Django channel](http://channels.readthedocs.io/en/latest/concepts.html)  
-* 範例 [線上聊天室](https://github.com/jacobian/channels-example)
-* 線上翻譯 [Django-channels-tw-docs](https://www.transifex.com/django-channels-tw-docs/public/)
-* 完成版本 [django-channels-docs-tw](http://django-channels-docs-tw.readthedocs.io/zh_TW/latest/)
+* Transifex 線上翻譯 [Django-channels-tw-docs](https://www.transifex.com/django-channels-tw-docs/public/)
+* 中文翻譯成果 [django-channels-docs-tw](http://django-channels-docs-tw.readthedocs.io/zh_TW/latest/)
+* 原文網址 [Django channel](http://channels.readthedocs.io/en/latest/concepts.html) 
+* Channels 範例 [線上聊天室](https://github.com/jacobian/channels-example)
 
 
 目前正在進行的 Django-channel 翻譯專案。~~歡迎 FORK 一起翻譯，目前計劃先使用 gitbook 建立在 git.io。~~
@@ -50,4 +50,6 @@ sphinx-intl update -l zh_TW
 要注意是因為我在 Transifex 上選擇 zh_TW 所以轉換格式要輸入正確。 然後就可以上到網站註冊一個翻譯團體，接著將這些 .po 檔案上傳就大功告成囉。
 
 
-翻譯的網址：https://www.transifex.com/django-channels-tw-docs/public/
+## 透過 RTD 發佈
+
+將翻譯好的 github 指向 RTD 專案設定就成自動生成一個靜態文件頁面。
