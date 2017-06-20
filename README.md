@@ -1,4 +1,4 @@
-# django-channel-tw-docs
+# Django-Channel-tw-docs
 
 * Transifex 線上翻譯 [Django-channels-tw-docs](https://www.transifex.com/django-channels-tw-docs/public/)
 * 中文翻譯成果 [django-channels-docs-tw](http://django-channels-docs-tw.readthedocs.io/zh_TW/latest/)
