@@ -20,7 +20,7 @@
 第二種比較單純，就編寫一下轉 sphinx document 風格的網站。只是翻譯大概就自己一個人翻譯吧？放在 github 上應該沒人會理我。
 
 ## 採用 Transifex
-目前我訂採用第一種方式，採用此方式要先把本機端的檔案轉成 .po 檔案上傳到 Transifex。因此在 mac os(osx) 上要安裝一個支援多語系的套件 gettex。方式很簡單：
+目前我訂採用第一種方式，採用此方式要先把本機端的檔案轉成 .po 檔案上傳到 Transifex。因此在 mac os(osx) 上要安裝一個支援多語系的套件 gettext。方式很簡單：
 
 ```
 #brew install gettext
@@ -31,19 +31,19 @@
 ![sphinx process](http://www.sphinx-doc.org/en/stable/_images/translation.png)
 
 所以先 clone Django channels 得專案到本機端上：
-```
+```shell
 git clone https://github.com/django/channels.git
 ```
 
 進入專案的 docs 底下，不過要先確認你的環境目前有安裝兩個套件，一個是 [sphinx](https://github.com/sphinx-doc/sphinx), 一個是 [sphinx_intl](https://github.com/sphinx-doc/sphinx-intl) 然後執行
 
-```
-make gettex
+```shell
+make gettext
 ```
 
 接著會在 `/_build/locale` 底下建立對應的 .pot 檔案。這些 .pot 檔案要讓我們用來轉換成 .po 檔。轉 .po 檔案的方式也很簡單，執行指令如下：
 
-```
+```shell
 sphinx-intl update -l zh_TW
 ```
 
