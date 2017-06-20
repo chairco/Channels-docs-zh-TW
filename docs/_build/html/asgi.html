@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>ASGI (Asynchronous Server Gateway Interface) Draft Spec &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
+    <title>ASGI (異步伺服器閘道介面) 規劃草案 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -53,13 +53,13 @@
           <div class="body" role="main">
             
   <div class="section" id="asgi-asynchronous-server-gateway-interface-draft-spec">
-<h1>ASGI (Asynchronous Server Gateway Interface) Draft Spec<a class="headerlink" href="#asgi-asynchronous-server-gateway-interface-draft-spec" title="本標題的永久連結">¶</a></h1>
+<h1>ASGI (異步伺服器閘道介面) 規劃草案<a class="headerlink" href="#asgi-asynchronous-server-gateway-interface-draft-spec" title="本標題的永久連結">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
 <p class="last">This is still in-progress, but is now mostly complete.</p>
 </div>
 <div class="section" id="abstract">
-<h2>Abstract<a class="headerlink" href="#abstract" title="本標題的永久連結">¶</a></h2>
+<h2>摘要<a class="headerlink" href="#abstract" title="本標題的永久連結">¶</a></h2>
 <p>This document proposes a standard interface between network protocol
 servers (particularly web servers) and Python applications, intended
 to allow handling of multiple common protocol styles (including HTTP, HTTP2,
@@ -71,7 +71,7 @@ how to encode and decode that protocol into messages.</p>
 <p>The set of sub-specifications is available <a class="reference internal" href="#asgi-sub-specifications"><span class="std std-ref">in the Message Formats section</span></a>.</p>
 </div>
 <div class="section" id="rationale">
-<h2>Rationale<a class="headerlink" href="#rationale" title="本標題的永久連結">¶</a></h2>
+<h2>說明<a class="headerlink" href="#rationale" title="本標題的永久連結">¶</a></h2>
 <p>The WSGI specification has worked well since it was introduced, and
 allowed for great flexibility in Python framework and web server choice.
 However, its design is irrevocably tied to the HTTP-style
@@ -100,7 +100,7 @@ distributed systems communication, or as the backbone of a service-oriented
 architecure for inter-service communication.</p>
 </div>
 <div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="本標題的永久連結">¶</a></h2>
+<h2>總覽<a class="headerlink" href="#overview" title="本標題的永久連結">¶</a></h2>
 <p>ASGI consists of three different components - <em>protocol servers</em>,
 a <em>channel layer</em>, and <em>application code</em>. Channel layers are the core
 part of the implementation, and provide an interface to both protocol
@@ -132,16 +132,16 @@ but this would be slightly too restrictive for many use cases and does not
 cover how to specify channel names to listen on. It is expected that
 frameworks will cover this use case.</p>
 <div class="section" id="channels-and-messages">
-<h3>Channels and Messages<a class="headerlink" href="#channels-and-messages" title="本標題的永久連結">¶</a></h3>
+<h3>路徑與訊息<a class="headerlink" href="#channels-and-messages" title="本標題的永久連結">¶</a></h3>
 <p>All communication in an ASGI stack uses <em>messages</em> sent over <em>channels</em>.
 All messages must be a <code class="docutils literal"><span class="pre">dict</span></code> at the top level of the object, and
 contain only the following types to ensure serializability:</p>
 <ul class="simple">
-<li>Byte strings</li>
-<li>Unicode strings</li>
+<li>Byte 字串</li>
+<li>Unicode 字串</li>
 <li>Integers (within the signed 64 bit range)</li>
 <li>Floating point numbers (within the IEEE 754 double precision range)</li>
-<li>Lists (tuples should be treated as lists)</li>
+<li>列表(元組會被視為列表)</li>
 <li>Dicts (keys must be unicode strings)</li>
 <li>Booleans</li>
 <li>None</li>
@@ -195,7 +195,7 @@ bodies are done, for example). All channel layers must support messages up
 to this size, but protocol specifications are encouraged to keep well below it.</p>
 </div>
 <div class="section" id="handling-protocols">
-<h3>Handling Protocols<a class="headerlink" href="#handling-protocols" title="本標題的永久連結">¶</a></h3>
+<h3>處理協議<a class="headerlink" href="#handling-protocols" title="本標題的永久連結">¶</a></h3>
 <p>ASGI messages represent two main things - internal application events
 (for example, a channel might be used to queue thumbnails of previously
 uploaded videos), and protocol events to/from connected clients.</p>
@@ -229,7 +229,7 @@ not required for basic application code and nearly all protocol server
 code, and so has been made optional in order to enable lightweight
 channel layers for applications that don't need the full feature set defined
 here.</p>
-<p>The extensions defined here are:</p>
+<p>此處擴充定義為:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">groups</span></code>: Allows grouping of channels to allow broadcast; see below for more.</li>
 <li><code class="docutils literal"><span class="pre">flush</span></code>: Allows easier testing and development with channel layers.</li>
@@ -275,10 +275,8 @@ and exit with an appropriate error message. It is expected that protocol
 servers will not need to use groups.</p>
 </div>
 <div class="section" id="linearization">
-<h3>Linearization<a class="headerlink" href="#linearization" title="本標題的永久連結">¶</a></h3>
-<p>The design of ASGI is meant to enable a shared-nothing architecture,
-where messages can be handled by any one of a set of threads, processes
-or machines running application code.</p>
+<h3>線性化<a class="headerlink" href="#linearization" title="本標題的永久連結">¶</a></h3>
+<p>ASGI 的設計目的為在實現無共享架構下，其中訊息可以藉由一組 threads，processes 或機器其中的任何一個來處理運行的應用程序代碼。</p>
 <p>This, of course, means that several different copies of the application
 could be handling messages simultaneously, and those messages could even
 be from the same client; in the worst case, two packets from a client
@@ -297,7 +295,7 @@ channels back to clients, are not subject to this problem; a single reader
 on these must always receive messages in channel order.</p>
 </div>
 <div class="section" id="capacity">
-<h3>Capacity<a class="headerlink" href="#capacity" title="本標題的永久連結">¶</a></h3>
+<h3>容量<a class="headerlink" href="#capacity" title="本標題的永久連結">¶</a></h3>
 <p>To provide backpressure, each channel in a channel layer may have a capacity,
 defined however the layer wishes (it is recommended that it is configurable
 by the user using keyword arguments to the channel layer constructor, and
@@ -317,9 +315,8 @@ policy.</p>
 </div>
 </div>
 <div class="section" id="specification-details">
-<h2>Specification Details<a class="headerlink" href="#specification-details" title="本標題的永久連結">¶</a></h2>
-<p>A <em>channel layer</em> must provide an object with these attributes
-(all function arguments are positional):</p>
+<h2>規格明細<a class="headerlink" href="#specification-details" title="本標題的永久連結">¶</a></h2>
+<p>一個 <em>路徑圖層</em> 必須有個物件具有這些屬性(所有函數參數都有方位性)：</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">send(channel,</span> <span class="pre">message)</span></code>, a callable that takes two arguments: the
 channel to send on, as a unicode string, and the message
@@ -369,7 +366,7 @@ raise ChannelFull.</li>
 membership is valid for after the most recent <code class="docutils literal"><span class="pre">group_add</span></code> call (see
 <em>Persistence</em> below)</li>
 </ul>
-<p>A channel layer implementing the <code class="docutils literal"><span class="pre">statistics</span></code> extension must also provide:</p>
+<p>路徑層架構的 <code class="docutils literal"><span class="pre">統計</span></code> 擴充功能需具備：</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">global_statistics()</span></code>, a callable that returns statistics across all channels</li>
 <li><code class="docutils literal"><span class="pre">channel_statistics(channel)</span></code>, a callable that returns statistics for specified channel</li>
@@ -382,7 +379,7 @@ membership is valid for after the most recent <code class="docutils literal"><sp
 <li><code class="docutils literal"><span class="pre">channel_full_count_per_second</span></code>, the number of times <cite>ChannelFull</cite> exception has been risen in the last second</li>
 </ul>
 </li>
-<li>Implementation may provide total counts, counts per seconds or both.</li>
+<li>執行可提供次數總和、每秒次數，或是兩者皆提供。</li>
 </ul>
 <p>A channel layer implementing the <code class="docutils literal"><span class="pre">flush</span></code> extension must also provide:</p>
 <ul class="simple">
@@ -407,18 +404,18 @@ and <code class="docutils literal"><span class="pre">(None,</span> <span class="
 to run it in nonblocking mode; use the normal <code class="docutils literal"><span class="pre">receive</span></code> for that.</li>
 </ul>
 <div class="section" id="channel-semantics">
-<h3>Channel Semantics<a class="headerlink" href="#channel-semantics" title="本標題的永久連結">¶</a></h3>
+<h3>Channel 語義<a class="headerlink" href="#channel-semantics" title="本標題的永久連結">¶</a></h3>
 <p>Channels <strong>must</strong>:</p>
 <ul class="simple">
 <li>Preserve ordering of messages perfectly with only a single reader
 and writer if the channel is a <em>single-reader</em> or <em>process-specific</em> channel.</li>
-<li>Never deliver a message more than once.</li>
+<li>請勿重覆傳送相同訊息超過一次。</li>
 <li>Never block on message send (though they may raise ChannelFull or
 MessageTooLarge)</li>
 <li>Be able to handle messages of at least 1MB in size when encoded as
 JSON (the implementation may use better encoding or compression, as long
 as it meets the equivalent size)</li>
-<li>Have a maximum name length of at least 100 bytes.</li>
+<li>最長名稱的長度為 100 bytes。</li>
 </ul>
 <p>They should attempt to preserve ordering in all cases as much as possible,
 but perfect global ordering is obviously not possible in the distributed case.</p>
@@ -462,7 +459,7 @@ restart, you will likely need to move and reprovision protocol servers, and
 making sure your code can cope with this is important.</p>
 </div>
 <div class="section" id="message-formats">
-<span id="asgi-sub-specifications"></span><h3>Message Formats<a class="headerlink" href="#message-formats" title="本標題的永久連結">¶</a></h3>
+<span id="asgi-sub-specifications"></span><h3>訊息格式<a class="headerlink" href="#message-formats" title="本標題的永久連結">¶</a></h3>
 <p>These describe the standardized message formats for the protocols this
 specification supports. All messages are <code class="docutils literal"><span class="pre">dicts</span></code> at the top level,
 and all keys are required unless explicitly marked as optional. If a key is
@@ -488,7 +485,7 @@ by their required fields.</p>
 </div>
 </div>
 <div class="section" id="protocol-format-guidelines">
-<h3>Protocol Format Guidelines<a class="headerlink" href="#protocol-format-guidelines" title="本標題的永久連結">¶</a></h3>
+<h3>協議格式指南<a class="headerlink" href="#protocol-format-guidelines" title="本標題的永久連結">¶</a></h3>
 <p>Message formats for protocols should follow these rules, unless
 a very good performance or implementation reason is present:</p>
 <ul class="simple">
@@ -512,7 +509,7 @@ order <code class="docutils literal"><span class="pre">1</span></code> and <code
 </ul>
 </div>
 <div class="section" id="approximate-global-ordering">
-<h3>Approximate Global Ordering<a class="headerlink" href="#approximate-global-ordering" title="本標題的永久連結">¶</a></h3>
+<h3>近似於全球訂購<a class="headerlink" href="#approximate-global-ordering" title="本標題的永久連結">¶</a></h3>
 <p>While maintaining true global (across-channels) ordering of messages is
 entirely unreasonable to expect of many implementations, they should strive
 to prevent busy channels from overpowering quiet channels.</p>
@@ -530,7 +527,7 @@ available, but whatever is chosen, it should try to avoid a scenario where
 a message doesn't get received purely because another channel is busy.</p>
 </div>
 <div class="section" id="strings-and-unicode">
-<h3>Strings and Unicode<a class="headerlink" href="#strings-and-unicode" title="本標題的永久連結">¶</a></h3>
+<h3>字串和 Unicode<a class="headerlink" href="#strings-and-unicode" title="本標題的永久連結">¶</a></h3>
 <p>In this document, and all sub-specifications, <em>byte string</em> refers to
 <code class="docutils literal"><span class="pre">str</span></code> on Python 2 and <code class="docutils literal"><span class="pre">bytes</span></code> on Python 3. If this type still supports
 Unicode codepoints due to the underlying implementation, then any values
@@ -542,35 +539,29 @@ two exact types.</p>
 strings and unicode strings; these should include logic to box one type as
 the other (for example, encoding byte strings as base64 unicode strings with
 a preceding special character, e.g. U+FFFF).</p>
-<p>Channel and group names are always unicode strings, with the additional
-limitation that they only use the following characters:</p>
+<p>路徑和群組名稱皆為Unicode字串，且額外限制只使用以下文字：</p>
 <ul class="simple">
-<li>ASCII letters</li>
-<li>The digits <code class="docutils literal"><span class="pre">0</span></code> through <code class="docutils literal"><span class="pre">9</span></code></li>
-<li>Hyphen <code class="docutils literal"><span class="pre">-</span></code></li>
-<li>Underscore <code class="docutils literal"><span class="pre">_</span></code></li>
-<li>Period <code class="docutils literal"><span class="pre">.</span></code></li>
-<li>Question mark <code class="docutils literal"><span class="pre">?</span></code> (only to delineiate single-reader channel names,
-and only one per name)</li>
-<li>Exclamation mark <code class="docutils literal"><span class="pre">!</span></code> (only to delineate process-specific channel names,
-and only one per name)</li>
+<li>ASCII字母</li>
+<li>字元從&quot;0&quot;到&quot;9&quot;</li>
+<li>連字號&quot;-&quot;</li>
+<li>底線&quot;_&quot;</li>
+<li>句號&quot;.&quot;</li>
+<li>問號&quot;?&quot;(僅限於單讀者路徑名稱，且每個名稱限用一次)</li>
+<li>驚嘆號&quot;!&quot;(僅描述特定於進行中的路徑名稱，且每個名稱限用一次)</li>
 </ul>
 </div>
 </div>
 <div class="section" id="common-questions">
-<h2>Common Questions<a class="headerlink" href="#common-questions" title="本標題的永久連結">¶</a></h2>
+<h2>常見問題<a class="headerlink" href="#common-questions" title="本標題的永久連結">¶</a></h2>
 <ol class="arabic">
 <li><p class="first">Why are messages <code class="docutils literal"><span class="pre">dicts</span></code>, rather than a more advanced type?</p>
-<p>We want messages to be very portable, especially across process and
-machine boundaries, and so a simple encodable type seemed the best way.
-We expect frameworks to wrap each protocol-specific set of messages in
-custom classes (e.g. <code class="docutils literal"><span class="pre">http.request</span></code> messages become <code class="docutils literal"><span class="pre">Request</span></code> objects)</p>
+<p>我們希望訊息方便編輯，特別在切換流程和機器介面，所以最好是一個簡單可編輯的類型。我們期望架構將包含每個特定協議訊息在各自定義類中(例如`http.request`訊息變`Request'物件)</p>
 </li>
 </ol>
 </div>
 <div class="section" id="copyright">
-<h2>Copyright<a class="headerlink" href="#copyright" title="本標題的永久連結">¶</a></h2>
-<p>This document has been placed in the public domain.</p>
+<h2>版權<a class="headerlink" href="#copyright" title="本標題的永久連結">¶</a></h2>
+<p>此文件已放於公有領域</p>
 </div>
 </div>
 
@@ -582,29 +573,29 @@ custom classes (e.g. <code class="docutils literal"><span class="pre">http.reque
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">ASGI (Asynchronous Server Gateway Interface) Draft Spec</a><ul>
-<li><a class="reference internal" href="#abstract">Abstract</a></li>
-<li><a class="reference internal" href="#rationale">Rationale</a></li>
-<li><a class="reference internal" href="#overview">Overview</a><ul>
-<li><a class="reference internal" href="#channels-and-messages">Channels and Messages</a></li>
-<li><a class="reference internal" href="#handling-protocols">Handling Protocols</a></li>
+<li><a class="reference internal" href="#">ASGI (異步伺服器閘道介面) 規劃草案</a><ul>
+<li><a class="reference internal" href="#abstract">摘要</a></li>
+<li><a class="reference internal" href="#rationale">說明</a></li>
+<li><a class="reference internal" href="#overview">總覽</a><ul>
+<li><a class="reference internal" href="#channels-and-messages">路徑與訊息</a></li>
+<li><a class="reference internal" href="#handling-protocols">處理協議</a></li>
 <li><a class="reference internal" href="#extensions">Extensions</a></li>
 <li><a class="reference internal" href="#groups">Groups</a></li>
-<li><a class="reference internal" href="#linearization">Linearization</a></li>
-<li><a class="reference internal" href="#capacity">Capacity</a></li>
+<li><a class="reference internal" href="#linearization">線性化</a></li>
+<li><a class="reference internal" href="#capacity">容量</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#specification-details">Specification Details</a><ul>
-<li><a class="reference internal" href="#channel-semantics">Channel Semantics</a></li>
+<li><a class="reference internal" href="#specification-details">規格明細</a><ul>
+<li><a class="reference internal" href="#channel-semantics">Channel 語義</a></li>
 <li><a class="reference internal" href="#persistence">Persistence</a></li>
-<li><a class="reference internal" href="#message-formats">Message Formats</a></li>
-<li><a class="reference internal" href="#protocol-format-guidelines">Protocol Format Guidelines</a></li>
-<li><a class="reference internal" href="#approximate-global-ordering">Approximate Global Ordering</a></li>
-<li><a class="reference internal" href="#strings-and-unicode">Strings and Unicode</a></li>
+<li><a class="reference internal" href="#message-formats">訊息格式</a></li>
+<li><a class="reference internal" href="#protocol-format-guidelines">協議格式指南</a></li>
+<li><a class="reference internal" href="#approximate-global-ordering">近似於全球訂購</a></li>
+<li><a class="reference internal" href="#strings-and-unicode">字串和 Unicode</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#common-questions">Common Questions</a></li>
-<li><a class="reference internal" href="#copyright">Copyright</a></li>
+<li><a class="reference internal" href="#common-questions">常見問題</a></li>
+<li><a class="reference internal" href="#copyright">版權</a></li>
 </ul>
 </li>
 </ul>
