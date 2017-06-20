@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>貢獻 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>貢獻 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="發行版本說明" href="releases/index.html" />
-    <link rel="prev" title="社群專案" href="community.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="Release Notes" href="releases/index.html" />
+    <link rel="prev" title="社群專案" href="community.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="releases/index.html" title="Release Notes"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="community.html" title="社群專案"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -52,16 +60,13 @@
 <p>我們正在尋找以下領域的幫助:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p class="first">文件與教程書寫</p>
-</li>
-<li><p class="first">錯誤修正與測試</p>
-</li>
+<li>文件與教程書寫</li>
+<li>錯誤修正與測試</li>
 <li>Feature polish and occasional new feature design</li>
-<li><p class="first">案例研究及書寫</p>
-</li>
+<li>案例研究及書寫</li>
 </ul>
 </div></blockquote>
-<p>You can find what we&#8217;re looking to work on in the GitHub issues list for each
+<p>You can find what we're looking to work on in the GitHub issues list for each
 of the Channels sub-projects:</p>
 <blockquote>
 <div><ul class="simple">
@@ -69,6 +74,7 @@ of the Channels sub-projects:</p>
 <li><a class="reference external" href="https://github.com/django/daphne/issues/">Daphne issues</a>, for the HTTP and Websocket termination</li>
 <li><a class="reference external" href="https://github.com/django/asgiref/issues/">asgiref issues</a>, for the base ASGI library/memory backend</li>
 <li><a class="reference external" href="https://github.com/django/asgi_redis/issues/">asgi_redis issues</a>, for the Redis channel backend</li>
+<li><a class="reference external" href="https://github.com/proofit404/asgi_rabbitmq/">asgi_rabbitmq</a>, for the RabbitMQ channel backend</li>
 <li><a class="reference external" href="https://github.com/django/asgi_ipc/issues/">asgi_ipc issues</a>, for the POSIX IPC channel backend</li>
 </ul>
 </div></blockquote>
@@ -84,41 +90,41 @@ of the Channels sub-projects:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">documentation</span></code>: Documentation issues. Pick these if you want to help us by writing docs.</li>
-<li><code class="docutils literal"><span class="pre">bug</span></code>: A bug in existing code. Usually easier for beginners as there&#8217;s a defined thing to fix.</li>
+<li><code class="docutils literal"><span class="pre">bug</span></code>: A bug in existing code. Usually easier for beginners as there's a defined thing to fix.</li>
 <li><code class="docutils literal"><span class="pre">enhancement</span></code>: A new feature for the code; may be a bit more open-ended.</li>
 </ul>
 </div></blockquote>
 <p>You should filter the issues list by the experience level and type of work
-you&#8217;d like to do, and then if you want to take something on leave a comment
+you'd like to do, and then if you want to take something on leave a comment
 and assign yourself to it. If you want advice about how to take on a bug,
 leave a comment asking about it, or pop into the IRC channel at
-<code class="docutils literal"><span class="pre">#django-channels</span></code> on Freenode and we&#8217;ll be happy to help.</p>
+<code class="docutils literal"><span class="pre">#django-channels</span></code> on Freenode and we'll be happy to help.</p>
 <p>The issues are also just a suggested list - any offer to help is welcome as long
 as it fits the project goals, but you should make an issue for the thing you
-wish to do and discuss it first if it&#8217;s relatively large (but if you just found
+wish to do and discuss it first if it's relatively large (but if you just found
 a small bug and want to fix it, sending us a pull request straight away is fine).</p>
 </div>
 <div class="section" id="i-m-a-novice-contributor-developer-can-i-help">
 <h2>我是一個初階 合作/開發人員 - 我可以幫什麼？<a class="headerlink" href="#i-m-a-novice-contributor-developer-can-i-help" title="本標題的永久連結">¶</a></h2>
 <p>Of course! The issues labelled with <code class="docutils literal"><span class="pre">exp/beginner</span></code> are a perfect place to
-get started, as they&#8217;re usually small and well defined. If you want help with
+get started, as they're usually small and well defined. If you want help with
 one of them, pop into the IRC channel at <code class="docutils literal"><span class="pre">#django-channels</span></code> on Freenode or
 get in touch with Andrew directly at <a class="reference external" href="mailto:andrew&#37;&#52;&#48;aeracode&#46;org">andrew<span>&#64;</span>aeracode<span>&#46;</span>org</a>.</p>
 </div>
 <div class="section" id="can-you-pay-me-for-my-time">
 <h2>你能支付我的時間嗎？<a class="headerlink" href="#can-you-pay-me-for-my-time" title="本標題的永久連結">¶</a></h2>
 <p>Thanks to Mozilla, we have a reasonable budget to pay people for their time
-working on all of the above sorts of tasks and more. Generally, we&#8217;d prefer
+working on all of the above sorts of tasks and more. Generally, we'd prefer
 to fund larger projects (you can find these labelled as <code class="docutils literal"><span class="pre">epic-project</span></code> in the
-issues lists) to reduce the administrative overhead, but we&#8217;re open to any
+issues lists) to reduce the administrative overhead, but we're open to any
 proposal.</p>
-<p>If you&#8217;re interested in working on something and being paid, you&#8217;ll need to
+<p>If you're interested in working on something and being paid, you'll need to
 draw up a short proposal and get in touch with the committee, discuss the work
 and your history with open-source contribution (we strongly prefer that you have
-a proven track record on at least a few things) and the amount you&#8217;d like to be paid.</p>
-<p>If you&#8217;re interested in working on one of these tasks, get in touch with
+a proven track record on at least a few things) and the amount you'd like to be paid.</p>
+<p>If you're interested in working on one of these tasks, get in touch with
 Andrew Godwin (<a class="reference external" href="mailto:andrew&#37;&#52;&#48;aeracode&#46;org">andrew<span>&#64;</span>aeracode<span>&#46;</span>org</a>) as a first point of contact; he can help
-talk you through what&#8217;s involved, and help judge/refine your proposal before
+talk you through what's involved, and help judge/refine your proposal before
 it goes to the committee.</p>
 <p>Tasks not on any issues list can also be proposed; Andrew can help talk about them
 and if they would be sensible to do.</p>
@@ -140,15 +146,13 @@ and if they would be sensible to do.</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="community.html" title="上一章">社群專案</a></li>
-      <li>Next: <a href="releases/index.html" title="下一章">發行版本說明</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="community.html"
+                        title="上一章">社群專案</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="releases/index.html"
+                        title="下一章">Release Notes</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -170,20 +174,24 @@ and if they would be sensible to do.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/contributing.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="releases/index.html" title="Release Notes"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="community.html" title="社群專案"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

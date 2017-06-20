@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>路由 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>路由 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -28,16 +28,24 @@
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
     <link rel="next" title="資料綁定" href="binding.html" />
-    <link rel="prev" title="一般消費者" href="generics.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="一般消費者" href="generics.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="binding.html" title="資料綁定"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="generics.html" title="一般消費者"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -58,15 +66,14 @@ that implements the routing interface will work:</p>
 <ul class="simple">
 <li>A method called <code class="docutils literal"><span class="pre">match</span></code>, taking a single <code class="docutils literal"><span class="pre">message</span></code> as an argument and
 returning <code class="docutils literal"><span class="pre">None</span></code> for no match or a tuple of <code class="docutils literal"><span class="pre">(consumer,</span> <span class="pre">kwargs)</span></code> if matched.</li>
-<li><p class="first">有個功能鍵叫&#8221;channel_names&#8221;可回覆一組可搭配的 channel 名稱，這使 channel 層可以管控他們</p>
-</li>
+<li>有個功能鍵叫&quot;channel_names&quot;可回覆一組可搭配的 channel 名稱，這使 channel 層可以管控他們</li>
 </ul>
 <p>以下是三個預設的路由物件:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">route</span></code>: Takes a channel name, a consumer function, and optional filter
 keyword arguments.</li>
 <li><code class="docutils literal"><span class="pre">route_class</span></code>: Takes a class-based consumer, and optional filter
-keyword arguments. Channel names are taken from the consumer&#8217;s
+keyword arguments. Channel names are taken from the consumer's
 <code class="docutils literal"><span class="pre">channel_names()</span></code> method.</li>
 <li><code class="docutils literal"><span class="pre">include</span></code>: Takes either a list or string import path to a routing list,
 and optional filter keyword arguments.</li>
@@ -92,7 +99,7 @@ match every filter to have the consumer called.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">connect_blog</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog/(?P&lt;slug&gt;[^/]+)/stream/$&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>你也可以指定過濾&#8221;include&#8221;:</p>
+<p>你也可以指定過濾&quot;include&quot;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">include</span><span class="p">(</span><span class="s2">&quot;blog_includes&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -110,7 +117,7 @@ strips off the <code class="docutils literal"><span class="pre">/liveblog</span>
 </pre></div>
 </div>
 <p>You can also include named capture groups in the filters on an include and
-they&#8217;ll be passed to the consumer just like those on <code class="docutils literal"><span class="pre">route</span></code>; note, though,
+they'll be passed to the consumer just like those on <code class="docutils literal"><span class="pre">route</span></code>; note, though,
 that if the keyword argument names from the <code class="docutils literal"><span class="pre">include</span></code> and the <code class="docutils literal"><span class="pre">route</span></code>
 clash, the values from <code class="docutils literal"><span class="pre">route</span></code> will take precedence.</p>
 </div>
@@ -129,15 +136,13 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="generics.html" title="上一章">一般消費者</a></li>
-      <li>Next: <a href="binding.html" title="下一章">資料綁定</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="generics.html"
+                        title="上一章">一般消費者</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="binding.html"
+                        title="下一章">資料綁定</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -159,20 +164,24 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/routing.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="binding.html" title="資料綁定"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="generics.html" title="一般消費者"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

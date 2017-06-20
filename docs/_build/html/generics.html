@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>一般消費者 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>一般消費者 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -28,16 +28,24 @@
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
     <link rel="next" title="路由" href="routing.html" />
-    <link rel="prev" title="配置" href="deploying.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="部署" href="deploying.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="deploying.html" title="部署"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -46,8 +54,8 @@
             
   <div class="section" id="generic-consumers">
 <h1>一般消費者<a class="headerlink" href="#generic-consumers" title="本標題的永久連結">¶</a></h1>
-<p>Much like Django&#8217;s class-based views, Channels has class-based consumers.
-They provide a way for you to arrange code so it&#8217;s highly modifiable and
+<p>Much like Django's class-based views, Channels has class-based consumers.
+They provide a way for you to arrange code so it's highly modifiable and
 inheritable, at the slight cost of it being harder to figure out the execution
 path.</p>
 <p>We recommend you use them if you find them valuable; normal function-based
@@ -72,7 +80,7 @@ to listen on from it directly, rather than making you pass it in explicitly.</p>
 </pre></div>
 </div>
 <p>Class-based consumers are instantiated once for each message they consume,
-so it&#8217;s safe to store things on <code class="docutils literal"><span class="pre">self</span></code> (in fact, <code class="docutils literal"><span class="pre">self.message</span></code> is the
+so it's safe to store things on <code class="docutils literal"><span class="pre">self</span></code> (in fact, <code class="docutils literal"><span class="pre">self.message</span></code> is the
 current message by default, and <code class="docutils literal"><span class="pre">self.kwargs</span></code> are the keyword arguments
 passed in from the routing).</p>
 <div class="section" id="base">
@@ -95,7 +103,7 @@ you can inherit from if you wish to build your own entirely from scratch.</p>
 <p>All you need to define is the <code class="docutils literal"><span class="pre">method_mapping</span></code> dictionary, which maps
 channel names to method names. The base code will take care of the dispatching
 for you, and set <code class="docutils literal"><span class="pre">self.message</span></code> to the current message as well.</p>
-<p>If you want to perfom more complicated routing, you&#8217;ll need to override the
+<p>If you want to perfom more complicated routing, you'll need to override the
 <code class="docutils literal"><span class="pre">dispatch()</span></code> and <code class="docutils literal"><span class="pre">channel_names()</span></code> methods in order to do the right thing;
 remember, though, your channel names cannot change during runtime and must
 always be the same for as long as your process runs.</p>
@@ -154,12 +162,12 @@ additionally automatically serializes all messages sent and receives using JSON.
         <span class="k">pass</span>
 </pre></div>
 </div>
-<p>You can call <code class="docutils literal"><span class="pre">self.send</span></code> inside the class to send things to the connection&#8217;s
+<p>You can call <code class="docutils literal"><span class="pre">self.send</span></code> inside the class to send things to the connection's
 <code class="docutils literal"><span class="pre">reply_channel</span></code> automatically. Any group names returned from <code class="docutils literal"><span class="pre">connection_groups</span></code>
 are used to add the socket to when it connects and to remove it from when it
 disconnects; you get keyword arguments too if your URL path, say, affects
 which group to talk to.</p>
-<p>另外，&#8221;self.path&#8221;屬性只設於目前的URL路徑</p>
+<p>另外，&quot;self.path&quot;屬性只設於目前的URL路徑</p>
 <p>The JSON-enabled consumer looks slightly different:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websockets</span> <span class="k">import</span> <span class="n">JsonWebsocketConsumer</span>
 
@@ -193,13 +201,22 @@ which group to talk to.</p>
 <span class="sd">        Perform things on connection close</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
+
+    <span class="c1"># Optionally provide your own custom json encoder and decoder</span>
+    <span class="c1"># @classmethod</span>
+    <span class="c1"># def decode_json(cls, text):</span>
+    <span class="c1">#     return my_custom_json_decoder(text)</span>
+    <span class="c1">#</span>
+    <span class="c1"># @classmethod</span>
+    <span class="c1"># def encode_json(cls, content):</span>
+    <span class="c1">#     return my_custom_json_encoder(content)</span>
 </pre></div>
 </div>
 <p>For this subclass, <code class="docutils literal"><span class="pre">receive</span></code> only gets a <code class="docutils literal"><span class="pre">content</span></code> argument that is the
 already-decoded JSON as Python datastructures; similarly, <code class="docutils literal"><span class="pre">send</span></code> now only
 takes a single argument, which it JSON-encodes before sending down to the
 client.</p>
-<p>Note that this subclass still can&#8217;t intercept <code class="docutils literal"><span class="pre">Group.send()</span></code> calls to make
+<p>Note that this subclass still can't intercept <code class="docutils literal"><span class="pre">Group.send()</span></code> calls to make
 them into JSON automatically, but it does provide <code class="docutils literal"><span class="pre">self.group_send(name,</span> <span class="pre">content)</span></code>
 that will do this for you if you call it explicitly.</p>
 <p><code class="docutils literal"><span class="pre">self.close()</span></code> is also provided to easily close the WebSocket from the
@@ -243,9 +260,12 @@ in the <code class="docutils literal"><span class="pre">routing.py</span></code>
         <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="n">EchoConsumer</span><span class="p">,</span>
         <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">AnotherConsumer</span><span class="p">,</span>
     <span class="p">}</span>
+
+    <span class="c1"># Optionally provide a custom multiplexer class</span>
+    <span class="c1"># multiplexer_class = MyCustomJsonEncodingMultiplexer</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">multiplexer</span></code> allows the consumer class to be independant of the stream name.
+<p>The <code class="docutils literal"><span class="pre">multiplexer</span></code> allows the consumer class to be independent of the stream name.
 It holds the stream name and the demultiplexer on the attributes <code class="docutils literal"><span class="pre">stream</span></code> and <code class="docutils literal"><span class="pre">demultiplexer</span></code>.</p>
 <p>The <a class="reference internal" href="binding.html"><span class="doc">data binding</span></a> code will also send out messages to clients
 in the same format, and you can encode things in this format yourself by
@@ -275,7 +295,7 @@ would be on a regular View.</p>
 </div>
 <div class="section" id="applying-decorators">
 <h2>Applying Decorators<a class="headerlink" href="#applying-decorators" title="本標題的永久連結">¶</a></h2>
-<p>To apply decorators to a class-based consumer, you&#8217;ll have to wrap a functional
+<p>To apply decorators to a class-based consumer, you'll have to wrap a functional
 part of the consumer; in this case, <code class="docutils literal"><span class="pre">get_handler</span></code> is likely the place you
 want to override; like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
@@ -286,7 +306,7 @@ want to override; like so:</p>
 </pre></div>
 </div>
 <p>You can also use the Django <code class="docutils literal"><span class="pre">method_decorator</span></code> utility to wrap methods that
-have <code class="docutils literal"><span class="pre">message</span></code> as their first positional argument - note that it won&#8217;t work
+have <code class="docutils literal"><span class="pre">message</span></code> as their first positional argument - note that it won't work
 for more high-level methods, like <code class="docutils literal"><span class="pre">WebsocketConsumer.receive</span></code>.</p>
 </div>
 <div class="section" id="as-route">
@@ -344,15 +364,13 @@ like so:</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="deploying.html" title="上一章">配置</a></li>
-      <li>Next: <a href="routing.html" title="下一章">路由</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="deploying.html"
+                        title="上一章">部署</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="routing.html"
+                        title="下一章">路由</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -374,20 +392,24 @@ like so:</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/generics.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="deploying.html" title="部署"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>
