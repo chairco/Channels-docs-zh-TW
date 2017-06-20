@@ -18,7 +18,7 @@
 第一種優點是方便，可以透過網站專心翻譯，但缺點是需要手動拉下 .po 檔案再轉 rst 不太確定 Django channels 作者能不能這樣共同編輯翻譯。
 
 採用 RTD 網站，~不知道中英文要怎樣處理~。發現 RTD 對於中英文方式很簡單，假如是英文要翻譯中文或是其他語言，只需設定同樣內容為子專案（語言別設定為中文），自動就會產生語言選項類似：
-!['#'](http://i.imgur.com/0Yknt4p.png)
+<img src="http://i.imgur.com/CWDyfHM.png" width="60%" height="60%">
 
 ~第二種比較單純，就編寫一下轉 sphinx document 風格的網站。只是翻譯大概就自己一個人翻譯吧？放在 github 上應該沒人會理我。~
 
@@ -32,8 +32,7 @@
 ```
 
 接著先 clone 專案的 docs 檔將 rst 轉成 .po 檔案，流程在 sphinx 官方網站上有一個很清楚的流程圖：
-<img src="http://www.sphinx-doc.org/en/stable/_images/translation.png" width="40%" height="60%">
-
+![sphinx process](http://www.sphinx-doc.org/en/stable/_images/translation.png)
 
 所以先 clone Django channels 得專案到本機端上：
 ```shell
