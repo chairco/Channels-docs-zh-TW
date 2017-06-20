@@ -32,7 +32,8 @@
 ```
 
 接著先 clone 專案的 docs 檔將 rst 轉成 .po 檔案，流程在 sphinx 官方網站上有一個很清楚的流程圖：
-![sphinx process](http://www.sphinx-doc.org/en/stable/_images/translation.png)
+<img src="http://www.sphinx-doc.org/en/stable/_images/translation.png" width="40%" height="60%">
+
 
 所以先 clone Django channels 得專案到本機端上：
 ```shell
