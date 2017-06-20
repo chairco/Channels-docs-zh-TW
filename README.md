@@ -73,3 +73,19 @@ source_lang = en
 
 ## 透過 RTD 發佈
 將翻譯好的 github 指向 RTD 專案設定就成自動生成一個靜態文件頁面。
+
+
+## 感謝[貢獻者](https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)
+這個翻譯感謝參與 2017.3 Sprint 活動的夥伴。沒有你們這個翻譯應該不會有太多進展(根據 Transifex 排序)：
+
++ Adrian Liaw (@adrianliaw)
++ hsiao yi (@hsiaoyi0504)
++ Jason (@chairco)
++ SpongeYao
++ Cropse (@cropse)
++ Larry Huang (@larry0220)
++ Hsiang Hung (@linusonwork0325)
++ YUN CHEN (@sayhi5)
++ Wonder Chang (@wonderchang)
++ Zong-han Xie (@xingularity)
++ Yuan CHAO (@yuanchao)
