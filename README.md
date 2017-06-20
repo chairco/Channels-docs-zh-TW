@@ -41,13 +41,31 @@ git clone https://github.com/django/channels.git
 make gettext
 ```
 
-接著會在 `/_build/locale` 底下建立對應的 .pot 檔案。這些 .pot 檔案要讓我們用來轉換成 .po 檔。轉 .po 檔案的方式也很簡單，執行指令如下：
+接著會在 `/_build/gettext` 底下建立對應的 .pot 檔案。這些 .pot 檔案要讓我們用來轉換成 .po 檔。轉 .po 檔案的方式也很簡單，執行指令如下：
 
 ```shell
 sphinx-intl update -l zh_TW
 ```
 
 要注意是因為我在 Transifex 上選擇 zh_TW 所以轉換格式要輸入正確。 然後就可以上到網站註冊一個翻譯團體，接著將這些 .po 檔案上傳就大功告成囉。
+
+
+## 從 Transifex 翻譯專案並且將完成的 .po 檔案 pull 回本機。
+
+在 root 資料夾底下建立 .tx 的資料夾和建立一個 config 檔案並輸入 Transifex網站位置和 .po 檔與 .pot 之間關係。
+
+```
+[main]
+host = https://www.transifex.com
+type = PO
+
+[django-channels-tw-docs.asgipo]
+file_filter = locale/<lang>/LC_MESSAGES/asgi.po
+source_file = _build/gettext/asgi.pot
+source_lang = en
+```
+
+接著翻譯完成之後只要執行 `tx pull -a` 就可以順利完成翻譯檔整合囉。
 
 
 ## 透過 RTD 發佈
