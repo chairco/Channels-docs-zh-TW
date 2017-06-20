@@ -128,7 +128,7 @@ purpose use ``send_and_consume`` method::
             self.assertEqual(client.receive(), {'all is': 'done'})
 
 
-You can use ``HttpClient`` for websocket related consumers. It automatically serializes JSON content,
+You can use ``WSClient`` for websocket related consumers. It automatically serializes JSON content,
 manage cookies and headers, give easy access to the session and add ability to authorize your requests.
 For example::
 
@@ -146,18 +146,18 @@ For example::
 
     # tests.py
     from channels import Group
-    from channels.test import ChannelTestCase, HttpClient
+    from channels.test import ChannelTestCase, WSClient
 
 
     class RoomsTests(ChannelTestCase):
 
         def test_rooms(self):
-            client = HttpClient()
+            client = WSClient()
             user = User.objects.create_user(
                 username='test', email='test@test.com', password='123456')
             client.login(username='test', password='123456')
 
-            client.send_and_consume('websocket.connect', '/rooms/')
+            client.send_and_consume('websocket.connect', path='/rooms/')
             # check that there is nothing to receive
             self.assertIsNone(client.receive())
 
@@ -181,38 +181,58 @@ For example::
             self.assertIsNone(client.receive())
 
 
-Instead of ``HttpClient.login`` method with credentials at arguments you
-may call ``HttpClient.force_login`` (like at django client) with the user object.
+Instead of ``WSClient.login`` method with credentials at arguments you
+may call ``WSClient.force_login`` (like at django client) with the user object.
 
 ``receive`` method by default trying to deserialize json text content of a message,
 so if you need to pass decoding use ``receive(json=False)``, like in the example.
+
+For testing consumers with ``enforce_ordering`` initialize ``HttpClient`` with ``ordered``
+flag, but if you wanna use your own order don't use it, use content::
+
+    client = HttpClient(ordered=True)
+    client.send_and_consume('websocket.receive', text='1', path='/ws')  # order = 0
+    client.send_and_consume('websocket.receive', text='2', path='/ws')  # order = 1
+    client.send_and_consume('websocket.receive', text='3', path='/ws')  # order = 2
+
+    # manually
+    client = HttpClient()
+    client.send('websocket.receive', content={'order': 0}, text='1')
+    client.send('websocket.receive', content={'order': 2}, text='2')
+    client.send('websocket.receive', content={'order': 1}, text='3')
+
+    # calling consume 4 time for `waiting` message with order 1
+    client.consume('websocket.receive')
+    client.consume('websocket.receive')
+    client.consume('websocket.receive')
+    client.consume('websocket.receive')
 
 
 Applying routes
 ---------------
 
-When you need to testing you consumers without routes in settings or you
-want to testing your consumers in more isolate and atomic way, it will be
+When you need to test your consumers without routes in settings or you
+want to test your consumers in a more isolate and atomic way, it will be
 simpler with ``apply_routes`` contextmanager and decorator for your ``ChannelTestCase``.
-It takes list of routes that you want to use and overwrite existing routes::
+It takes a list of routes that you want to use and overwrites existing routes::
 
-    from channels.test import ChannelTestCase, HttpClient, apply_routes
+    from channels.test import ChannelTestCase, WSClient, apply_routes
 
     class MyTests(ChannelTestCase):
 
         def test_myconsumer(self):
-            client = HttpClient()
+            client = WSClient()
 
             with apply_routes([MyConsumer.as_route(path='/new')]):
                 client.send_and_consume('websocket.connect', '/new')
                 self.assertEqual(client.receive(), {'key': 'value'})
 
 
-Test Data binding with ``HttpClient``
+Test Data binding with ``WSClient``
 -------------------------------------
 
 As you know data binding in channels works in outbound and inbound ways,
-so that ways tests in different ways and ``HttpClient`` and ``apply_routes``
+so that ways tests in different ways and ``WSClient`` and ``apply_routes``
 will help to do this.
 When you testing outbound consumers you need just import your ``Binding``
 subclass with specified ``group_names``. At test you can  join to one of them,
@@ -220,20 +240,19 @@ make some changes with target model and check received message.
 Lets test ``IntegerValueBinding`` from :doc:`data binding <binding>`
 with creating::
 
-    from channels.test import ChannelTestCase, HttpClient
+    from channels.test import ChannelTestCase, WSClient
     from channels.signals import consumer_finished
 
     class TestIntegerValueBinding(ChannelTestCase):
 
         def test_outbound_create(self):
-            # We use HttpClient because of json encoding messages
-            client = HttpClient()
+            # We use WSClient because of json encoding messages
+            client = WSClient()
             client.join_group("intval-updates")  # join outbound binding
 
             # create target entity
             value = IntegerValue.objects.create(name='fifty', value=50)
 
-            consumer_finished.send(sender=None)
             received = client.receive()  # receive outbound binding message
             self.assertIsNotNone(received)
 
@@ -267,7 +286,7 @@ For example::
 
             with apply_routes([Demultiplexer.as_route(path='/'),
                               route("binding.intval", IntegerValueBinding.consumer)]):
-                client = HttpClient()
+                client = WSClient()
                 client.send_and_consume('websocket.connect', path='/')
                 client.send_and_consume('websocket.receive', path='/', text={
                     'stream': 'intval',
@@ -294,3 +313,65 @@ mocked.
 
 You can pass an ``alias`` argument to ``get_next_message``, ``Client`` and ``Channel``
 to use a different layer too.
+
+Live Server Test Case
+---------------------
+
+You can use browser automation libraries like Selenium or Splinter to
+check your application against real layer installation.  First of all
+provide ``TEST_CONFIG`` setting to prevent overlapping with running
+dev environment.
+
+.. code:: python
+
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "asgi_redis.RedisChannelLayer",
+            "ROUTING": "my_project.routing.channel_routing",
+            "CONFIG": {
+                "hosts": [("redis-server-name", 6379)],
+            },
+            "TEST_CONFIG": {
+                "hosts": [("localhost", 6379)],
+            },
+        },
+    }
+
+Now use ``ChannelLiveServerTestCase`` for your acceptance tests.
+
+.. code:: python
+
+    from channels.test import ChannelLiveServerTestCase
+    from splinter import Browser
+
+    class IntegrationTest(ChannelLiveServerTestCase):
+
+        def test_browse_site_index(self):
+
+            with Browser() as browser:
+
+                browser.visit(self.live_server_url)
+                # the rest of your integration test...
+
+In the test above Daphne and Channels worker processes were fired up.
+These processes run your project against the test database and the
+default channel layer you spacify in the settings.  If channel layer
+support ``flush`` extension, initial cleanup will be done.  So do not
+run this code against your production environment.  When channels
+infrastructure is ready default web browser will be also started.  You
+can open your website in the real browser which can execute JavaScript
+and operate on WebSockets.  ``live_server_ws_url`` property is also
+provided if you decide to run messaging directly from Python.
+
+By default live server test case will serve static files.  To disable
+this feature override `serve_static` class attribute.
+
+.. code:: python
+
+    class IntegrationTest(ChannelLiveServerTestCase):
+
+        serve_static = False
+
+        def test_websocket_message(self):
+            # JS and CSS are not available in this test.
+            ...

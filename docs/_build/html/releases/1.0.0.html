@@ -61,13 +61,13 @@ Channels work correctly.</p>
 <h2>主要特徵<a class="headerlink" href="#major-features" title="本標題的永久連結">¶</a></h2>
 <p>Channels 1.0 introduces a couple of new major features.</p>
 <div class="section" id="websocket-accept-reject-flow">
-<h3>WebSocket 接受/拒絕 流量<a class="headerlink" href="#websocket-accept-reject-flow" title="本標題的永久連結">¶</a></h3>
+<h3>WebSocket 接受/拒絕流量<a class="headerlink" href="#websocket-accept-reject-flow" title="本標題的永久連結">¶</a></h3>
 <p>Rather than be immediately accepted, WebSockets now pause during the handshake
 while they send over a message on <code class="docutils literal"><span class="pre">websocket.connect</span></code>, and your application
 must either accept or reject the connection before the handshake is completed
 and messages can be received.</p>
 <p>You <strong>must</strong> update Daphne to at least 1.0.0 to make this work correctly.</p>
-<p>這有幾項優點:</p>
+<p>這裡有幾項優點:</p>
 <ul class="simple">
 <li>You can now reject WebSockets before they even finish connecting, giving
 appropriate error codes to browsers and not letting the browser-side socket
@@ -129,7 +129,7 @@ together from code that also works outside the context of multiplexing.</p>
 <h3>Delay Server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h3>
 <p>A built-in delay server, launched with <cite>manage.py rundelay</cite>, now ships if you
 wish to use it. It needs some extra initial setup and uses a database for
-persistance; see <a class="reference internal" href="../delay.html"><span class="doc">Delay Server</span></a> for more information.</p>
+persistance; see <a class="reference internal" href="../delay.html"><span class="doc">延遲伺服器</span></a> for more information.</p>
 </div>
 </div>
 <div class="section" id="minor-changes">
@@ -234,7 +234,7 @@ disconnection handling into their own methods.</p>
   <ul>
 <li><a class="reference internal" href="#">1.0.0 Release Notes</a><ul>
 <li><a class="reference internal" href="#major-features">主要特徵</a><ul>
-<li><a class="reference internal" href="#websocket-accept-reject-flow">WebSocket 接受/拒絕 流量</a></li>
+<li><a class="reference internal" href="#websocket-accept-reject-flow">WebSocket 接受/拒絕流量</a></li>
 <li><a class="reference internal" href="#consumer-atomicity">Consumer Atomicity</a></li>
 <li><a class="reference internal" href="#databinding-group-action-overhaul">Databinding Group/Action Overhaul</a></li>
 <li><a class="reference internal" href="#demultiplexer-overhaul">Demultiplexer Overhaul</a></li>
