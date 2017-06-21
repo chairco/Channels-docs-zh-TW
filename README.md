@@ -10,7 +10,7 @@
 
 ## 翻譯方法
 
-+ 第一種像是 [python-doc-tw](https://github.com/python-doc-tw/python-doc-tw) 透過 Transifex 將 rst 檔案拉到網站上一個個翻譯。可參考完整[教學](http://www.sphinx-doc.org/en/stable/intl.html)
++ 第一種像 [python-doc-tw](https://github.com/python-doc-tw/python-doc-tw) 一樣透過 Transifex 將 rst 檔案拉到網站上一個個翻譯。(http://www.sphinx-doc.org/en/stable/intl.html)
 + 第二種為在本機端上編輯一個新的 sphinx 來編輯一個新的翻譯。
 
 兩種方式各有優缺點。
@@ -27,11 +27,11 @@
 目前我訂採用第一種方式，採用此方式要先把本機端的檔案轉成 .po 檔案上傳到 Transifex。因此在 mac os(osx) 上要安裝一個支援多語系的套件 gettext。方式很簡單：
 
 ```
-#brew install gettext
-#brew link gettext --force //如果安裝過要重新 --force 
+$ brew install gettext
+$ brew link gettext --force //如果安裝過要重新 --force 
 ```
 
-接著先 clone 專案的 docs 檔將 rst 轉成 .po 檔案，流程在 sphinx 官方網站上有一個很清楚的流程圖：
+首先 clone 專案的 docs 檔將 rst 轉成 .po 檔案，在 sphinx 官方網站上有一個很清楚的流程圖，可參考完整[教學]：
 ![sphinx process](http://www.sphinx-doc.org/en/stable/_images/translation.png)
 
 所以先 clone Django channels 得專案到本機端上：
