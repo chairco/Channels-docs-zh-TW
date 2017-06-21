@@ -72,7 +72,9 @@ source_lang = en
 
 
 ## 透過 RTD 發佈
-將翻譯好的 github 指向 RTD 專案設定就成自動生成一個靜態文件頁面。
+最後在本機端 `/locale/zh_TW/LC_MESSAGE` 內應該會存在 .po 檔案，但網頁須要 .mo 檔案才有辦法正確顯示。所以最後一個步驟是透過 `make html` 指令產生一個靜態頁面同時將 .po 檔案兩兩對應的轉換成 .mo 檔案。
+
+最後將 RTD 專案設定指向 github 位置，接著每一次 push 新的程式碼就會成自動生成一個靜態文件頁面囉。
 
 
 ## 感謝[貢獻者](https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)
