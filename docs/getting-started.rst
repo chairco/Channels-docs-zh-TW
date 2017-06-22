@@ -132,7 +132,9 @@ Let's test it! Run ``runserver``, open a browser, navigate to a page on the serv
 (you can't use any page's console because of origin restrictions), and put the
 following into the JavaScript console to open a WebSocket and send some data
 down it (you might need to change the socket address if you're using a
-development VM or similar)::
+development VM or similar)
+
+.. code-block:: javascript
 
     // Note that the path doesn't matter for routing; any WebSocket
     // connection gets bumped over to WebSocket consumers
@@ -165,12 +167,19 @@ disconnect, like this::
 
     # Connected to websocket.connect
     def ws_add(message):
+        # Accept the incoming connection
         message.reply_channel.send({"accept": True})
+        # Add them to the chat group
         Group("chat").add(message.reply_channel)
 
     # Connected to websocket.disconnect
     def ws_disconnect(message):
         Group("chat").discard(message.reply_channel)
+
+.. note::
+    You need to explicitly accept WebSocket connections if you override connect
+    by sending ``accept: True`` - you can also reject them at connection time,
+    before they open, by sending ``close: True``.
 
 Of course, if you've read through :doc:`concepts`, you'll know that channels
 added to groups expire out if their messages expire (every channel layer has
@@ -204,7 +213,9 @@ get the message. Here's all the code::
 
     # Connected to websocket.connect
     def ws_add(message):
+        # Accept the connection
         message.reply_channel.send({"accept": True})
+        # Add to the chat group
         Group("chat").add(message.reply_channel)
 
     # Connected to websocket.receive
@@ -237,7 +248,9 @@ views.
 
 With all that code, you now have a working set of a logic for a chat server.
 Test time! Run ``runserver``, open a browser and use that same JavaScript
-code in the developer console as before::
+code in the developer console as before
+
+.. code-block:: javascript
 
     // Note that the path doesn't matter right now; any WebSocket
     // connection gets bumped over to WebSocket consumers
@@ -323,6 +336,12 @@ and set up your channel layer like this::
             "ROUTING": "myproject.routing.channel_routing",
         },
     }
+
+You'll also need to install the Redis server - there are downloads available
+for Mac OS and Windows, and it's in pretty much every linux distribution's
+package manager. For example, on Ubuntu, you can just::
+
+    sudo apt-get install redis-server
 
 Fire up ``runserver``, and it'll work as before - unexciting, like good
 infrastructure should be. You can also try out the cross-process nature; run
@@ -493,7 +512,9 @@ chat to people with the same first letter of their username::
 If you're just using ``runserver`` (and so Daphne), you can just connect
 and your cookies should transfer your auth over. If you were running WebSockets
 on a separate domain, you'd have to remember to provide the
-Django session ID as part of the URL, like this::
+Django session ID as part of the URL, like this
+
+.. code-block:: javascript
 
     socket = new WebSocket("ws://127.0.0.1:9000/?session_key=abcdefg");
 
@@ -501,6 +522,51 @@ You can get the current session key in a template with ``{{ request.session.sess
 Note that this can't work with signed cookie sessions - since only HTTP
 responses can set cookies, it needs a backend it can write to to separately
 store state.
+
+
+Security
+--------
+
+Unlike AJAX requests, WebSocket requests are not limited by the Same-Origin
+policy. This means you don't have to take any extra steps when you have an HTML
+page served by host A containing JavaScript code wanting to connect to a
+WebSocket on Host B.
+
+While this can be convenient, it also implies that by default any third-party
+site can connect to your WebSocket application. When you are using the
+``http_session_user`` or the ``channel_session_user_from_http`` decorator, this
+connection would be authenticated.
+
+The WebSocket specification requires browsers to send the origin of a WebSocket
+request in the HTTP header named ``Origin``, but validating that header is left
+to the server.
+
+You can use the decorator ``channels.security.websockets.allowed_hosts_only``
+on a ``websocket.connect`` consumer to only allow requests originating
+from hosts listed in the ``ALLOWED_HOSTS`` setting::
+
+    # In consumers.py
+    from channels import Channel, Group
+    from channels.sessions import channel_session
+    from channels.auth import channel_session_user, channel_session_user_from_http
+    from channels.security.websockets import allowed_hosts_only.
+
+    # Connected to websocket.connect
+    @allowed_hosts_only
+    @channel_session_user_from_http
+    def ws_add(message):
+        # Accept connection
+        ...
+
+Requests from other hosts or requests with missing or invalid origin header
+are now rejected.
+
+The name ``allowed_hosts_only`` is an alias for the class-based decorator
+``AllowedHostsOnlyOriginValidator``, which inherits from
+``BaseOriginValidator``. If you have custom requirements for origin validation,
+create a subclass and overwrite the method
+``validate_origin(self, message, origin)``. It must return True when a message
+should be accepted, False otherwise.
 
 
 Routing
@@ -553,6 +619,8 @@ consumer above to use a room based on URL rather than username::
     def ws_add(message, room):
         # Add them to the right group
         Group("chat-%s" % room).add(message.reply_channel)
+        # Accept the connection request
+        message.reply_channel.send({"accept": True})
 
 In the next section, we'll change to sending the ``room`` as a part of the
 WebSocket message - which you might do if you had a multiplexing client -
@@ -608,6 +676,8 @@ have a ChatMessage model with ``message`` and ``room`` fields::
         # Save room in session and add us to the group
         message.channel_session['room'] = room
         Group("chat-%s" % room).add(message.reply_channel)
+        # Accept the connection request
+        message.reply_channel.send({"accept": True})
 
     # Connected to websocket.receive
     @channel_session
@@ -622,6 +692,19 @@ have a ChatMessage model with ``message`` and ``room`` fields::
     @channel_session
     def ws_disconnect(message):
         Group("chat-%s" % message.channel_session['room']).discard(message.reply_channel)
+
+Update ``routing.py`` as well::
+
+    # in routing.py
+    from channels.routing import route
+    from myapp.consumers import ws_connect, ws_message, ws_disconnect, msg_consumer
+
+    channel_routing = [
+        route("websocket.connect", ws_connect),
+        route("websocket.receive", ws_message),
+        route("websocket.disconnect", ws_disconnect),
+        route("chat-messages", msg_consumer),
+    ]
 
 Note that we could add messages onto the ``chat-messages`` channel from anywhere;
 inside a View, inside another model's ``post_save`` signal, inside a management

@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, chairco(Jason)
+# This file is distributed under the same license as the
+# Django-Channels-tw-docs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Django-Channels-tw-docs 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-21 02:56+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../javascript.rst:2
+msgid "Channels WebSocket wrapper"
+msgstr ""
+
+#: ../../javascript.rst:4
+msgid ""
+"Channels ships with a javascript WebSocket wrapper to help you connect to"
+" your websocket and send/receive messages."
+msgstr ""
+
+#: ../../javascript.rst:7
+msgid ""
+"First, you must include the javascript library in your template; if "
+"you're using Django's staticfiles, this is as easy as::"
+msgstr ""
+
+#: ../../javascript.rst:14
+msgid ""
+"If you are using an alternative method of serving static files, the "
+"compiled source code is located at "
+"``channels/static/channels/js/websocketbridge.js`` in a Channels "
+"installation. We compile the file for you each release; it's ready to "
+"serve as-is."
+msgstr ""
+
+#: ../../javascript.rst:19
+msgid ""
+"The library is deliberately quite low-level and generic; it's designed to"
+" be compatible with any JavaScript code or framework, so you can build "
+"more specific integration on top of it."
+msgstr ""
+
+#: ../../javascript.rst:23
+msgid "To process messages"
+msgstr ""
+
+#: ../../javascript.rst:33
+msgid "To send messages, use the `send` method"
+msgstr ""
+
+#: ../../javascript.rst:39
+msgid "To demultiplex specific streams"
+msgstr ""
+
+#: ../../javascript.rst:52
+msgid "To send a message to a specific stream"
+msgstr ""
+
+#: ../../javascript.rst:58
+msgid ""
+"The `WebSocketBridge` instance exposes the underlaying "
+"`ReconnectingWebSocket` as the `socket` property. You can use this "
+"property to add any custom behavior. For example"
+msgstr ""
+
+#: ../../javascript.rst:67
+msgid ""
+"The library is also available as a npm module, under the name `django-"
+"channels <https://www.npmjs.com/package/django-channels>`_"
+msgstr ""
+

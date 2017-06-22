@@ -10,6 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-26 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,11 +20,11 @@ msgstr ""
 
 #: ../../inshort.rst:2
 msgid "In Short"
-msgstr ""
+msgstr "簡短說明"
 
 #: ../../inshort.rst:6
 msgid "What is Channels?"
-msgstr ""
+msgstr "什麼是 Channels?"
 
 #: ../../inshort.rst:8
 msgid ""
@@ -39,12 +40,12 @@ msgstr ""
 
 #: ../../inshort.rst:12
 msgid "Background tasks, running in the same servers as the rest of Django"
-msgstr ""
+msgstr "背景測試，像其它的Django一樣在相同伺服器執行"
 
 #: ../../inshort.rst:14
 msgid ""
 "It allows other things too, but these are the ones you'll use to start with."
-msgstr ""
+msgstr "這也允許其它物件，但你要從這些物件開始"
 
 #: ../../inshort.rst:18
 msgid "How?"
@@ -52,11 +53,11 @@ msgstr ""
 
 #: ../../inshort.rst:20
 msgid "It separates Django into two process types:"
-msgstr ""
+msgstr "這將Django分成2種運行類型:"
 
 #: ../../inshort.rst:22
 msgid "One that handles HTTP and WebSockets"
-msgstr ""
+msgstr "一個處理HTTP 和 WebSockets"
 
 #: ../../inshort.rst:23
 msgid ""
@@ -78,7 +79,7 @@ msgstr ""
 
 #: ../../inshort.rst:34
 msgid "I have to change how I run Django?"
-msgstr ""
+msgstr "我必須改變我使用Django的方法？"
 
 #: ../../inshort.rst:36
 msgid ""
@@ -106,11 +107,11 @@ msgstr ""
 
 #: ../../inshort.rst:48
 msgid "What else does Channels give me?"
-msgstr ""
+msgstr "Channels還給會給我什麼？"
 
 #: ../../inshort.rst:50
 msgid "Other features include:"
-msgstr ""
+msgstr "其他特徵包括："
 
 #: ../../inshort.rst:52
 msgid "Easy HTTP long-poll support for thousands of clients at once"
@@ -122,7 +123,7 @@ msgstr ""
 
 #: ../../inshort.rst:54
 msgid "Automatic user login for WebSockets based on site cookies"
-msgstr ""
+msgstr "自動用戶登入主要應用於WebSockets的網站cookies"
 
 #: ../../inshort.rst:55
 msgid ""
@@ -146,7 +147,7 @@ msgstr ""
 
 #: ../../inshort.rst:62
 msgid "Does it scale?"
-msgstr ""
+msgstr "這可以縮放嗎？"
 
 #: ../../inshort.rst:64
 msgid ""
@@ -165,7 +166,7 @@ msgstr ""
 
 #: ../../inshort.rst:75
 msgid "Why doesn't it use my favourite message queue?"
-msgstr ""
+msgstr "為什麼它不使用我的喜好排序訊息？"
 
 #: ../../inshort.rst:77
 msgid ""

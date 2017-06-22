@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
+# Copyright (C) 2017, chairco(Jason)
+# This file is distributed under the same license as the Django-Channels-tw-docs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Django-Channels-tw-docs 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2017-06-21 02:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,87 +100,87 @@ msgstr ""
 msgid "The JSON-enabled consumer looks slightly different::"
 msgstr ""
 
-#: ../../generics.rst:166
+#: ../../generics.rst:175
 msgid "For this subclass, ``receive`` only gets a ``content`` argument that is the already-decoded JSON as Python datastructures; similarly, ``send`` now only takes a single argument, which it JSON-encodes before sending down to the client."
 msgstr ""
 
-#: ../../generics.rst:171
+#: ../../generics.rst:180
 msgid "Note that this subclass still can't intercept ``Group.send()`` calls to make them into JSON automatically, but it does provide ``self.group_send(name, content)`` that will do this for you if you call it explicitly."
 msgstr ""
 
-#: ../../generics.rst:175
+#: ../../generics.rst:184
 msgid "``self.close()`` is also provided to easily close the WebSocket from the server end with an optional status code once you are done with it."
 msgstr ""
 
-#: ../../generics.rst:181
+#: ../../generics.rst:190
 msgid "WebSocket Multiplexing"
 msgstr ""
 
-#: ../../generics.rst:183
+#: ../../generics.rst:192
 msgid "Channels provides a standard way to multiplex different data streams over a single WebSocket, called a ``Demultiplexer``."
 msgstr ""
 
-#: ../../generics.rst:186
+#: ../../generics.rst:195
 msgid "It expects JSON-formatted WebSocket frames with two keys, ``stream`` and ``payload``, and will match the ``stream`` against the mapping to find a channel name. It will then forward the message onto that channel while preserving ``reply_channel``, so you can hook consumers up to them directly in the ``routing.py`` file, and use authentication decorators as you wish."
 msgstr ""
 
-#: ../../generics.rst:193
+#: ../../generics.rst:202
 msgid "Example using class-based consumer::"
 msgstr ""
 
-#: ../../generics.rst:225
-msgid "The ``multiplexer`` allows the consumer class to be independant of the stream name. It holds the stream name and the demultiplexer on the attributes ``stream`` and ``demultiplexer``."
+#: ../../generics.rst:237
+msgid "The ``multiplexer`` allows the consumer class to be independent of the stream name. It holds the stream name and the demultiplexer on the attributes ``stream`` and ``demultiplexer``."
 msgstr ""
 
-#: ../../generics.rst:228
+#: ../../generics.rst:240
 msgid "The :doc:`data binding <binding>` code will also send out messages to clients in the same format, and you can encode things in this format yourself by using the ``WebsocketDemultiplexer.encode`` class method."
 msgstr ""
 
-#: ../../generics.rst:234
+#: ../../generics.rst:246
 msgid "Sessions and Users"
 msgstr ""
 
-#: ../../generics.rst:236
+#: ../../generics.rst:248
 msgid "If you wish to use ``channel_session`` or ``channel_session_user`` with a class-based consumer, simply set one of the variables in the class body::"
 msgstr ""
 
-#: ../../generics.rst:243
+#: ../../generics.rst:255
 msgid "This will run the appropriate decorator around your handler methods, and provide ``message.channel_session`` and ``message.user`` on the message object - both the one passed in to your handler as an argument as well as ``self.message``, as they point to the same instance."
 msgstr ""
 
-#: ../../generics.rst:248
+#: ../../generics.rst:260
 msgid "And if you just want to use the user from the django session, add ``http_user``::"
 msgstr ""
 
-#: ../../generics.rst:254
+#: ../../generics.rst:266
 msgid "This will give you ``message.user``, which will be the same as ``request.user`` would be on a regular View."
 msgstr ""
 
-#: ../../generics.rst:259
+#: ../../generics.rst:271
 msgid "Applying Decorators"
 msgstr ""
 
-#: ../../generics.rst:261
+#: ../../generics.rst:273
 msgid "To apply decorators to a class-based consumer, you'll have to wrap a functional part of the consumer; in this case, ``get_handler`` is likely the place you want to override; like so::"
 msgstr ""
 
-#: ../../generics.rst:271
+#: ../../generics.rst:283
 msgid "You can also use the Django ``method_decorator`` utility to wrap methods that have ``message`` as their first positional argument - note that it won't work for more high-level methods, like ``WebsocketConsumer.receive``."
 msgstr ""
 
-#: ../../generics.rst:277
+#: ../../generics.rst:289
 msgid "As route"
 msgstr ""
 
-#: ../../generics.rst:279
+#: ../../generics.rst:291
 msgid "Instead of making routes using ``route_class`` you may use the ``as_route`` shortcut. This function takes route filters (:ref:`filters`) as kwargs and returns ``route_class``. For example::"
 msgstr ""
 
-#: ../../generics.rst:289
+#: ../../generics.rst:301
 msgid "Use the ``attrs`` dict keyword for dynamic class attributes. For example you have the generic consumer::"
 msgstr ""
 
-#: ../../generics.rst:299
+#: ../../generics.rst:311
 msgid "You can create consumers with different ``group`` and  ``group_prefix`` with ``attrs``, like so::"
 msgstr ""
 

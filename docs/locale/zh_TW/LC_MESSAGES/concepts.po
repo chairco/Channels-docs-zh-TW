@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-26 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Jason <chairco@gmail.com>, 2017\n"
+"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../concepts.rst:2
 msgid "Channels Concepts"
-msgstr ""
+msgstr "Channels 的概念"
 
 #: ../../concepts.rst:4
 msgid ""
@@ -28,8 +28,7 @@ msgid ""
 "responses; a request comes in, Django is fired up to serve it, generates a "
 "response to send, and then Django goes away and waits for the next request."
 msgstr ""
-"Django 的傳統視圖看法圍繞著請求與回應；一個請求進來，Django 被觸發接著服務它，產生一個回應並送出，接著 Django "
-"離開並且等待下一個請求。"
+"Django 的傳統做法圍繞著請求與回應；一個請求進來，Django 就被觸發並服務它，產生一個回應並送出，接著 Django 離開並且等待下一個請求。"
 
 #: ../../concepts.rst:8
 msgid ""
@@ -37,15 +36,15 @@ msgid ""
 "but the modern Web includes things like WebSockets and HTTP2 server push, "
 "which allow websites to communicate outside of this traditional cycle."
 msgstr ""
-"當互聯網是透過簡單的瀏覽器交互驅動時，這是好的方法，但現代的 Web 包括 WebSockets 和 HTTP2 "
-"服務器推送，它們允許網站在傳統的周期外通信。"
+"當互聯網的運作方式只是簡單的瀏覽器交互，這是個好方法，但現代的網站包括了 WebSockets 和 HTTP2 Server Push "
+"等這類的技術，它們讓網站可以在這種傳統式的循環之外進行溝通。"
 
 #: ../../concepts.rst:12
 msgid ""
 "And, beyond that, there are plenty of non-critical tasks that applications "
 "could easily offload until after a response has been sent - like saving "
 "things into a cache or thumbnailing newly-uploaded images."
-msgstr "除此之外，還有許多非關鍵任務像是應用程序可以輕鬆的卸載直到一個回應被送出之後 - 例如保存東西到緩存空間或是新生成縮圖-上傳圖像。"
+msgstr "除此之外，還有許多非關鍵性的任務，是應用程式可以輕鬆的卸載直到有個回應被送出，例如把東西保存到快取或是為新上傳的圖片產生縮圖。"
 
 #: ../../concepts.rst:16
 msgid ""
@@ -305,7 +304,7 @@ msgstr ""
 
 #: ../../concepts.rst:171
 msgid "Groups"
-msgstr ""
+msgstr "群組"
 
 #: ../../concepts.rst:173
 msgid ""
@@ -398,7 +397,7 @@ msgstr ""
 
 #: ../../concepts.rst:257
 msgid "Next Steps"
-msgstr ""
+msgstr "下一步"
 
 #: ../../concepts.rst:259
 msgid ""

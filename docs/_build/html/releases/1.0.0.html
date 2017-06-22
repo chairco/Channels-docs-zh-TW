@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1.0.0 Release Notes &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>1.0.0 Release Notes &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -28,16 +28,25 @@
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜尋" href="../search.html" />
     <link rel="next" title="1.0.1 Release Notes" href="1.0.1.html" />
-    <link rel="prev" title="Release Notes" href="index.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="Release Notes" href="index.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="1.0.1.html" title="1.0.1 Release Notes"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Release Notes"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -73,7 +82,7 @@ and messages can be received.</p>
 appropriate error codes to browsers and not letting the browser-side socket
 ever get into a connected state and send messages.</li>
 <li>Combined with Consumer Atomicity (below), it means there is no longer any need
-for the old &#8220;slight ordering&#8221; mode, as the connect consumer must run to
+for the old &quot;slight ordering&quot; mode, as the connect consumer must run to
 completion and accept the socket before any messages can be received and
 forwarded onto <code class="docutils literal"><span class="pre">websocket.receive</span></code>.</li>
 <li>Any <code class="docutils literal"><span class="pre">send</span></code> message sent to the WebSocket will implicitly accept the connection,
@@ -88,8 +97,8 @@ and then send them once it exits and the outbound part of any decorators have
 been run (even if an exception is raised).</p>
 <p>This makes the flow of messages much easier to reason about - consumers can now
 be reasoned about as atomic blocks that run and then send messages, meaning that
-if you send a message to start another consumer you&#8217;re guaranteed that the
-sending consumer has finished running by the time it&#8217;s acted upon.</p>
+if you send a message to start another consumer you're guaranteed that the
+sending consumer has finished running by the time it's acted upon.</p>
 <p>If you want to send messages immediately rather than at the end of the consumer,
 you can still do that by passing the <code class="docutils literal"><span class="pre">immediately</span></code> argument:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Channel</span><span class="p">(</span><span class="s2">&quot;thumbnailing-tasks&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">34245</span><span class="p">},</span> <span class="n">immediately</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -101,18 +110,18 @@ conditions in some apps that were pre-existing.</p>
 <div class="section" id="databinding-group-action-overhaul">
 <h3>Databinding Group/Action Overhaul<a class="headerlink" href="#databinding-group-action-overhaul" title="本標題的永久連結">¶</a></h3>
 <p>Previously, databinding subclasses had to implement
-<code class="docutils literal"><span class="pre">group_names(instance,</span> <span class="pre">action)</span></code> to return what groups to send an instance&#8217;s
+<code class="docutils literal"><span class="pre">group_names(instance,</span> <span class="pre">action)</span></code> to return what groups to send an instance's
 change to of the type <code class="docutils literal"><span class="pre">action</span></code>. This had flaws, most notably when what was
 actually just a modification to the instance in question changed its
 permission status so more clients could see it; to those clients, it should
-instead have been &#8220;created&#8221;.</p>
+instead have been &quot;created&quot;.</p>
 <p>Now, Channels just calls <code class="docutils literal"><span class="pre">group_names(instance)</span></code>, and you should return what
 groups can see the instance at the current point in time given the instance
 you were passed. Channels will actually call the method before and after changes,
 comparing the groups you gave, and sending out create, update or delete messages
 to clients appropriately.</p>
 <p>Existing databinding code will need to be adapted; see the
-&#8220;Backwards Incompatible Changes&#8221; section for more.</p>
+&quot;Backwards Incompatible Changes&quot; section for more.</p>
 </div>
 <div class="section" id="demultiplexer-overhaul">
 <h3>Demultiplexer Overhaul<a class="headerlink" href="#demultiplexer-overhaul" title="本標題的永久連結">¶</a></h3>
@@ -121,15 +130,15 @@ onto new channels without special headers, and instead now correctly split out
 incoming messages into sub-messages that still look like <code class="docutils literal"><span class="pre">websocket.receive</span></code>
 messages, and directly dispatch these to the relevant consumer.</p>
 <p>They also now forward all <code class="docutils literal"><span class="pre">websocket.connect</span></code> and <code class="docutils literal"><span class="pre">websocket.disconnect</span></code>
-messages to all of their sub-consumers, so it&#8217;s much easier to compose things
+messages to all of their sub-consumers, so it's much easier to compose things
 together from code that also works outside the context of multiplexing.</p>
-<p>For more, read the updated <span class="xref doc">/generic</span> docs.</p>
+<p>For more, read the updated <span class="xref std std-doc">/generic</span> docs.</p>
 </div>
 <div class="section" id="delay-server">
 <h3>Delay Server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h3>
 <p>A built-in delay server, launched with <cite>manage.py rundelay</cite>, now ships if you
 wish to use it. It needs some extra initial setup and uses a database for
-persistance; see <a class="reference internal" href="../delay.html"><span class="doc">Delay Server</span></a> for more information.</p>
+persistance; see <a class="reference internal" href="../delay.html"><span class="doc">延遲伺服器</span></a> for more information.</p>
 </div>
 </div>
 <div class="section" id="minor-changes">
@@ -168,7 +177,7 @@ to reject a connection mid-handshake.</li>
 </ul>
 <p>Many consumers already do the former, but if your connect consumer does not
 send anything you MUST now send an accept message or the socket will remain
-in the handshaking phase forever and you&#8217;ll never get any messages.</p>
+in the handshaking phase forever and you'll never get any messages.</p>
 <p>All built-in Channels consumers (e.g. in the generic consumers) have been
 upgraded to do this.</p>
 <p>You <strong>must</strong> update Daphne to at least 1.0.0 to make this work correctly.</p>
@@ -181,7 +190,7 @@ instance and action provided.</p>
 <p>Now, instead, you must implement <code class="docutils literal"><span class="pre">group_names(instance)</span></code>, which returns the
 groups that can see the instance as it is presented for you; the action
 results will be worked out for you. For example, if you want to only show
-objects marked as &#8220;admin_only&#8221; to admins, and objects without it to everyone,
+objects marked as &quot;admin_only&quot; to admins, and objects without it to everyone,
 previously you would have done:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">group_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">admin_only</span><span class="p">:</span>
@@ -251,17 +260,13 @@ disconnection handling into their own methods.</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Release Notes</a><ul>
-      <li>Previous: <a href="index.html" title="上一章">Release Notes</a></li>
-      <li>Next: <a href="1.0.1.html" title="下一章">1.0.1 Release Notes</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="index.html"
+                        title="上一章">Release Notes</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="1.0.1.html"
+                        title="下一章">1.0.1 Release Notes</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -283,20 +288,25 @@ disconnection handling into their own methods.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="../_sources/releases/1.0.0.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="1.0.1.html" title="1.0.1 Release Notes"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Release Notes"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

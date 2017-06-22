@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
+# Copyright (C) 2017, chairco(Jason)
+# This file is distributed under the same license as the Django-Channels-tw-docs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Django-Channels-tw-docs 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2017-06-21 02:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -176,27 +176,27 @@ msgstr ""
 msgid "Now, we could go back into our example above and add an expiring set and keep track of expiry times and so forth, but what would be the point of a framework if it made you add boilerplate code? Instead, Channels implements this abstraction as a core concept called Groups::"
 msgstr ""
 
-#: ../../concepts.rst:244
+#: ../../concepts.rst:246
 msgid "Not only do groups have their own ``send()`` method (which backends can provide an efficient implementation of), they also automatically manage expiry of the group members - when the channel starts having messages expire on it due to non-consumption, we go in and remove it from all the groups it's in as well. Of course, you should still remove things from the group on disconnect if you can; the expiry code is there to catch cases where the disconnect message doesn't make it for some reason."
 msgstr ""
 
-#: ../../concepts.rst:252
+#: ../../concepts.rst:254
 msgid "Groups are generally only useful for reply channels (ones containing the character ``!``), as these are unique-per-client, but can be used for normal channels as well if you wish."
 msgstr ""
 
-#: ../../concepts.rst:257
+#: ../../concepts.rst:259
 msgid "Next Steps"
 msgstr ""
 
-#: ../../concepts.rst:259
+#: ../../concepts.rst:261
 msgid "That's the high-level overview of channels and groups, and how you should start thinking about them. Remember, Django provides some channels but you're free to make and consume your own, and all channels are network-transparent."
 msgstr ""
 
-#: ../../concepts.rst:264
+#: ../../concepts.rst:266
 msgid "One thing channels do not do, however, is guarantee delivery. If you need certainty that tasks will complete, use a system designed for this with retries and persistence (e.g. Celery), or alternatively make a management command that checks for completion and re-submits a message to the channel if nothing is completed (rolling your own retry logic, essentially)."
 msgstr ""
 
-#: ../../concepts.rst:270
+#: ../../concepts.rst:272
 msgid "We'll cover more about what kind of tasks fit well into Channels in the rest of the documentation, but for now, let's progress to :doc:`getting-started` and writing some code."
 msgstr ""
 

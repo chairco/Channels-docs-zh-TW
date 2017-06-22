@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Routing &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>路由 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Data Binding" href="binding.html" />
-    <link rel="prev" title="Generic Consumers" href="generics.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="資料綁定" href="binding.html" />
+    <link rel="prev" title="一般消費者" href="generics.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="binding.html" title="資料綁定"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="generics.html" title="一般消費者"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,10 +53,8 @@
           <div class="body" role="main">
             
   <div class="section" id="routing">
-<h1>Routing<a class="headerlink" href="#routing" title="本標題的永久連結">¶</a></h1>
-<p>Routing in Channels is done using a system similar to that in core Django;
-a list of possible routes is provided, and Channels goes through all routes
-until a match is found, and then runs the resulting consumer.</p>
+<h1>路由<a class="headerlink" href="#routing" title="本標題的永久連結">¶</a></h1>
+<p>Channels 中的路由是使用一個較 Django 核心簡單的系統來達成的。給予一個所有可能路由的序列，Channels 將會遍歷所有的可能直到發現一個相符的路由，然後該路由的 consumer 將會被執行。</p>
 <p>The difference comes, however, in the fact that Channels has to route based
 on more than just URL; channel name is the main thing routed on, and URL
 path is one of many other optional things you can route on, depending on
@@ -60,21 +66,20 @@ that implements the routing interface will work:</p>
 <ul class="simple">
 <li>A method called <code class="docutils literal"><span class="pre">match</span></code>, taking a single <code class="docutils literal"><span class="pre">message</span></code> as an argument and
 returning <code class="docutils literal"><span class="pre">None</span></code> for no match or a tuple of <code class="docutils literal"><span class="pre">(consumer,</span> <span class="pre">kwargs)</span></code> if matched.</li>
-<li>A method called <code class="docutils literal"><span class="pre">channel_names</span></code>, which returns a set of channel names that
-will match, which is fed to the channel layer to listen on them.</li>
+<li>有個功能鍵叫&quot;channel_names&quot;可回覆一組可搭配的 channel 名稱，這使 channel 層可以管控他們</li>
 </ul>
-<p>The three default routing objects are:</p>
+<p>以下是三個預設的路由物件:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">route</span></code>: Takes a channel name, a consumer function, and optional filter
 keyword arguments.</li>
 <li><code class="docutils literal"><span class="pre">route_class</span></code>: Takes a class-based consumer, and optional filter
-keyword arguments. Channel names are taken from the consumer&#8217;s
+keyword arguments. Channel names are taken from the consumer's
 <code class="docutils literal"><span class="pre">channel_names()</span></code> method.</li>
 <li><code class="docutils literal"><span class="pre">include</span></code>: Takes either a list or string import path to a routing list,
 and optional filter keyword arguments.</li>
 </ul>
 <div class="section" id="filters">
-<span id="id1"></span><h2>Filters<a class="headerlink" href="#filters" title="本標題的永久連結">¶</a></h2>
+<span id="id1"></span><h2>篩選器<a class="headerlink" href="#filters" title="本標題的永久連結">¶</a></h2>
 <p>Filtering is how you limit matches based on, for example, URLs; you use regular
 expressions, like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">ws_connect</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^/chat/$&quot;</span><span class="p">)</span>
@@ -82,11 +87,9 @@ expressions, like so:</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
-<p class="last">Unlike Django&#8217;s URL routing, which strips the first slash of a URL for
-neatness, Channels includes the first slash, as the routing system is
-generic and not designed just for URLs.</p>
+<p class="last">和Django內建的URL Routing不同。在Django內建的Routing裡，第一個/會被略去，已求簡潔。然而在Channels中，第一個/是被保留的。這是因為Routing是通用的，且不是只為了URL所設計。</p>
 </div>
-<p>You can have multiple filters:</p>
+<p>你可以使用多重過濾器:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;email.receive&quot;</span><span class="p">,</span> <span class="n">comment_response</span><span class="p">,</span> <span class="n">to_address</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*@example.com$&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;^reply&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -96,7 +99,7 @@ match every filter to have the consumer called.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">connect_blog</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog/(?P&lt;slug&gt;[^/]+)/stream/$&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can also specify filters on an <code class="docutils literal"><span class="pre">include</span></code>:</p>
+<p>你也可以指定過濾&quot;include&quot;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">include</span><span class="p">(</span><span class="s2">&quot;blog_includes&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -114,7 +117,7 @@ strips off the <code class="docutils literal"><span class="pre">/liveblog</span>
 </pre></div>
 </div>
 <p>You can also include named capture groups in the filters on an include and
-they&#8217;ll be passed to the consumer just like those on <code class="docutils literal"><span class="pre">route</span></code>; note, though,
+they'll be passed to the consumer just like those on <code class="docutils literal"><span class="pre">route</span></code>; note, though,
 that if the keyword argument names from the <code class="docutils literal"><span class="pre">include</span></code> and the <code class="docutils literal"><span class="pre">route</span></code>
 clash, the values from <code class="docutils literal"><span class="pre">route</span></code> will take precedence.</p>
 </div>
@@ -128,20 +131,18 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Routing</a><ul>
-<li><a class="reference internal" href="#filters">Filters</a></li>
+<li><a class="reference internal" href="#">路由</a><ul>
+<li><a class="reference internal" href="#filters">篩選器</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="generics.html" title="上一章">Generic Consumers</a></li>
-      <li>Next: <a href="binding.html" title="下一章">Data Binding</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="generics.html"
+                        title="上一章">一般消費者</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="binding.html"
+                        title="下一章">資料綁定</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -163,20 +164,24 @@ clash, the values from <code class="docutils literal"><span class="pre">route</s
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/routing.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="binding.html" title="資料綁定"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="generics.html" title="一般消費者"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

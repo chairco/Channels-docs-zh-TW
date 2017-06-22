@@ -10,6 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-26 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,7 +20,7 @@ msgstr ""
 
 #: ../../routing.rst:2
 msgid "Routing"
-msgstr ""
+msgstr "路由"
 
 #: ../../routing.rst:4
 msgid ""
@@ -27,6 +28,8 @@ msgid ""
 " list of possible routes is provided, and Channels goes through all routes "
 "until a match is found, and then runs the resulting consumer."
 msgstr ""
+"Channels 中的路由是使用一個較 Django 核心簡單的系統來達成的。給予一個所有可能路由的序列，Channels "
+"將會遍歷所有的可能直到發現一個相符的路由，然後該路由的 consumer 將會被執行。"
 
 #: ../../routing.rst:8
 msgid ""
@@ -55,11 +58,11 @@ msgstr ""
 msgid ""
 "A method called ``channel_names``, which returns a set of channel names that"
 " will match, which is fed to the channel layer to listen on them."
-msgstr ""
+msgstr "有個功能鍵叫\"channel_names\"可回覆一組可搭配的 channel 名稱，這使 channel 層可以管控他們"
 
 #: ../../routing.rst:24
 msgid "The three default routing objects are:"
-msgstr ""
+msgstr "以下是三個預設的路由物件:"
 
 #: ../../routing.rst:26
 msgid ""
@@ -82,7 +85,7 @@ msgstr ""
 
 #: ../../routing.rst:39
 msgid "Filters"
-msgstr ""
+msgstr "篩選器"
 
 #: ../../routing.rst:41
 msgid ""
@@ -96,10 +99,12 @@ msgid ""
 "neatness, Channels includes the first slash, as the routing system is "
 "generic and not designed just for URLs."
 msgstr ""
+"和Django內建的URL "
+"Routing不同。在Django內建的Routing裡，第一個/會被略去，已求簡潔。然而在Channels中，第一個/是被保留的。這是因為Routing是通用的，且不是只為了URL所設計。"
 
 #: ../../routing.rst:51
 msgid "You can have multiple filters::"
-msgstr ""
+msgstr "你可以使用多重過濾器::"
 
 #: ../../routing.rst:55
 msgid ""
@@ -115,7 +120,7 @@ msgstr ""
 
 #: ../../routing.rst:62
 msgid "You can also specify filters on an ``include``::"
-msgstr ""
+msgstr "你也可以指定過濾\"include\":"
 
 #: ../../routing.rst:66
 msgid ""

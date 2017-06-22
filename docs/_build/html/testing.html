@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Testing Consumers &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>測試消費者 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Reference" href="reference.html" />
-    <link rel="prev" title="Delay Server" href="delay.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="參考" href="reference.html" />
+    <link rel="prev" title="延遲伺服器" href="delay.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="reference.html" title="參考"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="delay.html" title="延遲伺服器"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,20 +53,19 @@
           <div class="body" role="main">
             
   <div class="section" id="testing-consumers">
-<h1>Testing Consumers<a class="headerlink" href="#testing-consumers" title="本標題的永久連結">¶</a></h1>
-<p>When you want to write unit tests for your new Channels consumers, you&#8217;ll
-realize that you can&#8217;t use the standard Django test client to submit fake HTTP
-requests - instead, you&#8217;ll need to submit fake Messages to your consumers,
+<h1>測試消費者<a class="headerlink" href="#testing-consumers" title="本標題的永久連結">¶</a></h1>
+<p>When you want to write unit tests for your new Channels consumers, you'll
+realize that you can't use the standard Django test client to submit fake HTTP
+requests - instead, you'll need to submit fake Messages to your consumers,
 and inspect what Messages they send themselves.</p>
 <p>We provide a <code class="docutils literal"><span class="pre">TestCase</span></code> subclass that sets all of this up for you,
 however, so you can easily write tests and check what your consumers are sending.</p>
 <div class="section" id="channeltestcase">
-<h2>ChannelTestCase<a class="headerlink" href="#channeltestcase" title="本標題的永久連結">¶</a></h2>
+<h2>Channel 測試案例<a class="headerlink" href="#channeltestcase" title="本標題的永久連結">¶</a></h2>
 <p>If your tests inherit from the <code class="docutils literal"><span class="pre">channels.test.ChannelTestCase</span></code> base class,
 whenever you run tests your channel layer will be swapped out for a captive
-in-memory layer, meaning you don&#8217;t need an external server running to run tests.</p>
-<p>Moreover, you can inject messages onto this layer and inspect ones sent to it
-to help test your consumers.</p>
+in-memory layer, meaning you don't need an external server running to run tests.</p>
+<p>此外，您可以將訊息放置到此層，並幫助您測試消費者查看訊息發送。</p>
 <p>To inject a message onto the layer, simply call <code class="docutils literal"><span class="pre">Channel.send()</span></code> inside
 any test method on a <code class="docutils literal"><span class="pre">ChannelTestCase</span></code> subclass, like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Channel</span>
@@ -73,14 +80,14 @@ any test method on a <code class="docutils literal"><span class="pre">ChannelTes
 <p>To receive a message from the layer, you can use <code class="docutils literal"><span class="pre">self.get_next_message(channel)</span></code>,
 which handles receiving the message and converting it into a Message object for
 you (if you want, you can call <code class="docutils literal"><span class="pre">receive_many</span></code> on the underlying channel layer,
-but you&#8217;ll get back a raw dict and channel name, which is not what consumers want).</p>
+but you'll get back a raw dict and channel name, which is not what consumers want).</p>
 <p>You can use this both to get Messages to send to consumers as their primary
 argument, as well as to get Messages from channels that consumers are supposed
 to send on to verify that they did.</p>
 <p>You can even pass <code class="docutils literal"><span class="pre">require=True</span></code> to <code class="docutils literal"><span class="pre">get_next_message</span></code> to make the test
 fail if there is no message on the channel (by default, it will return you
 <code class="docutils literal"><span class="pre">None</span></code> instead).</p>
-<p>Here&#8217;s an extended example testing a consumer that&#8217;s supposed to take a value
+<p>Here's an extended example testing a consumer that's supposed to take a value
 and post the square of it to the <code class="docutils literal"><span class="pre">&quot;result&quot;</span></code> channel:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Channel</span>
 <span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span>
@@ -122,9 +129,9 @@ use the <code class="docutils literal"><span class="pre">reply_channel</span></c
 </div>
 </div>
 <div class="section" id="groups">
-<h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<h2>群組<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
 <p>You can test Groups in the same way as Channels inside a <code class="docutils literal"><span class="pre">ChannelTestCase</span></code>;
-the entire channel layer is flushed each time a test is run, so it&#8217;s safe to
+the entire channel layer is flushed each time a test is run, so it's safe to
 do group adds and sends during a test. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Group</span>
 <span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span>
@@ -159,7 +166,7 @@ purpose use <code class="docutils literal"><span class="pre">send_and_consume</s
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">(),</span> <span class="p">{</span><span class="s1">&#39;all is&#39;</span><span class="p">:</span> <span class="s1">&#39;done&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>You can use <code class="docutils literal"><span class="pre">HttpClient</span></code> for websocket related consumers. It automatically serializes JSON content,
+<p>You can use <code class="docutils literal"><span class="pre">WSClient</span></code> for websocket related consumers. It automatically serializes JSON content,
 manage cookies and headers, give easy access to the session and add ability to authorize your requests.
 For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># consumers.py</span>
@@ -175,18 +182,18 @@ For example:</p>
 
 <span class="c1"># tests.py</span>
 <span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Group</span>
-<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">HttpClient</span>
+<span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">WSClient</span>
 
 
 <span class="k">class</span> <span class="nc">RoomsTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">test_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">WSClient</span><span class="p">()</span>
         <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
             <span class="n">username</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s1">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;123456&#39;</span><span class="p">)</span>
         <span class="n">client</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;123456&#39;</span><span class="p">)</span>
 
-        <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="s1">&#39;/rooms/&#39;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/rooms/&#39;</span><span class="p">)</span>
         <span class="c1"># check that there is nothing to receive</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
 
@@ -210,23 +217,43 @@ For example:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Instead of <code class="docutils literal"><span class="pre">HttpClient.login</span></code> method with credentials at arguments you
-may call <code class="docutils literal"><span class="pre">HttpClient.force_login</span></code> (like at django client) with the user object.</p>
+<p>Instead of <code class="docutils literal"><span class="pre">WSClient.login</span></code> method with credentials at arguments you
+may call <code class="docutils literal"><span class="pre">WSClient.force_login</span></code> (like at django client) with the user object.</p>
 <p><code class="docutils literal"><span class="pre">receive</span></code> method by default trying to deserialize json text content of a message,
 so if you need to pass decoding use <code class="docutils literal"><span class="pre">receive(json=False)</span></code>, like in the example.</p>
+<p>For testing consumers with <code class="docutils literal"><span class="pre">enforce_ordering</span></code> initialize <code class="docutils literal"><span class="pre">HttpClient</span></code> with <code class="docutils literal"><span class="pre">ordered</span></code>
+flag, but if you wanna use your own order don't use it, use content:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">(</span><span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/ws&#39;</span><span class="p">)</span>  <span class="c1"># order = 0</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/ws&#39;</span><span class="p">)</span>  <span class="c1"># order = 1</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/ws&#39;</span><span class="p">)</span>  <span class="c1"># order = 2</span>
+
+<span class="c1"># manually</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+
+<span class="c1"># calling consume 4 time for `waiting` message with order 1</span>
+<span class="n">client</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="applying-routes">
-<h2>Applying routes<a class="headerlink" href="#applying-routes" title="本標題的永久連結">¶</a></h2>
-<p>When you need to testing you consumers without routes in settings or you
-want to testing your consumers in more isolate and atomic way, it will be
+<h2>應用路由<a class="headerlink" href="#applying-routes" title="本標題的永久連結">¶</a></h2>
+<p>When you need to test your consumers without routes in settings or you
+want to test your consumers in a more isolate and atomic way, it will be
 simpler with <code class="docutils literal"><span class="pre">apply_routes</span></code> contextmanager and decorator for your <code class="docutils literal"><span class="pre">ChannelTestCase</span></code>.
-It takes list of routes that you want to use and overwrite existing routes:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">HttpClient</span><span class="p">,</span> <span class="n">apply_routes</span>
+It takes a list of routes that you want to use and overwrites existing routes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">WSClient</span><span class="p">,</span> <span class="n">apply_routes</span>
 
 <span class="k">class</span> <span class="nc">MyTests</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">test_myconsumer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">WSClient</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">apply_routes</span><span class="p">([</span><span class="n">MyConsumer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/new&#39;</span><span class="p">)]):</span>
             <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="s1">&#39;/new&#39;</span><span class="p">)</span>
@@ -234,30 +261,29 @@ It takes list of routes that you want to use and overwrite existing routes:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="test-data-binding-with-httpclient">
-<h2>Test Data binding with <code class="docutils literal"><span class="pre">HttpClient</span></code><a class="headerlink" href="#test-data-binding-with-httpclient" title="本標題的永久連結">¶</a></h2>
+<div class="section" id="test-data-binding-with-wsclient">
+<h2>Test Data binding with <code class="docutils literal"><span class="pre">WSClient</span></code><a class="headerlink" href="#test-data-binding-with-wsclient" title="本標題的永久連結">¶</a></h2>
 <p>As you know data binding in channels works in outbound and inbound ways,
-so that ways tests in different ways and <code class="docutils literal"><span class="pre">HttpClient</span></code> and <code class="docutils literal"><span class="pre">apply_routes</span></code>
+so that ways tests in different ways and <code class="docutils literal"><span class="pre">WSClient</span></code> and <code class="docutils literal"><span class="pre">apply_routes</span></code>
 will help to do this.
 When you testing outbound consumers you need just import your <code class="docutils literal"><span class="pre">Binding</span></code>
 subclass with specified <code class="docutils literal"><span class="pre">group_names</span></code>. At test you can  join to one of them,
 make some changes with target model and check received message.
 Lets test <code class="docutils literal"><span class="pre">IntegerValueBinding</span></code> from <a class="reference internal" href="binding.html"><span class="doc">data binding</span></a>
 with creating:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">HttpClient</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelTestCase</span><span class="p">,</span> <span class="n">WSClient</span>
 <span class="kn">from</span> <span class="nn">channels.signals</span> <span class="k">import</span> <span class="n">consumer_finished</span>
 
 <span class="k">class</span> <span class="nc">TestIntegerValueBinding</span><span class="p">(</span><span class="n">ChannelTestCase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">test_outbound_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># We use HttpClient because of json encoding messages</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+        <span class="c1"># We use WSClient because of json encoding messages</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">WSClient</span><span class="p">()</span>
         <span class="n">client</span><span class="o">.</span><span class="n">join_group</span><span class="p">(</span><span class="s2">&quot;intval-updates&quot;</span><span class="p">)</span>  <span class="c1"># join outbound binding</span>
 
         <span class="c1"># create target entity</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">IntegerValue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fifty&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
-        <span class="n">consumer_finished</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">received</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>  <span class="c1"># receive outbound binding message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">received</span><span class="p">)</span>
 
@@ -290,7 +316,7 @@ For example:</p>
 
         <span class="k">with</span> <span class="n">apply_routes</span><span class="p">([</span><span class="n">Demultiplexer</span><span class="o">.</span><span class="n">as_route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">),</span>
                           <span class="n">route</span><span class="p">(</span><span class="s2">&quot;binding.intval&quot;</span><span class="p">,</span> <span class="n">IntegerValueBinding</span><span class="o">.</span><span class="n">consumer</span><span class="p">)]):</span>
-            <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">()</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">WSClient</span><span class="p">()</span>
             <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.connect&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
             <span class="n">client</span><span class="o">.</span><span class="n">send_and_consume</span><span class="p">(</span><span class="s1">&#39;websocket.receive&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">{</span>
                 <span class="s1">&#39;stream&#39;</span><span class="p">:</span> <span class="s1">&#39;intval&#39;</span><span class="p">,</span>
@@ -316,6 +342,61 @@ mocked.</p>
 <p>You can pass an <code class="docutils literal"><span class="pre">alias</span></code> argument to <code class="docutils literal"><span class="pre">get_next_message</span></code>, <code class="docutils literal"><span class="pre">Client</span></code> and <code class="docutils literal"><span class="pre">Channel</span></code>
 to use a different layer too.</p>
 </div>
+<div class="section" id="live-server-test-case">
+<h2>Live Server Test Case<a class="headerlink" href="#live-server-test-case" title="本標題的永久連結">¶</a></h2>
+<p>You can use browser automation libraries like Selenium or Splinter to
+check your application against real layer installation.  First of all
+provide <code class="docutils literal"><span class="pre">TEST_CONFIG</span></code> setting to prevent overlapping with running
+dev environment.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;asgi_redis.RedisChannelLayer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ROUTING&quot;</span><span class="p">:</span> <span class="s2">&quot;my_project.routing.channel_routing&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;redis-server-name&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)],</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;TEST_CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now use <code class="docutils literal"><span class="pre">ChannelLiveServerTestCase</span></code> for your acceptance tests.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.test</span> <span class="k">import</span> <span class="n">ChannelLiveServerTestCase</span>
+<span class="kn">from</span> <span class="nn">splinter</span> <span class="k">import</span> <span class="n">Browser</span>
+
+<span class="k">class</span> <span class="nc">IntegrationTest</span><span class="p">(</span><span class="n">ChannelLiveServerTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_browse_site_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">with</span> <span class="n">Browser</span><span class="p">()</span> <span class="k">as</span> <span class="n">browser</span><span class="p">:</span>
+
+            <span class="n">browser</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">live_server_url</span><span class="p">)</span>
+            <span class="c1"># the rest of your integration test...</span>
+</pre></div>
+</div>
+<p>In the test above Daphne and Channels worker processes were fired up.
+These processes run your project against the test database and the
+default channel layer you spacify in the settings.  If channel layer
+support <code class="docutils literal"><span class="pre">flush</span></code> extension, initial cleanup will be done.  So do not
+run this code against your production environment.  When channels
+infrastructure is ready default web browser will be also started.  You
+can open your website in the real browser which can execute JavaScript
+and operate on WebSockets.  <code class="docutils literal"><span class="pre">live_server_ws_url</span></code> property is also
+provided if you decide to run messaging directly from Python.</p>
+<p>By default live server test case will serve static files.  To disable
+this feature override <cite>serve_static</cite> class attribute.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntegrationTest</span><span class="p">(</span><span class="n">ChannelLiveServerTestCase</span><span class="p">):</span>
+
+    <span class="n">serve_static</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">test_websocket_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># JS and CSS are not available in this test.</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -326,26 +407,25 @@ to use a different layer too.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Testing Consumers</a><ul>
-<li><a class="reference internal" href="#channeltestcase">ChannelTestCase</a></li>
+<li><a class="reference internal" href="#">測試消費者</a><ul>
+<li><a class="reference internal" href="#channeltestcase">Channel 測試案例</a></li>
 <li><a class="reference internal" href="#generic-consumers">Generic Consumers</a></li>
-<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#groups">群組</a></li>
 <li><a class="reference internal" href="#clients">Clients</a></li>
-<li><a class="reference internal" href="#applying-routes">Applying routes</a></li>
-<li><a class="reference internal" href="#test-data-binding-with-httpclient">Test Data binding with <code class="docutils literal"><span class="pre">HttpClient</span></code></a></li>
+<li><a class="reference internal" href="#applying-routes">應用路由</a></li>
+<li><a class="reference internal" href="#test-data-binding-with-wsclient">Test Data binding with <code class="docutils literal"><span class="pre">WSClient</span></code></a></li>
 <li><a class="reference internal" href="#multiple-channel-layers">Multiple Channel Layers</a></li>
+<li><a class="reference internal" href="#live-server-test-case">Live Server Test Case</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="delay.html" title="上一章">Delay Server</a></li>
-      <li>Next: <a href="reference.html" title="下一章">Reference</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="delay.html"
+                        title="上一章">延遲伺服器</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="reference.html"
+                        title="下一章">參考</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -367,20 +447,24 @@ to use a different layer too.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/testing.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="reference.html" title="參考"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="delay.html" title="延遲伺服器"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

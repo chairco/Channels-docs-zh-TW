@@ -10,6 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-26 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,12 +20,12 @@ msgstr ""
 
 #: ../../faqs.rst:2
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "常見問題"
 
 #: ../../faqs.rst:5
 msgid ""
 "Why are you doing this rather than just using Tornado/gevent/asyncio/etc.?"
-msgstr ""
+msgstr "為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?"
 
 #: ../../faqs.rst:7
 msgid ""
@@ -73,7 +74,7 @@ msgstr ""
 
 #: ../../faqs.rst:37
 msgid "Why aren't you using node/go/etc. to proxy to Django?"
-msgstr ""
+msgstr "為什麼你不用node/go/等去取代Django?"
 
 #: ../../faqs.rst:39
 msgid ""
@@ -193,7 +194,7 @@ msgstr ""
 
 #: ../../faqs.rst:117
 msgid "How do I associate data with incoming connections?"
-msgstr ""
+msgstr "我該如何與傳入的連接和數據做關聯？"
 
 #: ../../faqs.rst:119
 msgid ""

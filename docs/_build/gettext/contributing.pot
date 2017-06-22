@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
+# Copyright (C) 2017, chairco(Jason)
+# This file is distributed under the same license as the Django-Channels-tw-docs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Django-Channels-tw-docs 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2017-06-21 02:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,74 +69,78 @@ msgid "`asgi_redis issues <https://github.com/django/asgi_redis/issues/>`_, for 
 msgstr ""
 
 #: ../../contributing.rst:25
+msgid "`asgi_rabbitmq <https://github.com/proofit404/asgi_rabbitmq/>`_, for the RabbitMQ channel backend"
+msgstr ""
+
+#: ../../contributing.rst:26
 msgid "`asgi_ipc issues <https://github.com/django/asgi_ipc/issues/>`_, for the POSIX IPC channel backend"
 msgstr ""
 
-#: ../../contributing.rst:27
+#: ../../contributing.rst:28
 msgid "Issues are categorized by difficulty level:"
 msgstr ""
 
-#: ../../contributing.rst:29
+#: ../../contributing.rst:30
 msgid "``exp/beginner``: Easy issues suitable for a first-time contributor."
 msgstr ""
 
-#: ../../contributing.rst:30
+#: ../../contributing.rst:31
 msgid "``exp/intermediate``: Moderate issues that need skill and a day or two to solve."
 msgstr ""
 
-#: ../../contributing.rst:31
+#: ../../contributing.rst:32
 msgid "``exp/advanced``: Difficult issues that require expertise and potentially weeks of work."
 msgstr ""
 
-#: ../../contributing.rst:33
+#: ../../contributing.rst:34
 msgid "They are also classified by type:"
 msgstr ""
 
-#: ../../contributing.rst:35
+#: ../../contributing.rst:36
 msgid "``documentation``: Documentation issues. Pick these if you want to help us by writing docs."
 msgstr ""
 
-#: ../../contributing.rst:36
+#: ../../contributing.rst:37
 msgid "``bug``: A bug in existing code. Usually easier for beginners as there's a defined thing to fix."
 msgstr ""
 
-#: ../../contributing.rst:37
+#: ../../contributing.rst:38
 msgid "``enhancement``: A new feature for the code; may be a bit more open-ended."
 msgstr ""
 
-#: ../../contributing.rst:39
+#: ../../contributing.rst:40
 msgid "You should filter the issues list by the experience level and type of work you'd like to do, and then if you want to take something on leave a comment and assign yourself to it. If you want advice about how to take on a bug, leave a comment asking about it, or pop into the IRC channel at ``#django-channels`` on Freenode and we'll be happy to help."
 msgstr ""
 
-#: ../../contributing.rst:45
+#: ../../contributing.rst:46
 msgid "The issues are also just a suggested list - any offer to help is welcome as long as it fits the project goals, but you should make an issue for the thing you wish to do and discuss it first if it's relatively large (but if you just found a small bug and want to fix it, sending us a pull request straight away is fine)."
 msgstr ""
 
-#: ../../contributing.rst:52
+#: ../../contributing.rst:53
 msgid "I'm a novice contributor/developer - can I help?"
 msgstr ""
 
-#: ../../contributing.rst:54
+#: ../../contributing.rst:55
 msgid "Of course! The issues labelled with ``exp/beginner`` are a perfect place to get started, as they're usually small and well defined. If you want help with one of them, pop into the IRC channel at ``#django-channels`` on Freenode or get in touch with Andrew directly at andrew@aeracode.org."
 msgstr ""
 
-#: ../../contributing.rst:61
+#: ../../contributing.rst:62
 msgid "Can you pay me for my time?"
 msgstr ""
 
-#: ../../contributing.rst:63
+#: ../../contributing.rst:64
 msgid "Thanks to Mozilla, we have a reasonable budget to pay people for their time working on all of the above sorts of tasks and more. Generally, we'd prefer to fund larger projects (you can find these labelled as ``epic-project`` in the issues lists) to reduce the administrative overhead, but we're open to any proposal."
 msgstr ""
 
-#: ../../contributing.rst:69
+#: ../../contributing.rst:70
 msgid "If you're interested in working on something and being paid, you'll need to draw up a short proposal and get in touch with the committee, discuss the work and your history with open-source contribution (we strongly prefer that you have a proven track record on at least a few things) and the amount you'd like to be paid."
 msgstr ""
 
-#: ../../contributing.rst:74
+#: ../../contributing.rst:75
 msgid "If you're interested in working on one of these tasks, get in touch with Andrew Godwin (andrew@aeracode.org) as a first point of contact; he can help talk you through what's involved, and help judge/refine your proposal before it goes to the committee."
 msgstr ""
 
-#: ../../contributing.rst:79
+#: ../../contributing.rst:80
 msgid "Tasks not on any issues list can also be proposed; Andrew can help talk about them and if they would be sensible to do."
 msgstr ""
 

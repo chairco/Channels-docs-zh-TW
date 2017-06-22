@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
+# Copyright (C) 2017, chairco(Jason)
+# This file is distributed under the same license as the Django-Channels-tw-docs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Django-Channels-tw-docs 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2017-06-21 02:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,14 +69,18 @@ msgid "`asgi_redis <https://github.com/django/asgi_redis/>`_, the Redis channel 
 msgstr ""
 
 #: ../../index.rst:32
+msgid "`asgi_rabbitmq <https://github.com/proofit404/asgi_rabbitmq/>`_, the RabbitMQ channel backend"
+msgstr ""
+
+#: ../../index.rst:33
 msgid "`asgi_ipc <https://github.com/django/asgi_ipc/>`_, the POSIX IPC channel backend"
 msgstr ""
 
-#: ../../index.rst:34
+#: ../../index.rst:35
 msgid "This documentation covers the system as a whole; individual release notes and instructions can be found in the individual repositories."
 msgstr ""
 
-#: ../../index.rst:39
+#: ../../index.rst:40
 msgid "Topics"
 msgstr ""
 

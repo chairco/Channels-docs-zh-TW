@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Channel Layer Types &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>通道層類型 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Delay Server" href="delay.html" />
-    <link rel="prev" title="Data Binding" href="binding.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="延遲伺服器" href="delay.html" />
+    <link rel="prev" title="Channels WebSocket wrapper" href="javascript.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="delay.html" title="延遲伺服器"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="javascript.html" title="Channels WebSocket wrapper"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,24 +53,16 @@
           <div class="body" role="main">
             
   <div class="section" id="channel-layer-types">
-<h1>Channel Layer Types<a class="headerlink" href="#channel-layer-types" title="本標題的永久連結">¶</a></h1>
-<p>Multiple choices of backend are available, to fill different tradeoffs of
-complexity, throughput and scalability. You can also write your own backend if
-you wish; the spec they confirm to is called <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a>. Any
-ASGI-compliant channel layer can be used.</p>
+<h1>通道層類型<a class="headerlink" href="#channel-layer-types" title="本標題的永久連結">¶</a></h1>
+<p>可以選擇多種後端，以滿足複雜性，吞吐量和可擴展性的不同折衷。你也可以寫你自己的後端，如果你願意；他們確認的規範被稱為 <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a>。可以使用任何符合ASGI的信道層。</p>
 <div class="section" id="redis">
 <h2>Redis<a class="headerlink" href="#redis" title="本標題的永久連結">¶</a></h2>
-<p>The Redis layer is the recommended backend to run Channels with, as it
-supports both high throughput on a single Redis server as well as the ability
-to run against a set of Redis servers in a sharded mode.</p>
-<p>To use the Redis layer, simply install it from PyPI (it lives in a separate
-package, as we didn&#8217;t want to force a dependency on the redis-py for the main
-install):</p>
+<p>Redis 層是運行 Channels 的推薦後端，因為它支持單個 Redis 服務器上的高吞吐量以及在分片模式下對一組 Redis 服務器運行的能力。</p>
+<p>要使用 Redis 層，只需從 PyPI 安裝它 (它放在一個單獨的包，因為我們不想強制依賴於 redis-py 主安裝):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">asgi_redis</span>
 </pre></div>
 </div>
-<p>By default, it will attempt to connect to a Redis server on <code class="docutils literal"><span class="pre">localhost:6379</span></code>,
-but you can override this with the <code class="docutils literal"><span class="pre">hosts</span></code> key in its config:</p>
+<p>默認情況下，它將嘗試連接到 <code class="docutils literal"><span class="pre">localhost:6379</span></code> 的 Redis 服務器，但是你可以用 <code class="docutils literal"><span class="pre">hosts</span></code> 再複寫它的 config:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;asgi_redis.RedisChannelLayer&quot;</span><span class="p">,</span>
@@ -75,54 +75,52 @@ but you can override this with the <code class="docutils literal"><span class="p
 </pre></div>
 </div>
 <div class="section" id="sharding">
-<h3>Sharding<a class="headerlink" href="#sharding" title="本標題的永久連結">¶</a></h3>
-<p>The sharding model is based on consistent hashing - in particular,
-<a class="reference internal" href="concepts.html#channel-types"><span class="std std-ref">response channels</span></a> are hashed and used to pick a single
-Redis server that both the interface server and the worker will use.</p>
-<p>For normal channels, since any worker can service any channel request, messages
-are simply distributed randomly among all possible servers, and workers will
-pick a single server to listen to. Note that if you run more Redis servers than
-workers, it&#8217;s very likely that some servers will not have workers listening to
-them; we recommend you always have at least ten workers for each Redis server
-to ensure good distribution. Workers will, however, change server periodically
-(every five seconds or so) so queued messages should eventually get a response.</p>
-<p>Note that if you change the set of sharding servers you will need to restart
-all interface servers and workers with the new set before anything works,
-and any in-flight messages will be lost (even with persistence, some will);
-the consistent hashing model relies on all running clients having the same
-settings. Any misconfigured interface server or worker will drop some or all
-messages.</p>
+<h3>分片<a class="headerlink" href="#sharding" title="本標題的永久連結">¶</a></h3>
+<p>分片模型基於一致性散列 - 特別是 <a class="reference internal" href="concepts.html#channel-types"><span class="std std-ref">response channels</span></a> 被散列，用於選擇接口服務器和 worker 都將使用的單個 Redis 服務器。</p>
+<p>對於正常信道，由於任何工作者都可以服務任何信道請求，所以消息簡單地在所有可能的服務器之間分佈，工作者將選擇單個服務器來收聽。注意，如果你運行的 Redis 服務器比 worker 多，很可能有些服務器沒有工作線程監聽它們;我們建議您始終為每個 Redis 服務器至少有十個工作線程，以確保良好的分發。然而，工作者將定期（每五秒左右）改變服務器，因此排隊的消息應該最終得到響應。</p>
+<p>請注意，如果更改分片服務器集，您需要在任何工作之前重新啟動所有接口服務器和具有新集的工作線程，並且任何正在傳輸的消息都將丟失（即使有持久性，也會有）。一致性哈希模型依賴於具有相同設置的所有運行的客戶端。任何配置錯誤的接口服務器或工作程序將刪除部分或全部消息。</p>
 </div>
+</div>
+<div class="section" id="rabbitmq">
+<h2>RabbitMQ<a class="headerlink" href="#rabbitmq" title="本標題的永久連結">¶</a></h2>
+<p>RabbitMQ layer is comparable to Redis in terms of latency and
+throughput.  It can work with single RabbitMQ node and with Erlang
+cluster.</p>
+<p>You need to install layer package from PyPI:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">asgi_rabbitmq</span>
+</pre></div>
+</div>
+<p>To use it you also need provide link to the virtual host with granted
+permissions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;asgi_rabbitmq.RabbitmqChannelLayer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ROUTING&quot;</span><span class="p">:</span> <span class="s2">&quot;???&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;amqp://guest:guest@rabbitmq:5672/</span><span class="si">%2F</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This layer has complete <a class="reference external" href="http://asgi-rabbitmq.readthedocs.io/en/latest/">documentation</a> on its own.</p>
 </div>
 <div class="section" id="ipc">
 <h2>IPC<a class="headerlink" href="#ipc" title="本標題的永久連結">¶</a></h2>
-<p>The IPC backend uses POSIX shared memory segments and semaphores in order to
-allow different processes on the same machine to communicate with each other.</p>
-<p>As it uses shared memory, it does not require any additional servers running
-to get working, and is quicker than any network-based channel layer. However,
-it can only run between processes on the same machine.</p>
+<p>IPC 後端使用 POSIX 共享內存段和信號量，以允許同一機器上的不同進程相互通信。</p>
+<p>由於它使用共享內存，它不需要任何額外的服務器運行來工作，並且快於任何基於網絡的通道層。但是，它只能在同一台機器上的進程之間運行。</p>
 <div class="admonition warning">
 <p class="first admonition-title">警告</p>
-<p class="last">The IPC layer only communicates between processes on the same machine,
-and while you might initially be tempted to run a cluster of machines all
-with their own IPC-based set of processes, this will result in groups not
-working properly; events sent to a group will only go to those channels
-that joined the group on the same machine. This backend is for
-single-machine deployments only.</p>
+<p class="last">IPC 層只在同一台機器上的進程之間進行通信，雖然最初可能會試圖運行一組具有自己的基於IPC的進程集合的機器，但這會導致組無法正常工作;發送到群組的事件將只會轉到在同一台計算機上加入群組的那些頻道。此後端僅用於單機部署。</p>
 </div>
 </div>
 <div class="section" id="in-memory">
 <h2>In-memory<a class="headerlink" href="#in-memory" title="本標題的永久連結">¶</a></h2>
-<p>The in-memory layer is only useful when running the protocol server and the
-worker server in a single process; the most common case of this
-is <code class="docutils literal"><span class="pre">runserver</span></code>, where a server thread, this channel layer, and worker thread all
-co-exist inside the same python process.</p>
-<p>Its path is <code class="docutils literal"><span class="pre">asgiref.inmemory.ChannelLayer</span></code>. If you try and use this channel
-layer with <code class="docutils literal"><span class="pre">runworker</span></code>, it will exit, as it does not support cross-process
-communication.</p>
+<p>in-memory 層僅在單個進程中運行協議服務器和工作服務器時有用;最常見的情況是``runserver``，其中服務器線程，這個通道層和工作線程都在同一個 python 進程內共存。</p>
+<p>它的路徑是``asgiref.inmemory.ChannelLayer``。如果你嘗試和``runworker``使用這個通道層，它將退出，因為它不支持跨進程通信。</p>
 </div>
 <div class="section" id="writing-custom-channel-layers">
-<h2>Writing Custom Channel Layers<a class="headerlink" href="#writing-custom-channel-layers" title="本標題的永久連結">¶</a></h2>
+<h2>編寫自定義通道層<a class="headerlink" href="#writing-custom-channel-layers" title="本標題的永久連結">¶</a></h2>
 <p>The interface channel layers present to Django and other software that
 communicates over them is codified in a specification called <a class="reference internal" href="asgi.html"><span class="doc">ASGI</span></a>.</p>
 <p>Any channel layer that conforms to the <a class="reference internal" href="asgi.html"><span class="doc">ASGI spec</span></a> can be used
@@ -139,26 +137,25 @@ a dict of keyword arguments to initialize the class with.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Channel Layer Types</a><ul>
+<li><a class="reference internal" href="#">通道層類型</a><ul>
 <li><a class="reference internal" href="#redis">Redis</a><ul>
-<li><a class="reference internal" href="#sharding">Sharding</a></li>
+<li><a class="reference internal" href="#sharding">分片</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#rabbitmq">RabbitMQ</a></li>
 <li><a class="reference internal" href="#ipc">IPC</a></li>
 <li><a class="reference internal" href="#in-memory">In-memory</a></li>
-<li><a class="reference internal" href="#writing-custom-channel-layers">Writing Custom Channel Layers</a></li>
+<li><a class="reference internal" href="#writing-custom-channel-layers">編寫自定義通道層</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="binding.html" title="上一章">Data Binding</a></li>
-      <li>Next: <a href="delay.html" title="下一章">Delay Server</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="javascript.html"
+                        title="上一章">Channels WebSocket wrapper</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="delay.html"
+                        title="下一章">延遲伺服器</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -180,20 +177,24 @@ a dict of keyword arguments to initialize the class with.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/backends.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="delay.html" title="延遲伺服器"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="javascript.html" title="Channels WebSocket wrapper"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

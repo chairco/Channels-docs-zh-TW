@@ -1,14 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>安裝 &#8212; Django-Channels-tw-docs 0.0.1 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -28,16 +28,24 @@
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
     <link rel="next" title="Getting Started with Channels" href="getting-started.html" />
-    <link rel="prev" title="Channels Concepts" href="concepts.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="Channels 的概念" href="concepts.html" /> 
   </head>
-  <body role="document">
-  
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="getting-started.html" title="Getting Started with Channels"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="concepts.html" title="Channels 的概念"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,13 +53,12 @@
           <div class="body" role="main">
             
   <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="本標題的永久連結">¶</a></h1>
-<p>Channels is available on PyPI - to install it, just run:</p>
+<h1>安裝<a class="headerlink" href="#installation" title="本標題的永久連結">¶</a></h1>
+<p>Channels 可以從 PyPI 上取得，執行以下指令來安裝:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">channels</span>
 </pre></div>
 </div>
-<p>Once that&#8217;s done, you should add <code class="docutils literal"><span class="pre">channels</span></code> to your
-<code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> setting:</p>
+<p>安裝完成之後，需要新增 <code class="docutils literal"><span class="pre">channels</span></code> 到 <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> 的設定中:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
     <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
@@ -62,13 +69,10 @@
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>That&#8217;s it! Once enabled, <code class="docutils literal"><span class="pre">channels</span></code> will integrate itself into Django and
-take control of the <code class="docutils literal"><span class="pre">runserver</span></code> command. See <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> for more.</p>
+<p>這樣子就完成了！啟用之後， <code class="docutils literal"><span class="pre">channels</span></code> 將會整合到 Django 當中，並且控制 <code class="docutils literal"><span class="pre">runserver</span></code> 指令。詳細請見 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 的說明。</p>
 <div class="section" id="installing-the-latest-development-version">
-<h2>Installing the latest development version<a class="headerlink" href="#installing-the-latest-development-version" title="本標題的永久連結">¶</a></h2>
-<p>To install the latest version of Channels, clone the repo, change to the repo,
-change to the repo directory, and pip install it into your current virtual
-environment:</p>
+<h2>安裝最新的開發中版本<a class="headerlink" href="#installing-the-latest-development-version" title="本標題的永久連結">¶</a></h2>
+<p>要安裝 Channels 的最新開發中版本，使用 git clone 將專案複製下來，並切換進該專案目錄，然後使用 pip install 來安裝到您目前的虛擬環境之中:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone git@github.com:django/channels.git
 $ cd channels
 $ &lt;activate your project’s virtual environment&gt;
@@ -86,20 +90,18 @@ $ &lt;activate your project’s virtual environment&gt;
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#installing-the-latest-development-version">Installing the latest development version</a></li>
+<li><a class="reference internal" href="#">安裝</a><ul>
+<li><a class="reference internal" href="#installing-the-latest-development-version">安裝最新的開發中版本</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="concepts.html" title="上一章">Channels Concepts</a></li>
-      <li>Next: <a href="getting-started.html" title="下一章">Getting Started with Channels</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上個主題</h4>
+  <p class="topless"><a href="concepts.html"
+                        title="上一章">Channels 的概念</a></p>
+  <h4>下個主題</h4>
+  <p class="topless"><a href="getting-started.html"
+                        title="下一章">Getting Started with Channels</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -121,20 +123,24 @@ $ &lt;activate your project’s virtual environment&gt;
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/installation.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="getting-started.html" title="Getting Started with Channels"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="concepts.html" title="Channels 的概念"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Django-Channels-tw-docs 0.0.1 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2017, chairco(Jason)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2 創建。
+    </div>
   </body>
 </html>

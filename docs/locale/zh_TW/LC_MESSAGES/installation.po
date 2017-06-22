@@ -10,6 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-26 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Adrian Liaw <adrianliaw2000@gmail.com>, 2017\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,17 +20,17 @@ msgstr ""
 
 #: ../../installation.rst:2
 msgid "Installation"
-msgstr ""
+msgstr "安裝"
 
 #: ../../installation.rst:4
 msgid "Channels is available on PyPI - to install it, just run::"
-msgstr ""
+msgstr "Channels 可以從 PyPI 上取得，執行以下指令來安裝::"
 
 #: ../../installation.rst:8
 msgid ""
 "Once that's done, you should add ``channels`` to your ``INSTALLED_APPS`` "
 "setting::"
-msgstr ""
+msgstr "安裝完成之後，需要新增 ``channels`` 到 ``INSTALLED_APPS`` 的設定中::"
 
 #: ../../installation.rst:20
 msgid ""
@@ -37,10 +38,12 @@ msgid ""
 "take control of the ``runserver`` command. See :doc:`getting-started` for "
 "more."
 msgstr ""
+"這樣子就完成了！啟用之後， ``channels`` 將會整合到 Django 當中，並且控制 ``runserver`` 指令。詳細請見 :doc"
+":`getting-started` 的說明。"
 
 #: ../../installation.rst:25
 msgid "Installing the latest development version"
-msgstr ""
+msgstr "安裝最新的開發中版本"
 
 #: ../../installation.rst:27
 msgid ""
@@ -48,3 +51,5 @@ msgid ""
 "repo, change to the repo directory, and pip install it into your current "
 "virtual environment::"
 msgstr ""
+"要安裝 Channels 的最新開發中版本，使用 git clone 將專案複製下來，並切換進該專案目錄，然後使用 pip install "
+"來安裝到您目前的虛擬環境之中::"
