@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Channels-docs-zhTW'
+project = 'Channels-docs-zh_TW'
 copyright = '2018, Jason(@chairco)'
 author = 'Jason(@chairco)'
 
