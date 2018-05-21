@@ -101,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Channels-docs-zhTW'
+htmlhelp_basename = 'Channels-docs-zh_TW'
 
 
 # -- Options for LaTeX output ---------------------------------------------
