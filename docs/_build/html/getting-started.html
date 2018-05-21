@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started with Channels &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>Getting Started with Channels &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.1',
+        VERSION:     '1.1.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="配置" href="deploying.html" />
-    <link rel="prev" title="安裝" href="installation.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="部署" href="deploying.html" />
+    <link rel="prev" title="安裝" href="installation.html" /> 
   </head>
   <body role="document">
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="deploying.html" title="部署"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="安裝"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -114,18 +122,22 @@
 </div>
 <p>現在讓我們看看它們在做些什麼。它綑綁在 <code class="docutils literal"><span class="pre">websocket.receice</span></code> channel，這意味著從 WebSocket packet 由客戶端發送給我們時它將收到一個訊息。</p>
 <p>當它得到這個訊息時，他會得從而到 <code class="docutils literal"><span class="pre">reply_channel</span></code> 屬性，他是從 client 端得到唯一的 channel 回應，接著使用 <code class="docutils literal"><span class="pre">send()</span></code> 方法送出一些內容返回 client。</p>
-<p>讓我們開始測試它！執行 <code class="docutils literal"><span class="pre">runserver</span></code>，開啟一個瀏覽器，跳到伺服器上的一個頁面(你不可使用任何控制台頁面)，並將以下內容放到 JavaScript 控制台中以打開WebSocket 並向其發送一些數據 (假如在 VM 上或是相似的地方開發你可能需要改變 socket 地址):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Note</span> <span class="n">that</span> <span class="n">the</span> <span class="n">path</span> <span class="n">doesn</span><span class="s1">&#39;t matter for routing; any WebSocket</span>
-<span class="o">//</span> <span class="n">connection</span> <span class="n">gets</span> <span class="n">bumped</span> <span class="n">over</span> <span class="n">to</span> <span class="n">WebSocket</span> <span class="n">consumers</span>
-<span class="n">socket</span> <span class="o">=</span> <span class="n">new</span> <span class="n">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://&quot;</span> <span class="o">+</span> <span class="n">window</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">host</span> <span class="o">+</span> <span class="s2">&quot;/chat/&quot;</span><span class="p">);</span>
-<span class="n">socket</span><span class="o">.</span><span class="n">onmessage</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">alert</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">data</span><span class="p">);</span>
+<p>Let&#8217;s test it! Run <code class="docutils literal"><span class="pre">runserver</span></code>, open a browser, navigate to a page on the server
+(you can&#8217;t use any page&#8217;s console because of origin restrictions), and put the
+following into the JavaScript console to open a WebSocket and send some data
+down it (you might need to change the socket address if you&#8217;re using a
+development VM or similar)</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="c1">// Note that the path doesn&#39;t matter for routing; any WebSocket</span>
+<span class="c1">// connection gets bumped over to WebSocket consumers</span>
+<span class="nx">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://&quot;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="s2">&quot;/chat/&quot;</span><span class="p">);</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">onmessage</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="n">socket</span><span class="o">.</span><span class="n">onopen</span> <span class="o">=</span> <span class="n">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">);</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="o">//</span> <span class="n">Call</span> <span class="n">onopen</span> <span class="n">directly</span> <span class="k">if</span> <span class="n">socket</span> <span class="ow">is</span> <span class="n">already</span> <span class="nb">open</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">readyState</span> <span class="o">==</span> <span class="n">WebSocket</span><span class="o">.</span><span class="n">OPEN</span><span class="p">)</span> <span class="n">socket</span><span class="o">.</span><span class="n">onopen</span><span class="p">();</span>
+<span class="c1">// Call onopen directly if socket is already open</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">socket</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="nx">WebSocket</span><span class="p">.</span><span class="nx">OPEN</span><span class="p">)</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>你應該看到一個提示立刻回傳並且說 &#8220;hello world&#8221; - 你的訊息已經被往返透過伺服器並且回覆去觸發這個提示。</p>
@@ -139,13 +151,21 @@
 
 <span class="c1"># Connected to websocket.connect</span>
 <span class="k">def</span> <span class="nf">ws_add</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Accept the incoming connection</span>
     <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="c1"># Add them to the chat group</span>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
 
 <span class="c1"># Connected to websocket.disconnect</span>
 <span class="k">def</span> <span class="nf">ws_disconnect</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">You need to explicitly accept WebSocket connections if you override connect
+by sending <code class="docutils literal"><span class="pre">accept:</span> <span class="pre">True</span></code> - you can also reject them at connection time,
+before they open, by sending <code class="docutils literal"><span class="pre">close:</span> <span class="pre">True</span></code>.</p>
 </div>
 <p>當然，如果你已經讀完 <a class="reference internal" href="concepts.html"><span class="doc">Channels 的概念</span></a> ，則你知道加到 groups 中的 channels 只要他們的訊息過期，則 channel 也跟著過期。 ( 每一個 channel layer 都有訊息的過期時限，通常是 30 秒至數分鐘，通常可以設定。 ) - 但是 <code class="docutils literal"><span class="pre">disconnect</span></code> handler 在任何時間都可以被呼叫。</p>
 <div class="admonition note">
@@ -168,7 +188,9 @@ get the message. Here&#8217;s all the code:</p>
 
 <span class="c1"># Connected to websocket.connect</span>
 <span class="k">def</span> <span class="nf">ws_add</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Accept the connection</span>
     <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="c1"># Add to the chat group</span>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
 
 <span class="c1"># Connected to websocket.receive</span>
@@ -201,18 +223,18 @@ fall through to the default handler, which passes it into URL routing and the
 views.</p>
 <p>With all that code, you now have a working set of a logic for a chat server.
 Test time! Run <code class="docutils literal"><span class="pre">runserver</span></code>, open a browser and use that same JavaScript
-code in the developer console as before:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Note</span> <span class="n">that</span> <span class="n">the</span> <span class="n">path</span> <span class="n">doesn</span><span class="s1">&#39;t matter right now; any WebSocket</span>
-<span class="o">//</span> <span class="n">connection</span> <span class="n">gets</span> <span class="n">bumped</span> <span class="n">over</span> <span class="n">to</span> <span class="n">WebSocket</span> <span class="n">consumers</span>
-<span class="n">socket</span> <span class="o">=</span> <span class="n">new</span> <span class="n">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://&quot;</span> <span class="o">+</span> <span class="n">window</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">host</span> <span class="o">+</span> <span class="s2">&quot;/chat/&quot;</span><span class="p">);</span>
-<span class="n">socket</span><span class="o">.</span><span class="n">onmessage</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">alert</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">data</span><span class="p">);</span>
+code in the developer console as before</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="c1">// Note that the path doesn&#39;t matter right now; any WebSocket</span>
+<span class="c1">// connection gets bumped over to WebSocket consumers</span>
+<span class="nx">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://&quot;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="s2">&quot;/chat/&quot;</span><span class="p">);</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">onmessage</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="n">socket</span><span class="o">.</span><span class="n">onopen</span> <span class="o">=</span> <span class="n">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">);</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="o">//</span> <span class="n">Call</span> <span class="n">onopen</span> <span class="n">directly</span> <span class="k">if</span> <span class="n">socket</span> <span class="ow">is</span> <span class="n">already</span> <span class="nb">open</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">readyState</span> <span class="o">==</span> <span class="n">WebSocket</span><span class="o">.</span><span class="n">OPEN</span><span class="p">)</span> <span class="n">socket</span><span class="o">.</span><span class="n">onopen</span><span class="p">();</span>
+<span class="c1">// Call onopen directly if socket is already open</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">socket</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="nx">WebSocket</span><span class="p">.</span><span class="nx">OPEN</span><span class="p">)</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>You should see an alert come back immediately saying &#8220;hello world&#8221; - but this
@@ -276,6 +298,12 @@ the <code class="docutils literal"><span class="pre">asgi_redis</span></code> pa
         <span class="s2">&quot;ROUTING&quot;</span><span class="p">:</span> <span class="s2">&quot;myproject.routing.channel_routing&quot;</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">}</span>
+</pre></div>
+</div>
+<p>You&#8217;ll also need to install the Redis server - there are downloads available
+for Mac OS and Windows, and it&#8217;s in pretty much every linux distribution&#8217;s
+package manager. For example, on Ubuntu, you can just:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">redis</span><span class="o">-</span><span class="n">server</span>
 </pre></div>
 </div>
 <p>Fire up <code class="docutils literal"><span class="pre">runserver</span></code>, and it&#8217;ll work as before - unexciting, like good
@@ -430,14 +458,53 @@ chat to people with the same first letter of their username:</p>
 <p>If you&#8217;re just using <code class="docutils literal"><span class="pre">runserver</span></code> (and so Daphne), you can just connect
 and your cookies should transfer your auth over. If you were running WebSockets
 on a separate domain, you&#8217;d have to remember to provide the
-Django session ID as part of the URL, like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">socket</span> <span class="o">=</span> <span class="n">new</span> <span class="n">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://127.0.0.1:9000/?session_key=abcdefg&quot;</span><span class="p">);</span>
+Django session ID as part of the URL, like this</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s2">&quot;ws://127.0.0.1:9000/?session_key=abcdefg&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>You can get the current session key in a template with <code class="docutils literal"><span class="pre">{{</span> <span class="pre">request.session.session_key</span> <span class="pre">}}</span></code>.
 Note that this can&#8217;t work with signed cookie sessions - since only HTTP
 responses can set cookies, it needs a backend it can write to to separately
 store state.</p>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="本標題的永久連結">¶</a></h2>
+<p>Unlike AJAX requests, WebSocket requests are not limited by the Same-Origin
+policy. This means you don&#8217;t have to take any extra steps when you have an HTML
+page served by host A containing JavaScript code wanting to connect to a
+WebSocket on Host B.</p>
+<p>While this can be convenient, it also implies that by default any third-party
+site can connect to your WebSocket application. When you are using the
+<code class="docutils literal"><span class="pre">http_session_user</span></code> or the <code class="docutils literal"><span class="pre">channel_session_user_from_http</span></code> decorator, this
+connection would be authenticated.</p>
+<p>The WebSocket specification requires browsers to send the origin of a WebSocket
+request in the HTTP header named <code class="docutils literal"><span class="pre">Origin</span></code>, but validating that header is left
+to the server.</p>
+<p>You can use the decorator <code class="docutils literal"><span class="pre">channels.security.websockets.allowed_hosts_only</span></code>
+on a <code class="docutils literal"><span class="pre">websocket.connect</span></code> consumer to only allow requests originating
+from hosts listed in the <code class="docutils literal"><span class="pre">ALLOWED_HOSTS</span></code> setting:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># In consumers.py</span>
+<span class="kn">from</span> <span class="nn">channels</span> <span class="k">import</span> <span class="n">Channel</span><span class="p">,</span> <span class="n">Group</span>
+<span class="kn">from</span> <span class="nn">channels.sessions</span> <span class="k">import</span> <span class="n">channel_session</span>
+<span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">channel_session_user</span><span class="p">,</span> <span class="n">channel_session_user_from_http</span>
+<span class="kn">from</span> <span class="nn">channels.security.websockets</span> <span class="k">import</span> <span class="n">allowed_hosts_only</span><span class="o">.</span>
+
+<span class="c1"># Connected to websocket.connect</span>
+<span class="nd">@allowed_hosts_only</span>
+<span class="nd">@channel_session_user_from_http</span>
+<span class="k">def</span> <span class="nf">ws_add</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="c1"># Accept connection</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Requests from other hosts or requests with missing or invalid origin header
+are now rejected.</p>
+<p>The name <code class="docutils literal"><span class="pre">allowed_hosts_only</span></code> is an alias for the class-based decorator
+<code class="docutils literal"><span class="pre">AllowedHostsOnlyOriginValidator</span></code>, which inherits from
+<code class="docutils literal"><span class="pre">BaseOriginValidator</span></code>. If you have custom requirements for origin validation,
+create a subclass and overwrite the method
+<code class="docutils literal"><span class="pre">validate_origin(self,</span> <span class="pre">message,</span> <span class="pre">origin)</span></code>. It must return True when a message
+should be accepted, False otherwise.</p>
 </div>
 <div class="section" id="routing">
 <h2>Routing<a class="headerlink" href="#routing" title="本標題的永久連結">¶</a></h2>
@@ -483,6 +550,8 @@ consumer above to use a room based on URL rather than username:</p>
 <span class="k">def</span> <span class="nf">ws_add</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
     <span class="c1"># Add them to the right group</span>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">room</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
+    <span class="c1"># Accept the connection request</span>
+    <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>In the next section, we&#8217;ll change to sending the <code class="docutils literal"><span class="pre">room</span></code> as a part of the
@@ -533,6 +602,8 @@ have a ChatMessage model with <code class="docutils literal"><span class="pre">m
     <span class="c1"># Save room in session and add us to the group</span>
     <span class="n">message</span><span class="o">.</span><span class="n">channel_session</span><span class="p">[</span><span class="s1">&#39;room&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">room</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
+    <span class="c1"># Accept the connection request</span>
+    <span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 
 <span class="c1"># Connected to websocket.receive</span>
 <span class="nd">@channel_session</span>
@@ -547,6 +618,19 @@ have a ChatMessage model with <code class="docutils literal"><span class="pre">m
 <span class="nd">@channel_session</span>
 <span class="k">def</span> <span class="nf">ws_disconnect</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
     <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;chat-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">message</span><span class="o">.</span><span class="n">channel_session</span><span class="p">[</span><span class="s1">&#39;room&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">reply_channel</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Update <code class="docutils literal"><span class="pre">routing.py</span></code> as well:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># in routing.py</span>
+<span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">myapp.consumers</span> <span class="k">import</span> <span class="n">ws_connect</span><span class="p">,</span> <span class="n">ws_message</span><span class="p">,</span> <span class="n">ws_disconnect</span><span class="p">,</span> <span class="n">msg_consumer</span>
+
+<span class="n">channel_routing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">ws_connect</span><span class="p">),</span>
+    <span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.receive&quot;</span><span class="p">,</span> <span class="n">ws_message</span><span class="p">),</span>
+    <span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.disconnect&quot;</span><span class="p">,</span> <span class="n">ws_disconnect</span><span class="p">),</span>
+    <span class="n">route</span><span class="p">(</span><span class="s2">&quot;chat-messages&quot;</span><span class="p">,</span> <span class="n">msg_consumer</span><span class="p">),</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 <p>Note that we could add messages onto the <code class="docutils literal"><span class="pre">chat-messages</span></code> channel from anywhere;
@@ -624,7 +708,7 @@ to manage logical sets of channels, and how Django&#8217;s session and authentic
 systems easily integrate with WebSockets.</p>
 <p>We recommend you read through the rest of the reference documentation to see
 more about what you can do with channels; in particular, you may want to look at
-our <a class="reference internal" href="deploying.html"><span class="doc">配置</span></a> documentation to get an idea of how to
+our <a class="reference internal" href="deploying.html"><span class="doc">部署</span></a> documentation to get an idea of how to
 design and run apps in production environments.</p>
 </div>
 </div>
@@ -643,6 +727,7 @@ design and run apps in production environments.</p>
 <li><a class="reference internal" href="#running-with-channels">Running with Channels</a></li>
 <li><a class="reference internal" href="#persisting-data">Persisting Data</a></li>
 <li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
 <li><a class="reference internal" href="#routing">Routing</a></li>
 <li><a class="reference internal" href="#models">Models</a></li>
 <li><a class="reference internal" href="#enforcing-ordering">Enforcing Ordering</a></li>
@@ -650,15 +735,13 @@ design and run apps in production environments.</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="installation.html" title="上一章">安裝</a></li>
-      <li>Next: <a href="deploying.html" title="下一章">配置</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="installation.html"
+                        title="上一章">安裝</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="deploying.html"
+                        title="下一章">部署</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -680,20 +763,24 @@ design and run apps in production environments.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/getting-started.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="deploying.html" title="部署"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="安裝"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
   </body>
 </html>

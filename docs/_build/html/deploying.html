@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>配置 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>部署 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.1',
+        VERSION:     '1.1.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -28,16 +28,24 @@
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
     <link rel="next" title="一般消費者" href="generics.html" />
-    <link rel="prev" title="Getting Started with Channels" href="getting-started.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="Getting Started with Channels" href="getting-started.html" /> 
   </head>
   <body role="document">
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="generics.html" title="一般消費者"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="getting-started.html" title="Getting Started with Channels"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,20 +53,17 @@
           <div class="body" role="main">
             
   <div class="section" id="deploying">
-<h1>配置<a class="headerlink" href="#deploying" title="本標題的永久連結">¶</a></h1>
-<p>Deploying applications using channels requires a few more steps than a normal
-Django WSGI application, but you have a couple of options as to how to deploy
-it and how much of your traffic you wish to route through the channel layers.</p>
-<p>Firstly, remember that it&#8217;s an entirely optional part of Django.
-If you leave a project with the default settings (no <code class="docutils literal"><span class="pre">CHANNEL_LAYERS</span></code>),
-it&#8217;ll just run and work like a normal WSGI app.</p>
-<p>當你想在作業上啟用 channels，你需要做這3件事情:</p>
+<h1>部署<a class="headerlink" href="#deploying" title="本標題的永久連結">¶</a></h1>
+<p>部署使用 channels 的應用比起一般的 Django WSGI 需要多幾個步驟，但如何部署你有幾個選項與通過 channels 的 channel 流量。</p>
+<p>首先，記住這是一個 Django 內的可選項。假使你離開一個預設的設定 (no <code class="docutils literal"><span class="pre">CHANNEL_LAYERS</span></code>) 的專案，它將會執行和運作像是一般的 WSGI app。</p>
+<p>當你想在作業上啟用 channels，你需要做這 3 件事情:</p>
 <ul class="simple">
 <li><p class="first">設一個 channel 後端</p>
 </li>
 <li><p class="first">執行使用者伺服器</p>
 </li>
-<li>Run interface servers</li>
+<li><p class="first">執行介面伺服器</p>
+</li>
 </ul>
 <p>You can set things up in one of two ways; either route all traffic through
 a <a class="reference internal" href="#asgi-alone"><span class="std std-ref">HTTP/WebSocket interface server</span></a>, removing the need
@@ -117,6 +122,20 @@ which works between processes on the same machine but not over the network
 <p>Make sure the same settings file is used across all your workers and interface
 servers; without it, they won&#8217;t be able to talk to each other and things
 will just fail to work.</p>
+<p>If you prefer to use RabbitMQ layer, please refer to its
+<a class="reference external" href="http://asgi-rabbitmq.readthedocs.io/en/latest/">documentation</a>.
+Usually your config will end up like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;asgi_rabbitmq.RabbitmqChannelLayer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ROUTING&quot;</span><span class="p">:</span> <span class="s2">&quot;my_project.routing.channel_routing&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;amqp://guest:guest@rabbitmq:5672/</span><span class="si">%2F</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="run-worker-servers">
 <h2>執行使用者伺服器<a class="headerlink" href="#run-worker-servers" title="本標題的永久連結">¶</a></h2>
@@ -156,7 +175,7 @@ of configuring a worker to only serve HTTP and WebSocket requests:</p>
 </div>
 </div>
 <div class="section" id="run-interface-servers">
-<h2>Run interface servers<a class="headerlink" href="#run-interface-servers" title="本標題的永久連結">¶</a></h2>
+<h2>執行介面伺服器<a class="headerlink" href="#run-interface-servers" title="本標題的永久連結">¶</a></h2>
 <p>The final piece of the puzzle is the &#8220;interface servers&#8221;, the processes that
 do the work of taking incoming requests and loading them into the channels
 system.</p>
@@ -165,7 +184,7 @@ features, you&#8217;ll need to run a native ASGI interface server, as the WSGI
 specification has no support for running these kinds of requests concurrently.
 We ship with an interface server that we recommend you use called
 <a class="reference external" href="http://github.com/django/daphne/">Daphne</a>; it supports WebSockets,
-long-poll HTTP requests, HTTP/2 <em>(soon)</em> and performs quite well.</p>
+long-poll HTTP requests, HTTP/2 and performs quite well.</p>
 <p>You can just keep running your Django code as a WSGI app if you like, behind
 something like uwsgi or gunicorn; this won&#8217;t let you support WebSockets, though,
 so you&#8217;ll need to run a separate interface server to terminate those connections
@@ -305,10 +324,10 @@ of new ones.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">配置</a><ul>
+<li><a class="reference internal" href="#">部署</a><ul>
 <li><a class="reference internal" href="#setting-up-a-channel-backend">設定一個 channel 後端</a></li>
 <li><a class="reference internal" href="#run-worker-servers">執行使用者伺服器</a></li>
-<li><a class="reference internal" href="#run-interface-servers">Run interface servers</a></li>
+<li><a class="reference internal" href="#run-interface-servers">執行介面伺服器</a></li>
 <li><a class="reference internal" href="#deploying-new-versions-of-code">Deploying new versions of code</a></li>
 <li><a class="reference internal" href="#running-just-asgi">Running just ASGI</a></li>
 <li><a class="reference internal" href="#running-asgi-alongside-wsgi">Running ASGI alongside WSGI</a></li>
@@ -317,15 +336,13 @@ of new ones.</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="getting-started.html" title="上一章">Getting Started with Channels</a></li>
-      <li>Next: <a href="generics.html" title="下一章">一般消費者</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="getting-started.html"
+                        title="上一章">Getting Started with Channels</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="generics.html"
+                        title="下一章">一般消費者</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -347,20 +364,24 @@ of new ones.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/deploying.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="generics.html" title="一般消費者"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="getting-started.html" title="Getting Started with Channels"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
   </body>
 </html>

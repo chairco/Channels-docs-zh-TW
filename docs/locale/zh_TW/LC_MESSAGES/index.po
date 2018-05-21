@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2017, test
 # This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: test 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-04-25 21:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Jason <chairco@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-"
+"tw/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: ../../index.rst:2
 msgid "Django Channels"
@@ -25,8 +25,8 @@ msgstr "Django Channels"
 #: ../../index.rst:4
 msgid ""
 "Channels is a project to make Django able to handle more than just plain "
-"HTTP requests, including WebSockets and HTTP2, as well as the ability to run"
-" code after a response has been sent for things like thumbnailing or "
+"HTTP requests, including WebSockets and HTTP2, as well as the ability to "
+"run code after a response has been sent for things like thumbnailing or "
 "background calculation."
 msgstr ""
 "Channels 是一個讓  Django 能夠處理更多 HTTP 請求的專案，包含 WebSockets 和 HTTP2, "
@@ -34,8 +34,8 @@ msgstr ""
 
 #: ../../index.rst:9
 msgid ""
-"It's an easy-to-understand extension of the Django view model, and easy to "
-"integrate and deploy."
+"It's an easy-to-understand extension of the Django view model, and easy "
+"to integrate and deploy."
 msgstr "這是一個很容易透過 Django 視圖模型去延伸理解，也很容易去整合與發佈。"
 
 #: ../../index.rst:12
@@ -56,8 +56,8 @@ msgstr "假如你希望快速的導覽，從 :doc:`inshort` 開始吧。"
 
 #: ../../index.rst:20
 msgid ""
-"If you are interested in contributing, please read our :doc:`contributing` "
-"docs!"
+"If you are interested in contributing, please read our "
+":doc:`contributing` docs!"
 msgstr "假如你有興趣做出些貢獻，請研讀我們的 :doc:`contributing` docs！"
 
 #: ../../index.rst:24
@@ -70,8 +70,8 @@ msgstr "Channels 來自於五個套件："
 
 #: ../../index.rst:28
 msgid ""
-"`Channels <https://github.com/django/channels/>`_, the Django integration "
-"layer"
+"`Channels <https://github.com/django/channels/>`_, the Django integration"
+" layer"
 msgstr ""
 "`Channels <https://github.com/django/channels/>`_，the Django integration "
 "layer"
@@ -101,6 +101,15 @@ msgstr ""
 "backend"
 
 #: ../../index.rst:32
+#, fuzzy
+msgid ""
+"`asgi_rabbitmq <https://github.com/proofit404/asgi_rabbitmq/>`_, the "
+"RabbitMQ channel backend"
+msgstr ""
+"`asgi_redis <https://github.com/django/asgi_redis/>`_, the Redis channel "
+"backend"
+
+#: ../../index.rst:33
 msgid ""
 "`asgi_ipc <https://github.com/django/asgi_ipc/>`_, the POSIX IPC channel "
 "backend"
@@ -108,12 +117,13 @@ msgstr ""
 "`asgi_ipc <https://github.com/django/asgi_ipc/>`_, the POSIX IPC channel "
 "backend"
 
-#: ../../index.rst:34
+#: ../../index.rst:35
 msgid ""
-"This documentation covers the system as a whole; individual release notes "
-"and instructions can be found in the individual repositories."
+"This documentation covers the system as a whole; individual release notes"
+" and instructions can be found in the individual repositories."
 msgstr "這份文件包含系統得整體；可以從個別的儲藏庫找到個別發佈紀錄與說明。"
 
-#: ../../index.rst:39
+#: ../../index.rst:40
 msgid "Topics"
 msgstr "主題"
+

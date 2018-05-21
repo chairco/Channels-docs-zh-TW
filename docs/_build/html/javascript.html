@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>通道 WebSocket 包裝 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+    <link rel="next" title="通道層類型" href="backends.html" />
+    <link rel="prev" title="資料綁定" href="binding.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="backends.html" title="通道層類型"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="binding.html" title="資料綁定"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="channels-websocket-wrapper">
+<h1>通道 WebSocket 包裝<a class="headerlink" href="#channels-websocket-wrapper" title="本標題的永久連結">¶</a></h1>
+<p>Channels ships with a javascript WebSocket wrapper to help you connect to your websocket
+and send/receive messages.</p>
+<p>First, you must include the javascript library in your template; if you&#8217;re using
+Django&#8217;s staticfiles, this is as easy as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">load</span> <span class="n">staticfiles</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">static</span> <span class="s2">&quot;channels/js/websocketbridge.js&quot;</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you are using an alternative method of serving static files, the compiled
+source code is located at <code class="docutils literal"><span class="pre">channels/static/channels/js/websocketbridge.js</span></code> in
+a Channels installation. We compile the file for you each release; it&#8217;s ready
+to serve as-is.</p>
+<p>The library is deliberately quite low-level and generic; it&#8217;s designed to
+be compatible with any JavaScript code or framework, so you can build more
+specific integration on top of it.</p>
+<p>To process messages</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="kr">const</span> <span class="nx">webSocketBridge</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">channels</span><span class="p">.</span><span class="nx">WebSocketBridge</span><span class="p">();</span>
+<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;/ws/&#39;</span><span class="p">);</span>
+<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>To send messages, use the <cite>send</cite> method</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="nx">prop1</span><span class="o">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="nx">prop2</span><span class="o">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>To demultiplex specific streams</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">connect</span><span class="p">();</span>
+<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="s1">&#39;/ws/&#39;</span><span class="p">);</span>
+<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">demultiplex</span><span class="p">(</span><span class="s1">&#39;mystream&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">demultiplex</span><span class="p">(</span><span class="s1">&#39;myotherstream&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>To send a message to a specific stream</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">stream</span><span class="p">(</span><span class="s1">&#39;mystream&#39;</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span><span class="nx">prop1</span><span class="o">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="nx">prop2</span><span class="o">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>The <cite>WebSocketBridge</cite> instance exposes the underlaying <cite>ReconnectingWebSocket</cite> as the <cite>socket</cite> property. You can use this property to add any custom behavior. For example</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Connected to WebSocket&quot;</span><span class="p">);</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>The library is also available as a npm module, under the name
+<a class="reference external" href="https://www.npmjs.com/package/django-channels">django-channels</a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="binding.html"
+                        title="上一章">資料綁定</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="backends.html"
+                        title="下一章">通道層類型</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/javascript.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="backends.html" title="通道層類型"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="binding.html" title="資料綁定"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

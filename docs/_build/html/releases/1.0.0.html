@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1.0.0 Release Notes &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>1.0.0 發行公告 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
     
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.1',
+        VERSION:     '1.1.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -28,16 +28,25 @@
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜尋" href="../search.html" />
     <link rel="next" title="1.0.1 發布說明" href="1.0.1.html" />
-    <link rel="prev" title="發行版本說明" href="index.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="發行版本說明" href="index.html" /> 
   </head>
   <body role="document">
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="1.0.1.html" title="1.0.1 發布說明"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="發行版本說明"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">發行版本說明</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,7 +54,7 @@
           <div class="body" role="main">
             
   <div class="section" id="release-notes">
-<h1>1.0.0 Release Notes<a class="headerlink" href="#release-notes" title="本標題的永久連結">¶</a></h1>
+<h1>1.0.0 發行公告<a class="headerlink" href="#release-notes" title="本標題的永久連結">¶</a></h1>
 <p>Channels 1.0.0 brings together a number of design changes, including some
 breaking changes, into our first fully stable release, and also brings the
 databinding code out of alpha phase. It was released on 2017/01/08.</p>
@@ -61,13 +70,13 @@ Channels work correctly.</p>
 <h2>主要特徵<a class="headerlink" href="#major-features" title="本標題的永久連結">¶</a></h2>
 <p>Channels 1.0 introduces a couple of new major features.</p>
 <div class="section" id="websocket-accept-reject-flow">
-<h3>WebSocket 接受/拒絕 流量<a class="headerlink" href="#websocket-accept-reject-flow" title="本標題的永久連結">¶</a></h3>
+<h3>WebSocket 接受/拒絕流量<a class="headerlink" href="#websocket-accept-reject-flow" title="本標題的永久連結">¶</a></h3>
 <p>Rather than be immediately accepted, WebSockets now pause during the handshake
 while they send over a message on <code class="docutils literal"><span class="pre">websocket.connect</span></code>, and your application
 must either accept or reject the connection before the handshake is completed
 and messages can be received.</p>
 <p>You <strong>must</strong> update Daphne to at least 1.0.0 to make this work correctly.</p>
-<p>這有幾項優點:</p>
+<p>這裡有幾項優點:</p>
 <ul class="simple">
 <li>You can now reject WebSockets before they even finish connecting, giving
 appropriate error codes to browsers and not letting the browser-side socket
@@ -129,7 +138,7 @@ together from code that also works outside the context of multiplexing.</p>
 <h3>Delay Server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h3>
 <p>A built-in delay server, launched with <cite>manage.py rundelay</cite>, now ships if you
 wish to use it. It needs some extra initial setup and uses a database for
-persistance; see <a class="reference internal" href="../delay.html"><span class="doc">Delay Server</span></a> for more information.</p>
+persistance; see <a class="reference internal" href="../delay.html"><span class="doc">延遲伺服器</span></a> for more information.</p>
 </div>
 </div>
 <div class="section" id="minor-changes">
@@ -232,9 +241,9 @@ disconnection handling into their own methods.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">1.0.0 Release Notes</a><ul>
+<li><a class="reference internal" href="#">1.0.0 發行公告</a><ul>
 <li><a class="reference internal" href="#major-features">主要特徵</a><ul>
-<li><a class="reference internal" href="#websocket-accept-reject-flow">WebSocket 接受/拒絕 流量</a></li>
+<li><a class="reference internal" href="#websocket-accept-reject-flow">WebSocket 接受/拒絕流量</a></li>
 <li><a class="reference internal" href="#consumer-atomicity">Consumer Atomicity</a></li>
 <li><a class="reference internal" href="#databinding-group-action-overhaul">Databinding Group/Action Overhaul</a></li>
 <li><a class="reference internal" href="#demultiplexer-overhaul">Demultiplexer Overhaul</a></li>
@@ -251,17 +260,13 @@ disconnection handling into their own methods.</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">發行版本說明</a><ul>
-      <li>Previous: <a href="index.html" title="上一章">發行版本說明</a></li>
-      <li>Next: <a href="1.0.1.html" title="下一章">1.0.1 發布說明</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="index.html"
+                        title="上一章">發行版本說明</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="1.0.1.html"
+                        title="下一章">1.0.1 發布說明</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -283,20 +288,25 @@ disconnection handling into their own methods.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="../_sources/releases/1.0.0.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="1.0.1.html" title="1.0.1 發布說明"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="發行版本說明"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >發行版本說明</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
   </body>
 </html>

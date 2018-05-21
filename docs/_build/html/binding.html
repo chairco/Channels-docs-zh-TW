@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>資料綁定 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>資料綁定 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.1',
+        VERSION:     '1.1.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="通道層類型" href="backends.html" />
-    <link rel="prev" title="路由" href="routing.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="通道 WebSocket 包裝" href="javascript.html" />
+    <link rel="prev" title="路由" href="routing.html" /> 
   </head>
   <body role="document">
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="javascript.html" title="通道 WebSocket 包裝"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -131,7 +139,9 @@
 </div>
 <div class="section" id="frontend-considerations">
 <h2>前端的考量點<a class="headerlink" href="#frontend-considerations" title="本標題的永久連結">¶</a></h2>
-<p>你可以使用 Channel 標準的 WebSocket 包裹 <strong>(尚未提供)</strong> 來自動反解多工，然後將接收的事例綁到你選定之前端架構的 <code class="docutils literal"><span class="pre">action</span></code>, <code class="docutils literal"><span class="pre">pk</span></code> 與 <code class="docutils literal"><span class="pre">data</span></code> 上。</p>
+<p>You can use the standard <a class="reference internal" href="javascript.html"><span class="doc">Channels WebSocket wrapper</span></a> to
+automatically run demultiplexing, and then tie the events you receive into your
+frontend framework of choice based on <code class="docutils literal"><span class="pre">action</span></code>, <code class="docutils literal"><span class="pre">pk</span></code> and <code class="docutils literal"><span class="pre">data</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">備註</p>
 <p class="last">我們需要熱門 JavaScript 架構的資料綁定插件，如果你有興趣提供，請和我們聯絡。</p>
@@ -164,15 +174,13 @@
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="routing.html" title="上一章">路由</a></li>
-      <li>Next: <a href="backends.html" title="下一章">通道層類型</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="routing.html"
+                        title="上一章">路由</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="javascript.html"
+                        title="下一章">通道 WebSocket 包裝</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -194,20 +202,24 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/binding.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="javascript.html" title="通道 WebSocket 包裝"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
   </body>
 </html>

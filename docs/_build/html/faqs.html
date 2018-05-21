@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>常見問題 &#8212; django-channels-tw-docs 0.0.1 說明文件</title>
+    <title>常見問題 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.1',
+        VERSION:     '1.1.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,17 +27,25 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="ASGI (異步伺服器網關介面) 規劃規格" href="asgi.html" />
-    <link rel="prev" title="參考" href="reference.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="ASGI (異步伺服器閘道介面) 規劃草案" href="asgi.html" />
+    <link rel="prev" title="參考" href="reference.html" /> 
   </head>
   <body role="document">
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="asgi.html" title="ASGI (異步伺服器閘道介面) 規劃草案"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="reference.html" title="參考"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -47,115 +55,50 @@
   <div class="section" id="frequently-asked-questions">
 <h1>常見問題<a class="headerlink" href="#frequently-asked-questions" title="本標題的永久連結">¶</a></h1>
 <div class="section" id="why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">
-<h2>為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?<a class="headerlink" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc" title="本標題的永久連結">¶</a></h2>
-<p>They&#8217;re kind of solving different problems. Tornado, gevent and other
-in-process async solutions are a way of making a single Python process act
-asynchronously - doing other things while a HTTP request is going on, or
-juggling hundreds of incoming connections without blocking on a single one.</p>
-<p>Channels is different - all the code you write for consumers runs synchronously.
-You can do all the blocking filesystem calls and CPU-bound tasks you like
-and all you&#8217;ll do is block the one worker you&#8217;re running on; the other
-worker processes will just keep on going and handling other messages.</p>
-<p>This is partially because Django is all written in a synchronous manner, and
-rewriting it to all be asynchronous would be a near-impossible task, but also
-because we believe that normal developers should not have to write
-asynchronous-friendly code. It&#8217;s really easy to shoot yourself in the foot;
-do a tight loop without yielding in the middle, or access a file that happens
-to be on a slow NFS share, and you&#8217;ve just blocked the entire process.</p>
-<p>Channels still uses asynchronous code, but it confines it to the interface
-layer - the processes that serve HTTP, WebSocket and other requests. These do
-indeed use asynchronous frameworks (currently, asyncio and Twisted) to handle
-managing all the concurrent connections, but they&#8217;re also fixed pieces of code;
-as an end developer, you&#8217;ll likely never have to touch them.</p>
-<p>All of your work can be with standard Python libraries and patterns and the
-only thing you need to look out for is worker contention - if you flood your
-workers with infinite loops, of course they&#8217;ll all stop working, but that&#8217;s
-better than a single thread of execution stopping the entire site.</p>
+<h2>為何使用 Channels，而不直接使用 Tornado/gevent/asyncio/ 等其他的套件?<a class="headerlink" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc" title="本標題的永久連結">¶</a></h2>
+<p>Tornado/gevent/asyncio 有些是用來解決不同的問題。Tornado, gevent 與其他類在進程中的非同步方案是使用單一 Python 的非同步解決方式 - 當一個 HTTP 請求正在執行時執行其他的事情，或是在單一進程中處理數百個連接。</p>
+<p>但 Channels 不大相同 - 對於針對 consumers 所撰寫的程式碼都會以同步來執行。你可以做所有可能會阻塞的檔案系統呼叫和 CPU-bound 所綁定的任務，你所需要做的就只是阻斷正在執行的 worker 其他的 worker 流程又會繼續開始執行並且處理其他的訊息。</p>
+<p>這部分原因是因為 Django 程式碼全部都是採取同步的方式撰寫，假使將其全部重寫成非同步的方式幾乎不太可能，而且我們也認為一般的開發人員也不需要一定得編寫友善的非同步程式碼，這樣很容易就會拿石頭砸到自己的腳; 執行一個緊密的循環而不用在中間過程 yield，或是在一個非常緩慢的 NFS 分享去存取一個檔案，而你僅僅只需要在進入流程裡阻斷它。</p>
+<p>Channels 仍然使用非同步的程式碼，但它會被限制在接口層 - 用來服務 HTTP，WebSocket 與其他請求的行程。這些確實是使用非同步的框架(目前是 asyncio 和 Twisted) 來處理與管理所有的並行連接，但它們也可以是固定的程式碼; 對於終端開發者將永遠不會碰觸到這些。</p>
+<p>你可以使用 Python 標準函式庫以及模式來處理所有工作，只有 worker 競爭這件事你需要注意 - 假使你讓 worker 淹沒在無限的迴圈中, 他們當然就會停止工作，但這還是比單一行程執行停止，等待進入來得好。</p>
 </div>
 <div class="section" id="why-aren-t-you-using-node-go-etc-to-proxy-to-django">
-<h2>為什麼你不用node/go/等去取代Django?<a class="headerlink" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django" title="本標題的永久連結">¶</a></h2>
-<p>There are a couple of solutions where you can use a more &#8220;async-friendly&#8221;
-language (or Python framework) to bridge things like WebSockets to Django -
-terminate them in (say) a Node process, and then bridge it to Django using
-either a reverse proxy model, or Redis signalling, or some other mechanism.</p>
-<p>The thing is, Channels actually makes it easier to do this if you wish. The
-key part of Channels is introducing a standardised way to run event-triggered
-pieces of code, and a standardised way to route messages via named channels
-that hits the right balance between flexibility and simplicity.</p>
-<p>While our interface servers are written in Python, there&#8217;s nothing stopping
-you from writing an interface server in another language, providing it follows
-the same serialisation standards for HTTP/WebSocket/etc. messages. In fact,
-we may ship an alternative server implementation ourselves at some point.</p>
+<h2>為何不用 node/go/ 等來作為 Django 的代理呢?<a class="headerlink" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django" title="本標題的永久連結">¶</a></h2>
+<p>有幾個很不錯的解決方案讓你可以使用更 &#8220;友善的非同步&#8221; 語言(或 Python 框架) 讓 Django 橋接到 WebSocket -  終止他們(比如) 一個 Node 行程, 然後使用反向代理模型, 或Redis信號或其他一些機制將其橋接到Django。</p>
+<p>假如你想實際上 Channels 讓這件事變得更容易達到。其中的關鍵就是 Channel 引入標準化的方式來運行 event-triggered 的程式碼片段，以及通過命名通道路由消息的標準化方式，在彈性和易用間達到了平衡。</p>
+<p>雖然接口的服務器是以 Python 開發，但這並不會影響或阻止你使用其他語言來撰寫接口伺服器，只要遵循同樣的 HTTP/WebSocket/etc. 相同的序列話標準。事實上有可能會在某些時候發佈一個自己實現的替代伺服器。</p>
 </div>
 <div class="section" id="why-isn-t-there-guaranteed-delivery-a-retry-mechanism">
-<h2>Why isn&#8217;t there guaranteed delivery/a retry mechanism?<a class="headerlink" href="#why-isn-t-there-guaranteed-delivery-a-retry-mechanism" title="本標題的永久連結">¶</a></h2>
-<p>Channels&#8217; design is such that anything is allowed to fail - a consumer can
-error and not send replies, the channel layer can restart and drop a few messages,
-a dogpile can happen and a few incoming clients get rejected.</p>
-<p>This is because designing a system that was fully guaranteed, end-to-end, would
-result in something with incredibly low throughput, and almost no problem needs
-that level of guarantee. If you want some level of guarantee, you can build on
-top of what Channels provides and add it in (for example, use a database to
-mark things that need to be cleaned up and resend messages if they aren&#8217;t after
-a while, or make idempotent consumers and over-send messages rather than
-under-send).</p>
-<p>That said, it&#8217;s a good way to design a system to presume any part of it can
-fail, and design for detection and recovery of that state, rather than hanging
-your entire livelihood on a system working perfectly as designed. Channels
-takes this idea and uses it to provide a high-throughput solution that is
-mostly reliable, rather than a low-throughput one that is <em>nearly</em> completely
-reliable.</p>
+<h2>為什麼沒有做到一個保證交付/重試機制？<a class="headerlink" href="#why-isn-t-there-guaranteed-delivery-a-retry-mechanism" title="本標題的永久連結">¶</a></h2>
+<p>Channels 得設計邏輯是這樣的，它允許任何錯誤 - 一個 consumer 可以發生錯誤導致沒有發送回覆，通道層可以重新啟用或是丟棄一些訊息，這可能會發生伺服器延宕與卡頓，也可能會有些新連入的客戶端會被拒絕。</p>
+<p>這是因為設計一個可以完全容錯的系統，點到點，會導致吞吐量低到一個難以置信的地步，而且幾乎沒有什麼問題會需要這樣程度的保證。假如你希望一訂程度的保證，你可以建立在 Channels 之上並且新增他（例如，使用資料庫去註記需要清理的事，並且在過一陣時間後重新發送，或是針對 consumers 與過度發送訊息的對象做冪等而非欠送）。</p>
+<p>也就是，設計一個系統來預測它可能會失敗部分，並設計檢測以及恢復該狀態，而非將整個功能掛在一個完全按照設計工作的系統上。 Channels 採用這種思想，並使用它來提供大多數可靠的高吞吐量解決方案，而不是幾乎*完全*可靠的低吞吐量解決方案。</p>
 </div>
 <div class="section" id="can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking">
-<h2>Can I run HTTP requests/service calls/etc. in parallel from Django without blocking?<a class="headerlink" href="#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking" title="本標題的永久連結">¶</a></h2>
-<p>Not directly - Channels only allows a consumer function to listen to channels
-at the start, which is what kicks it off; you can&#8217;t send tasks off on channels
-to other consumers and then <em>wait on the result</em>. You can send them off and keep
-going, but you cannot ever block waiting on a channel in a consumer, as otherwise
-you&#8217;d hit deadlocks, livelocks, and similar issues.</p>
-<p>This is partially a design feature - this falls into the class of &#8220;difficult
-async concepts that it&#8217;s easy to shoot yourself in the foot with&#8221; - but also
-to keep the underlying channels implementation simple. By not allowing this sort
-of blocking, we can have specifications for channel layers that allows horizontal
-scaling and sharding.</p>
-<p>What you can do is:</p>
+<h2>我可以在 Django 執行 HTTP requests/service call/etc. 再不阻斷下進行平行嗎？<a class="headerlink" href="#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking" title="本標題的永久連結">¶</a></h2>
+<p>無法直接達到 -  Channels 只允許 consumer 功能在開始時 listen channels，這是啟動它的原因; 您無法將 channels 上的任務發送給其他 consumer，然後*等待結果*。 你可以發送它們並且繼續，但是你永遠不能阻斷在 consumer 的頻道上等待，否則你會遭遇 deadlock，livelocks 和類似的問題。</p>
+<p>這部分是一個設計特徵 - 屬於“困難的異步概念，很容易拿石頭砸自己的腳” - 同時也保持簡單的底層渠道實現。 通過不允許這種阻塞，可以為通道層規定允許水平縮放和分片的規範。</p>
+<p>你所可以做得事：</p>
 <ul class="simple">
-<li>Dispatch a whole load of tasks to run later in the background and then finish
-your current task - for example, dispatching an avatar thumbnailing task in
-the avatar upload view, then returning a &#8220;we got it!&#8221; HTTP response.</li>
-<li>Pass details along to the other task about how to continue, in particular
-a channel name linked to another consumer that will finish the job, or
-IDs or other details of the data (remember, message contents are just a dict
-you can put stuff into). For example, you might have a generic image fetching
-task for a variety of models that should fetch an image, store it, and pass
-the resultant ID and the ID of the object you&#8217;re attaching it to onto a different
-channel depending on the model - you&#8217;d pass the next channel name and the
-ID of the target object in the message, and then the consumer could send
-a new message onto that channel name when it&#8217;s done.</li>
-<li>Have interface servers that perform requests or slow tasks (remember, interface
-servers are the specialist code which <em>is</em> written to be highly asynchronous)
-and then send their results onto a channel when finished. Again, you can&#8217;t wait
-around inside a consumer and block on the results, but you can provide another
-consumer on a new channel that will do the second half.</li>
+<li><p class="first">調度整個任務負載讓其可以延遲在後台運行，然後完成當前任務 - 例如，在頭像上傳視圖中分發頭像縮圖任務，然後回傳 “我們得到它！” HTTP response。</p>
+</li>
+<li><p class="first">將詳細訊息傳遞給相關可以繼續的其他任務，尤其是與將完成作業的其他 consumer 相關聯 channel 名稱，或數據的 ID 或其他詳細訊息（請記住，訊息內容只是一個可以允許放入您內容得字典） 。例如，您可能需要獲取圖片，存儲圖片，並將生成的 ID 和要附加到的對象的 ID 傳遞到不同 channel 的各種模型的通用圖片抓取任務，具體取決於模型 - 您將在消息中傳遞下一個 channel 名稱和目標對象的 ID，然後 consumer 可以在完成後向該 channel 名稱發送新消息。</p>
+</li>
+<li><p class="first">有執行請求或緩慢的任務（記住，接口服務器*是*一個會被寫入高度非同步的專業程式碼界面），結束時，他們的結果發送到另個 channel。同樣，你不能在 consumer 內部等待並阻斷結果，但你可以在下一個新 channel 上提供另一個 consumer。</p>
+</li>
 </ul>
 </div>
 <div class="section" id="how-do-i-associate-data-with-incoming-connections">
-<h2>我該如何與傳入的連接和數據做關聯？<a class="headerlink" href="#how-do-i-associate-data-with-incoming-connections" title="本標題的永久連結">¶</a></h2>
-<p>Channels provides full integration with Django&#8217;s session and auth system for its
-WebSockets support, as well as per-websocket sessions for persisting data, so
-you can easily persist data on a per-connection or per-user basis.</p>
-<p>You can also provide your own solution if you wish, keyed off of <code class="docutils literal"><span class="pre">message.reply_channel</span></code>,
-which is the unique channel representing the connection, but remember that
-whatever you store in must be <strong>network-transparent</strong> - storing things in a
-global variable won&#8217;t work outside of development.</p>
+<h2>我該如何與傳入的連接和資料做關聯？<a class="headerlink" href="#how-do-i-associate-data-with-incoming-connections" title="本標題的永久連結">¶</a></h2>
+<p>Channels 提供 WebSocket 與 Django session 和認證系統完整的支援，以及用於保存資料的每個 WebSocket 會話，因此您可以輕鬆地在每個連接或每個用戶的基礎上保存數據或是資料。</p>
+<p>假使你願意，也可以提供自己的解決方案，鍵入 <code class="docutils literal"><span class="pre">message.reply_channel</span></code>，這代表連接的唯一 channel，但請記住，無論你存儲在哪裡，都必須是 <strong>network-transparent</strong> - 存儲物在全域變數中不會在開發之外使用。</p>
 </div>
 <div class="section" id="how-do-i-talk-to-channels-from-my-non-django-application">
-<h2>How do I talk to Channels from my non-Django application?<a class="headerlink" href="#how-do-i-talk-to-channels-from-my-non-django-application" title="本標題的永久連結">¶</a></h2>
-<p>If you have an external server or script you want to talk to Channels, you have
-a few choices:</p>
+<h2>如何讓非 Django 應用與 Channels 進行通話？<a class="headerlink" href="#how-do-i-talk-to-channels-from-my-non-django-application" title="本標題的永久連結">¶</a></h2>
+<p>假使你有一個外部服務器或是腳本想與 Channels 溝通，你可以有一個選擇：</p>
 <ul class="simple">
 <li>If it&#8217;s a Python program, and you&#8217;ve made an <code class="docutils literal"><span class="pre">asgi.py</span></code> file for your project
-(see <a class="reference internal" href="deploying.html"><span class="doc">配置</span></a>), you can import the channel layer directly as
+(see <a class="reference internal" href="deploying.html"><span class="doc">部署</span></a>), you can import the channel layer directly as
 <code class="docutils literal"><span class="pre">yourproject.asgi.channel_layer</span></code> and call <code class="docutils literal"><span class="pre">send()</span></code> and <code class="docutils literal"><span class="pre">receive_many()</span></code>
 on it directly. See the <a class="reference internal" href="asgi.html"><span class="doc">ASGI spec</span></a> for the API the channel layer
 presents.</li>
@@ -169,23 +112,13 @@ HTTP, WebSocket, or another protocol that your project talks, as normal.</li>
 </ul>
 </div>
 <div class="section" id="are-channels-python-2-3-or-2-3">
-<h2>Are channels Python 2, 3 or 2+3?<a class="headerlink" href="#are-channels-python-2-3-or-2-3" title="本標題的永久連結">¶</a></h2>
-<p>Django-channels and all of its dependencies are compatible with Python 2.7,
-3.4, and higher. This includes the parts of Twisted that some of the Channels
-packages (like daphne) use.</p>
+<h2>Channels 是否支援 Python 2, 3 或是 2+3?<a class="headerlink" href="#are-channels-python-2-3-or-2-3" title="本標題的永久連結">¶</a></h2>
+<p>Django-channels 及其所有相依套件需要與 Python 2.7, 3.4 及更高版本才能相容。這包括Twisted 的部分 Channels 套件（如 daohne）使用的部分。</p>
 </div>
 <div class="section" id="why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback">
-<h2>Why isn&#8217;t there support for socket.io/SockJS/long poll fallback?<a class="headerlink" href="#why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback" title="本標題的永久連結">¶</a></h2>
-<p>Emulating WebSocket over HTTP long polling requires considerably more effort
-than terminating WebSockets; some server-side state of the connection must
-be kept in a place that&#8217;s accessible from all nodes, so when the new long
-poll comes in, messages can be replayed onto it.</p>
-<p>For this reason, we think it&#8217;s out of scope for Channels itself, though
-Channels and Daphne come with first-class support for long-running HTTP
-connections without taking up a worker thread (you can consume <code class="docutils literal"><span class="pre">http.request</span></code>
-and not send a response until later, add the reply channel to groups,
-and even listen out for the <code class="docutils literal"><span class="pre">http.disconnect</span></code> channel that tells you when
-long polls terminate early).</p>
+<h2>為何不支持 socket.io/SockJS/long poll fallback？<a class="headerlink" href="#why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback" title="本標題的永久連結">¶</a></h2>
+<p>通過 HTTP 長輪詢模擬 WebSocket 比終止 WebSocket 需要更多的功夫; 連接的某些服務器端狀態必須保存在可從所有節點訪問的位置，因此當新的長輪詢進入時，可以將訊息重播給它。</p>
+<p>出於這個原因，我們認為它不在 Channels 本身的範圍內，儘管 Channels 和 Daphne 為長時間運行的 HTTP 連接提供了一流的支援，且不佔用工作線程（您可以使用 “http.request” 而不發送任何回應直到最後，將回覆 channel 添加到群組，甚至可以聽取 “http.disconnect” 頻道，告訴你什麼時候長時間 polls 提前結束）。</p>
 </div>
 </div>
 
@@ -198,26 +131,24 @@ long polls terminate early).</p>
   <h3><a href="index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">常見問題</a><ul>
-<li><a class="reference internal" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?</a></li>
-<li><a class="reference internal" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django">為什麼你不用node/go/等去取代Django?</a></li>
-<li><a class="reference internal" href="#why-isn-t-there-guaranteed-delivery-a-retry-mechanism">Why isn&#8217;t there guaranteed delivery/a retry mechanism?</a></li>
-<li><a class="reference internal" href="#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking">Can I run HTTP requests/service calls/etc. in parallel from Django without blocking?</a></li>
-<li><a class="reference internal" href="#how-do-i-associate-data-with-incoming-connections">我該如何與傳入的連接和數據做關聯？</a></li>
-<li><a class="reference internal" href="#how-do-i-talk-to-channels-from-my-non-django-application">How do I talk to Channels from my non-Django application?</a></li>
-<li><a class="reference internal" href="#are-channels-python-2-3-or-2-3">Are channels Python 2, 3 or 2+3?</a></li>
-<li><a class="reference internal" href="#why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback">Why isn&#8217;t there support for socket.io/SockJS/long poll fallback?</a></li>
+<li><a class="reference internal" href="#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">為何使用 Channels，而不直接使用 Tornado/gevent/asyncio/ 等其他的套件?</a></li>
+<li><a class="reference internal" href="#why-aren-t-you-using-node-go-etc-to-proxy-to-django">為何不用 node/go/ 等來作為 Django 的代理呢?</a></li>
+<li><a class="reference internal" href="#why-isn-t-there-guaranteed-delivery-a-retry-mechanism">為什麼沒有做到一個保證交付/重試機制？</a></li>
+<li><a class="reference internal" href="#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking">我可以在 Django 執行 HTTP requests/service call/etc. 再不阻斷下進行平行嗎？</a></li>
+<li><a class="reference internal" href="#how-do-i-associate-data-with-incoming-connections">我該如何與傳入的連接和資料做關聯？</a></li>
+<li><a class="reference internal" href="#how-do-i-talk-to-channels-from-my-non-django-application">如何讓非 Django 應用與 Channels 進行通話？</a></li>
+<li><a class="reference internal" href="#are-channels-python-2-3-or-2-3">Channels 是否支援 Python 2, 3 或是 2+3?</a></li>
+<li><a class="reference internal" href="#why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback">為何不支持 socket.io/SockJS/long poll fallback？</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="reference.html" title="上一章">參考</a></li>
-      <li>Next: <a href="asgi.html" title="下一章">ASGI (異步伺服器網關介面) 規劃規格</a></li>
-  </ul></li>
-</ul>
-</div>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="reference.html"
+                        title="上一章">參考</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="asgi.html"
+                        title="下一章">ASGI (異步伺服器閘道介面) 規劃草案</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -239,20 +170,24 @@ long polls terminate early).</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, chairco(Jason).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/faqs.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="asgi.html" title="ASGI (異步伺服器閘道介面) 規劃草案"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="reference.html" title="參考"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
   </body>
 </html>

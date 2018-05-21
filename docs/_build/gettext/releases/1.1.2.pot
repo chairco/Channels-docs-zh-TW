@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-doc-tw package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-doc-tw 1.1.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-25 21:56+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../releases/1.1.2.rst:2
+msgid "1.1.2 Release Notes"
+msgstr ""
+
+#: ../../releases/1.1.2.rst:4
+msgid "Channels 1.1.2 is a bugfix release for the 1.1 series, released on April 1st, 2017."
+msgstr ""
+
+#: ../../releases/1.1.2.rst:9
+msgid "Major Changes"
+msgstr ""
+
+#: ../../releases/1.1.2.rst:11
+msgid "None."
+msgstr ""
+
+#: ../../releases/1.1.2.rst:15
+msgid "Minor Changes & Bugfixes"
+msgstr ""
+
+#: ../../releases/1.1.2.rst:17
+msgid "Session name hash changed to SHA-1 to satisfy FIPS-140-2."
+msgstr ""
+
+#: ../../releases/1.1.2.rst:19
+msgid "`scheme` key in ASGI-HTTP messages now translates into `request.is_secure()` correctly."
+msgstr ""
+
+#: ../../releases/1.1.2.rst:22
+msgid "WebsocketBridge now exposes the underlying WebSocket as `.socket`."
+msgstr ""
+
+#: ../../releases/1.1.2.rst:26
+msgid "Backwards Incompatible Changes"
+msgstr ""
+
+#: ../../releases/1.1.2.rst:28
+msgid "When you upgrade all current channel sessions will be invalidated; you should make sure you disconnect all WebSockets during upgrade."
+msgstr ""
+

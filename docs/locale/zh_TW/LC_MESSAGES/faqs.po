@@ -10,8 +10,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-26 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/django-channels-tw-docs/teams/72101/zh_TW/)\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2017\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,7 +25,7 @@ msgstr "常見問題"
 #: ../../faqs.rst:5
 msgid ""
 "Why are you doing this rather than just using Tornado/gevent/asyncio/etc.?"
-msgstr "為什麼你使用這個，而不是只使用Tornado/gevent/asyncio/等?"
+msgstr "為何使用 Channels，而不直接使用 Tornado/gevent/asyncio/ 等其他的套件?"
 
 #: ../../faqs.rst:7
 msgid ""
@@ -34,6 +34,8 @@ msgid ""
 "asynchronously - doing other things while a HTTP request is going on, or "
 "juggling hundreds of incoming connections without blocking on a single one."
 msgstr ""
+"Tornado/gevent/asyncio 有些是用來解決不同的問題。Tornado, gevent 與其他類在進程中的非同步方案是使用單一 "
+"Python 的非同步解決方式 - 當一個 HTTP 請求正在執行時執行其他的事情，或是在單一進程中處理數百個連接。"
 
 #: ../../faqs.rst:12
 msgid ""
@@ -43,6 +45,8 @@ msgid ""
 "the other worker processes will just keep on going and handling other "
 "messages."
 msgstr ""
+"但 Channels 不大相同 - 對於針對 consumers 所撰寫的程式碼都會以同步來執行。你可以做所有可能會阻塞的檔案系統呼叫和 CPU-"
+"bound 所綁定的任務，你所需要做的就只是阻斷正在執行的 worker 其他的 worker 流程又會繼續開始執行並且處理其他的訊息。"
 
 #: ../../faqs.rst:17
 msgid ""
@@ -54,6 +58,9 @@ msgid ""
 "happens to be on a slow NFS share, and you've just blocked the entire "
 "process."
 msgstr ""
+"這部分原因是因為 Django "
+"程式碼全部都是採取同步的方式撰寫，假使將其全部重寫成非同步的方式幾乎不太可能，而且我們也認為一般的開發人員也不需要一定得編寫友善的非同步程式碼，這樣很容易就會拿石頭砸到自己的腳;"
+" 執行一個緊密的循環而不用在中間過程 yield，或是在一個非常緩慢的 NFS 分享去存取一個檔案，而你僅僅只需要在進入流程裡阻斷它。"
 
 #: ../../faqs.rst:24
 msgid ""
@@ -63,6 +70,9 @@ msgid ""
 "handle managing all the concurrent connections, but they're also fixed "
 "pieces of code; as an end developer, you'll likely never have to touch them."
 msgstr ""
+"Channels 仍然使用非同步的程式碼，但它會被限制在接口層 - 用來服務 HTTP，WebSocket "
+"與其他請求的行程。這些確實是使用非同步的框架(目前是 asyncio 和 Twisted) 來處理與管理所有的並行連接，但它們也可以是固定的程式碼; "
+"對於終端開發者將永遠不會碰觸到這些。"
 
 #: ../../faqs.rst:30
 msgid ""
@@ -71,10 +81,12 @@ msgid ""
 " workers with infinite loops, of course they'll all stop working, but that's"
 " better than a single thread of execution stopping the entire site."
 msgstr ""
+"你可以使用 Python 標準函式庫以及模式來處理所有工作，只有 worker 競爭這件事你需要注意 - 假使你讓 worker 淹沒在無限的迴圈中, "
+"他們當然就會停止工作，但這還是比單一行程執行停止，等待進入來得好。"
 
 #: ../../faqs.rst:37
 msgid "Why aren't you using node/go/etc. to proxy to Django?"
-msgstr "為什麼你不用node/go/等去取代Django?"
+msgstr "為何不用 node/go/ 等來作為 Django 的代理呢?"
 
 #: ../../faqs.rst:39
 msgid ""
@@ -83,6 +95,8 @@ msgid ""
 "terminate them in (say) a Node process, and then bridge it to Django using "
 "either a reverse proxy model, or Redis signalling, or some other mechanism."
 msgstr ""
+"有幾個很不錯的解決方案讓你可以使用更 \"友善的非同步\" 語言(或 Python 框架) 讓 Django 橋接到 WebSocket -  "
+"終止他們(比如) 一個 Node 行程, 然後使用反向代理模型, 或Redis信號或其他一些機制將其橋接到Django。"
 
 #: ../../faqs.rst:44
 msgid ""
@@ -91,6 +105,8 @@ msgid ""
 "triggered pieces of code, and a standardised way to route messages via named"
 " channels that hits the right balance between flexibility and simplicity."
 msgstr ""
+"假如你想實際上 Channels 讓這件事變得更容易達到。其中的關鍵就是 Channel 引入標準化的方式來運行 event-triggered "
+"的程式碼片段，以及通過命名通道路由消息的標準化方式，在彈性和易用間達到了平衡。"
 
 #: ../../faqs.rst:49
 msgid ""
@@ -100,10 +116,12 @@ msgid ""
 "In fact, we may ship an alternative server implementation ourselves at some "
 "point."
 msgstr ""
+"雖然接口的服務器是以 Python 開發，但這並不會影響或阻止你使用其他語言來撰寫接口伺服器，只要遵循同樣的 HTTP/WebSocket/etc. "
+"相同的序列話標準。事實上有可能會在某些時候發佈一個自己實現的替代伺服器。"
 
 #: ../../faqs.rst:56
 msgid "Why isn't there guaranteed delivery/a retry mechanism?"
-msgstr ""
+msgstr "為什麼沒有做到一個保證交付/重試機制？"
 
 #: ../../faqs.rst:58
 msgid ""
@@ -111,6 +129,8 @@ msgid ""
 "error and not send replies, the channel layer can restart and drop a few "
 "messages, a dogpile can happen and a few incoming clients get rejected."
 msgstr ""
+"Channels 得設計邏輯是這樣的，它允許任何錯誤 - 一個 consumer "
+"可以發生錯誤導致沒有發送回覆，通道層可以重新啟用或是丟棄一些訊息，這可能會發生伺服器延宕與卡頓，也可能會有些新連入的客戶端會被拒絕。"
 
 #: ../../faqs.rst:62
 msgid ""
@@ -122,6 +142,9 @@ msgid ""
 " if they aren't after a while, or make idempotent consumers and over-send "
 "messages rather than under-send)."
 msgstr ""
+"這是因為設計一個可以完全容錯的系統，點到點，會導致吞吐量低到一個難以置信的地步，而且幾乎沒有什麼問題會需要這樣程度的保證。假如你希望一訂程度的保證，你可以建立在"
+" Channels 之上並且新增他（例如，使用資料庫去註記需要清理的事，並且在過一陣時間後重新發送，或是針對 consumers "
+"與過度發送訊息的對象做冪等而非欠送）。"
 
 #: ../../faqs.rst:70
 msgid ""
@@ -132,12 +155,14 @@ msgid ""
 "that is mostly reliable, rather than a low-throughput one that is *nearly* "
 "completely reliable."
 msgstr ""
+"也就是，設計一個系統來預測它可能會失敗部分，並設計檢測以及恢復該狀態，而非將整個功能掛在一個完全按照設計工作的系統上。 Channels "
+"採用這種思想，並使用它來提供大多數可靠的高吞吐量解決方案，而不是幾乎*完全*可靠的低吞吐量解決方案。"
 
 #: ../../faqs.rst:79
 msgid ""
 "Can I run HTTP requests/service calls/etc. in parallel from Django without "
 "blocking?"
-msgstr ""
+msgstr "我可以在 Django 執行 HTTP requests/service call/etc. 再不阻斷下進行平行嗎？"
 
 #: ../../faqs.rst:81
 msgid ""
@@ -147,6 +172,9 @@ msgid ""
 "them off and keep going, but you cannot ever block waiting on a channel in a"
 " consumer, as otherwise you'd hit deadlocks, livelocks, and similar issues."
 msgstr ""
+"無法直接達到 -  Channels 只允許 consumer 功能在開始時 listen channels，這是啟動它的原因; 您無法將 "
+"channels 上的任務發送給其他 consumer，然後*等待結果*。 你可以發送它們並且繼續，但是你永遠不能阻斷在 consumer "
+"的頻道上等待，否則你會遭遇 deadlock，livelocks 和類似的問題。"
 
 #: ../../faqs.rst:87
 msgid ""
@@ -156,10 +184,12 @@ msgid ""
 "not allowing this sort of blocking, we can have specifications for channel "
 "layers that allows horizontal scaling and sharding."
 msgstr ""
+"這部分是一個設計特徵 - 屬於“困難的異步概念，很容易拿石頭砸自己的腳” - 同時也保持簡單的底層渠道實現。 "
+"通過不允許這種阻塞，可以為通道層規定允許水平縮放和分片的規範。"
 
 #: ../../faqs.rst:93
 msgid "What you can do is:"
-msgstr ""
+msgstr "你所可以做得事："
 
 #: ../../faqs.rst:95
 msgid ""
@@ -168,6 +198,8 @@ msgid ""
 "task in the avatar upload view, then returning a \"we got it!\" HTTP "
 "response."
 msgstr ""
+"調度整個任務負載讓其可以延遲在後台運行，然後完成當前任務 - 例如，在頭像上傳視圖中分發頭像縮圖任務，然後回傳 “我們得到它！” HTTP "
+"response。"
 
 #: ../../faqs.rst:99
 msgid ""
@@ -181,6 +213,10 @@ msgid ""
 "and the ID of the target object in the message, and then the consumer could "
 "send a new message onto that channel name when it's done."
 msgstr ""
+"將詳細訊息傳遞給相關可以繼續的其他任務，尤其是與將完成作業的其他 consumer 相關聯 channel 名稱，或數據的 ID "
+"或其他詳細訊息（請記住，訊息內容只是一個可以允許放入您內容得字典） 。例如，您可能需要獲取圖片，存儲圖片，並將生成的 ID 和要附加到的對象的 ID "
+"傳遞到不同 channel 的各種模型的通用圖片抓取任務，具體取決於模型 - 您將在消息中傳遞下一個 channel 名稱和目標對象的 ID，然後 "
+"consumer 可以在完成後向該 channel 名稱發送新消息。"
 
 #: ../../faqs.rst:109
 msgid ""
@@ -191,10 +227,12 @@ msgid ""
 " you can provide another consumer on a new channel that will do the second "
 "half."
 msgstr ""
+"有執行請求或緩慢的任務（記住，接口服務器*是*一個會被寫入高度非同步的專業程式碼界面），結束時，他們的結果發送到另個 channel。同樣，你不能在 "
+"consumer 內部等待並阻斷結果，但你可以在下一個新 channel 上提供另一個 consumer。"
 
 #: ../../faqs.rst:117
 msgid "How do I associate data with incoming connections?"
-msgstr "我該如何與傳入的連接和數據做關聯？"
+msgstr "我該如何與傳入的連接和資料做關聯？"
 
 #: ../../faqs.rst:119
 msgid ""
@@ -202,6 +240,8 @@ msgid ""
 " its WebSockets support, as well as per-websocket sessions for persisting "
 "data, so you can easily persist data on a per-connection or per-user basis."
 msgstr ""
+"Channels 提供 WebSocket 與 Django session 和認證系統完整的支援，以及用於保存資料的每個 WebSocket "
+"會話，因此您可以輕鬆地在每個連接或每個用戶的基礎上保存數據或是資料。"
 
 #: ../../faqs.rst:123
 msgid ""
@@ -211,16 +251,18 @@ msgid ""
 "transparent** - storing things in a global variable won't work outside of "
 "development."
 msgstr ""
+"假使你願意，也可以提供自己的解決方案，鍵入 ``message.reply_channel``，這代表連接的唯一 "
+"channel，但請記住，無論你存儲在哪裡，都必須是 **network-transparent** - 存儲物在全域變數中不會在開發之外使用。"
 
 #: ../../faqs.rst:130
 msgid "How do I talk to Channels from my non-Django application?"
-msgstr ""
+msgstr "如何讓非 Django 應用與 Channels 進行通話？"
 
 #: ../../faqs.rst:132
 msgid ""
 "If you have an external server or script you want to talk to Channels, you "
 "have a few choices:"
-msgstr ""
+msgstr "假使你有一個外部服務器或是腳本想與 Channels 溝通，你可以有一個選擇："
 
 #: ../../faqs.rst:135
 msgid ""
@@ -248,7 +290,7 @@ msgstr ""
 
 #: ../../faqs.rst:152
 msgid "Are channels Python 2, 3 or 2+3?"
-msgstr ""
+msgstr "Channels 是否支援 Python 2, 3 或是 2+3?"
 
 #: ../../faqs.rst:154
 msgid ""
@@ -256,10 +298,12 @@ msgid ""
 "3.4, and higher. This includes the parts of Twisted that some of the "
 "Channels packages (like daphne) use."
 msgstr ""
+"Django-channels 及其所有相依套件需要與 Python 2.7, 3.4 及更高版本才能相容。這包括Twisted 的部分 "
+"Channels 套件（如 daohne）使用的部分。"
 
 #: ../../faqs.rst:160
 msgid "Why isn't there support for socket.io/SockJS/long poll fallback?"
-msgstr ""
+msgstr "為何不支持 socket.io/SockJS/long poll fallback？"
 
 #: ../../faqs.rst:162
 msgid ""
@@ -268,6 +312,8 @@ msgid ""
 "be kept in a place that's accessible from all nodes, so when the new long "
 "poll comes in, messages can be replayed onto it."
 msgstr ""
+"通過 HTTP 長輪詢模擬 WebSocket 比終止 WebSocket 需要更多的功夫; "
+"連接的某些服務器端狀態必須保存在可從所有節點訪問的位置，因此當新的長輪詢進入時，可以將訊息重播給它。"
 
 #: ../../faqs.rst:167
 msgid ""
@@ -278,3 +324,6 @@ msgid ""
 "to groups, and even listen out for the ``http.disconnect`` channel that "
 "tells you when long polls terminate early)."
 msgstr ""
+"出於這個原因，我們認為它不在 Channels 本身的範圍內，儘管 Channels 和 Daphne 為長時間運行的 HTTP "
+"連接提供了一流的支援，且不佔用工作線程（您可以使用 “http.request” 而不發送任何回應直到最後，將回覆 channel "
+"添加到群組，甚至可以聽取 “http.disconnect” 頻道，告訴你什麼時候長時間 polls 提前結束）。"

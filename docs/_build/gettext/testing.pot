@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-doc-tw package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-doc-tw 1.1.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-04-25 21:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,46 +85,70 @@ msgid "For more complicated test suites you can use the ``Client`` abstraction t
 msgstr ""
 
 #: ../../testing.rst:131
-msgid "You can use ``HttpClient`` for websocket related consumers. It automatically serializes JSON content, manage cookies and headers, give easy access to the session and add ability to authorize your requests. For example::"
+msgid "You can use ``WSClient`` for websocket related consumers. It automatically serializes JSON content, manage cookies and headers, give easy access to the session and add ability to authorize your requests. For example::"
 msgstr ""
 
 #: ../../testing.rst:184
-msgid "Instead of ``HttpClient.login`` method with credentials at arguments you may call ``HttpClient.force_login`` (like at django client) with the user object."
+msgid "Instead of ``WSClient.login`` method with credentials at arguments you may call ``WSClient.force_login`` (like at django client) with the user object."
 msgstr ""
 
 #: ../../testing.rst:187
 msgid "``receive`` method by default trying to deserialize json text content of a message, so if you need to pass decoding use ``receive(json=False)``, like in the example."
 msgstr ""
 
-#: ../../testing.rst:192
-msgid "Applying routes"
-msgstr ""
-
-#: ../../testing.rst:194
-msgid "When you need to testing you consumers without routes in settings or you want to testing your consumers in more isolate and atomic way, it will be simpler with ``apply_routes`` contextmanager and decorator for your ``ChannelTestCase``. It takes list of routes that you want to use and overwrite existing routes::"
+#: ../../testing.rst:190
+msgid "For testing consumers with ``enforce_ordering`` initialize ``HttpClient`` with ``ordered`` flag, but if you wanna use your own order don't use it, use content::"
 msgstr ""
 
 #: ../../testing.rst:212
-msgid "Test Data binding with ``HttpClient``"
+msgid "Applying routes"
 msgstr ""
 
 #: ../../testing.rst:214
-msgid "As you know data binding in channels works in outbound and inbound ways, so that ways tests in different ways and ``HttpClient`` and ``apply_routes`` will help to do this. When you testing outbound consumers you need just import your ``Binding`` subclass with specified ``group_names``. At test you can  join to one of them, make some changes with target model and check received message. Lets test ``IntegerValueBinding`` from :doc:`data binding <binding>` with creating::"
+msgid "When you need to test your consumers without routes in settings or you want to test your consumers in a more isolate and atomic way, it will be simpler with ``apply_routes`` contextmanager and decorator for your ``ChannelTestCase``. It takes a list of routes that you want to use and overwrites existing routes::"
 msgstr ""
 
-#: ../../testing.rst:257
+#: ../../testing.rst:232
+msgid "Test Data binding with ``WSClient``"
+msgstr ""
+
+#: ../../testing.rst:234
+msgid "As you know data binding in channels works in outbound and inbound ways, so that ways tests in different ways and ``WSClient`` and ``apply_routes`` will help to do this. When you testing outbound consumers you need just import your ``Binding`` subclass with specified ``group_names``. At test you can  join to one of them, make some changes with target model and check received message. Lets test ``IntegerValueBinding`` from :doc:`data binding <binding>` with creating::"
+msgstr ""
+
+#: ../../testing.rst:276
 msgid "There is another situation with inbound binding. It is used with :ref:`multiplexing`, So we apply two routes: websocket route for demultiplexer and route with internal consumer for binding itself, connect to websocket entrypoint and test different actions. For example::"
 msgstr ""
 
-#: ../../testing.rst:288
+#: ../../testing.rst:307
 msgid "Multiple Channel Layers"
 msgstr ""
 
-#: ../../testing.rst:290
+#: ../../testing.rst:309
 msgid "If you want to test code that uses multiple channel layers, specify the alias of the layers you want to mock as the ``test_channel_aliases`` attribute on the ``ChannelTestCase`` subclass; by default, only the ``default`` layer is mocked."
 msgstr ""
 
-#: ../../testing.rst:295
+#: ../../testing.rst:314
 msgid "You can pass an ``alias`` argument to ``get_next_message``, ``Client`` and ``Channel`` to use a different layer too."
+msgstr ""
+
+#: ../../testing.rst:318
+msgid "Live Server Test Case"
+msgstr ""
+
+#: ../../testing.rst:320
+msgid "You can use browser automation libraries like Selenium or Splinter to check your application against real layer installation.  First of all provide ``TEST_CONFIG`` setting to prevent overlapping with running dev environment."
+msgstr ""
+
+#: ../../testing.rst:340
+msgid "Now use ``ChannelLiveServerTestCase`` for your acceptance tests."
+msgstr ""
+
+#: ../../testing.rst:356
+msgid "In the test above Daphne and Channels worker processes were fired up. These processes run your project against the test database and the default channel layer you spacify in the settings.  If channel layer support ``flush`` extension, initial cleanup will be done.  So do not run this code against your production environment.  When channels infrastructure is ready default web browser will be also started.  You can open your website in the real browser which can execute JavaScript and operate on WebSockets.  ``live_server_ws_url`` property is also provided if you decide to run messaging directly from Python."
+msgstr ""
+
+#: ../../testing.rst:366
+msgid "By default live server test case will serve static files.  To disable this feature override `serve_static` class attribute."
 msgstr ""
 

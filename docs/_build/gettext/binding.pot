@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-doc-tw package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-doc-tw 1.1.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-04-25 21:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,7 @@ msgid "Frontend Considerations"
 msgstr ""
 
 #: ../../binding.rst:139
-msgid "You can use the standard Channels WebSocket wrapper **(not yet available)** to automatically run demultiplexing, and then tie the events you receive into your frontend framework of choice based on ``action``, ``pk`` and ``data``."
+msgid "You can use the standard :doc:`Channels WebSocket wrapper <javascript>` to automatically run demultiplexing, and then tie the events you receive into your frontend framework of choice based on ``action``, ``pk`` and ``data``."
 msgstr ""
 
 #: ../../binding.rst:145
