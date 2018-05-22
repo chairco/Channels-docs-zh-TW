@@ -1,0 +1,456 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>消費者 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="路由" href="routing.html" />
+    <link rel="prev" title="教學第四章: 自動化測試" href="../tutorial/part_4.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="../tutorial/part_4.html" title="教學第四章: 自動化測試"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="consumers">
+<h1>消費者<a class="headerlink" href="#consumers" title="本標題的永久連結">¶</a></h1>
+<p>While Channels is built around a basic low-level spec called
+<a class="reference internal" href="../asgi.html"><span class="doc">ASGI</span></a>, it&#8217;s more designed for interoperability than for writing
+complex applications in. So, Channels provides you with Consumers, a rich
+abstraction that allows you to make ASGI applications easily.</p>
+<p>Consumers do a couple of things in particular:</p>
+<ul class="simple">
+<li>Structures your code as a series of functions to be called whenever an
+event happens, rather than making you write an event loop.</li>
+<li>Allow you to write synchronous or async code and deals with handoffs
+and threading for you.</li>
+</ul>
+<p>Of course, you are free to ignore consumers and use the other parts of
+Channels - like routing, session handling and authentication - with any
+ASGI app, but they&#8217;re generally the best way to write your application code.</p>
+<div class="section" id="basic-layout">
+<span id="sync-to-async"></span><h2>Basic Layout<a class="headerlink" href="#basic-layout" title="本標題的永久連結">¶</a></h2>
+<p>A consumer is a subclass of either <code class="docutils literal"><span class="pre">channels.consumer.AsyncConsumer</span></code> or
+<code class="docutils literal"><span class="pre">channels.consumer.SyncConsumer</span></code>. As these names suggest, one will expect
+you to write async-capable code, while the other will run your code
+synchronously in a threadpool for you.</p>
+<p>Let&#8217;s look at a basic example of a <code class="docutils literal"><span class="pre">SyncConsumer</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.consumer</span> <span class="k">import</span> <span class="n">SyncConsumer</span>
+
+<span class="k">class</span> <span class="nc">EchoConsumer</span><span class="p">(</span><span class="n">SyncConsumer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">websocket_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket.accept&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">websocket_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket.send&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
+<p>This is a very simple WebSocket echo server - it will accept all incoming
+WebSocket connections, and then reply to all incoming WebSocket text frames
+with the same text.</p>
+<p>Consumers are structured around a series of named methods corresponding to the
+<code class="docutils literal"><span class="pre">type</span></code> value of the messages they are going to receive, with any <code class="docutils literal"><span class="pre">.</span></code>
+replaced by <code class="docutils literal"><span class="pre">_</span></code>. The two handlers above are handling <code class="docutils literal"><span class="pre">websocket.connect</span></code>
+and <code class="docutils literal"><span class="pre">websocket.receive</span></code> messages respectively.</p>
+<p>How did we know what event types we were going to get and what would be
+in them (like <code class="docutils literal"><span class="pre">websocket.receive</span></code> having a <code class="docutils literal"><span class="pre">text</span></code>) key? That&#8217;s because we
+designed this against the ASGI WebSocket specification, which tells us how
+WebSockets are presented - read more about it in <a class="reference internal" href="../asgi.html"><span class="doc">ASGI</span></a> - and
+protected this application with a router that checks for a scope type of
+<code class="docutils literal"><span class="pre">websocket</span></code> - see more about that in <a class="reference internal" href="routing.html"><span class="doc">路由</span></a>.</p>
+<p>Apart from that, the only other basic API is <code class="docutils literal"><span class="pre">self.send(event)</span></code>. This lets
+you send events back to the client or protocol server as defined by the
+protocol - if you read the WebSocket protocol, you&#8217;ll see that the dict we
+send above is how you send a text frame to the client.</p>
+<p>The <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> is laid out very similarly, but all the handler methods
+must be coroutines, and <code class="docutils literal"><span class="pre">self.send</span></code> is a coroutine:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.consumer</span> <span class="k">import</span> <span class="n">AsyncConsumer</span>
+
+<span class="k">class</span> <span class="nc">EchoConsumer</span><span class="p">(</span><span class="n">AsyncConsumer</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket.accept&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket.send&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
+<p>When should you use <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> and when should you use <code class="docutils literal"><span class="pre">SyncConsumer</span></code>?
+The main thing to consider is what you&#8217;re talking to. If you call a slow
+synchronous function from inside an <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> you&#8217;re going to hold up
+the entire event loop, so they&#8217;re only useful if you&#8217;re also calling async
+code (for example, using <code class="docutils literal"><span class="pre">aiohttp</span></code> to fetch 20 pages in parallel).</p>
+<p>If you&#8217;re calling any part of Django&#8217;s ORM or other synchronous code, you
+should use a <code class="docutils literal"><span class="pre">SyncConsumer</span></code>, as this will run the whole consumer in a thread
+and stop your ORM queries blocking the entire server.</p>
+<p>We recommend that you <strong>write SyncConsumers by default</strong>, and only use
+AsyncConsumers in cases where you know you are doing something that would
+be improved by async handling (long-running tasks that could be done in
+parallel) <em>and</em> you are only using async-native libraries.</p>
+<p>If you really want to call a synchronous function from an <code class="docutils literal"><span class="pre">AsyncConsumer</span></code>,
+take a look at <code class="docutils literal"><span class="pre">asgiref.sync.sync_to_async</span></code>, which is the utility that Channels
+uses to run <code class="docutils literal"><span class="pre">SyncConsumers</span></code> in threadpools, and can turn any synchronous
+callable into an asynchronous coroutine.</p>
+<div class="admonition important">
+<p class="first admonition-title">重要</p>
+<p class="last">If you want to call the Django ORM from an <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> (or any other
+synchronous code), you should use the <code class="docutils literal"><span class="pre">database_sync_to_async</span></code> adapter
+instead. See <a class="reference internal" href="databases.html"><span class="doc">資料庫存取</span></a> for more.</p>
+</div>
+<div class="section" id="closing-consumers">
+<h3>Closing Consumers<a class="headerlink" href="#closing-consumers" title="本標題的永久連結">¶</a></h3>
+<p>When the socket or connection attached to your consumer is closed - either by
+you or the client - you will likely get an event sent to you (for example,
+<code class="docutils literal"><span class="pre">http.disconnect</span></code> or <code class="docutils literal"><span class="pre">websocket.disconnect</span></code>), and your application instance
+will be given a short amount of time to act on it.</p>
+<p>Once you have finished doing your post-disconnect cleanup, you need to raise
+<code class="docutils literal"><span class="pre">channels.exceptions.StopConsumer</span></code> to halt the ASGI application cleanly and
+let the server clean it up. If you leave it running - by not raising this
+exception - the server will reach its application close timeout (which is
+10 seconds by default in Daphne) and then kill your application and raise
+a warning.</p>
+<p>The generic consumers below do this for you, so this is only needed if you
+are writing your own consumer class based on <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> or
+<code class="docutils literal"><span class="pre">SyncConsumer</span></code>. However, if you override their <code class="docutils literal"><span class="pre">__call__</span></code> method, or
+block the handling methods that it calls from returning, you may still run into
+this; take a look at their source code if you want more information.</p>
+<p>Additionally, if you launch your own background coroutines, make sure to also
+shut them down when the connection is finished, or you&#8217;ll leak coroutines into
+the server.</p>
+</div>
+<div class="section" id="channel-layers">
+<h3>Channel Layers<a class="headerlink" href="#channel-layers" title="本標題的永久連結">¶</a></h3>
+<p>Consumers also let you deal with Channel&#8217;s <em>channel layers</em>, to let them
+send messages between each other either one-to-one or via a broadcast system
+called groups. You can read more in <a class="reference internal" href="channel_layers.html"><span class="doc">Channel Layers</span></a>.</p>
+</div>
+</div>
+<div class="section" id="scope">
+<span id="id1"></span><h2>Scope<a class="headerlink" href="#scope" title="本標題的永久連結">¶</a></h2>
+<p>Consumers receive the connection&#8217;s <code class="docutils literal"><span class="pre">scope</span></code> when they are initialised, which
+contains a lot of the information you&#8217;d find on the <code class="docutils literal"><span class="pre">request</span></code> object in a
+Django view. It&#8217;s available as <code class="docutils literal"><span class="pre">self.scope</span></code> inside the consumer&#8217;s methods.</p>
+<p>Scopes are part of the <a class="reference internal" href="../asgi.html"><span class="doc">ASGI specification</span></a>, but here are
+some common things you might want to use:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">scope[&quot;path&quot;]</span></code>, the path on the request. <em>(HTTP and WebSocket)</em></li>
+<li><code class="docutils literal"><span class="pre">scope[&quot;headers&quot;]</span></code>, raw name/value header pairs from the request <em>(HTTP and WebSocket)</em></li>
+<li><code class="docutils literal"><span class="pre">scope[&quot;method&quot;]</span></code>, the method name used for the request. <em>(HTTP)</em></li>
+</ul>
+<p>If you enable things like <a class="reference internal" href="authentication.html"><span class="doc">認證</span></a>, you&#8217;ll also be able to access
+the user object as <code class="docutils literal"><span class="pre">scope[&quot;user&quot;]</span></code>, and the URLRouter, for example, will
+put captured groups from the URL into <code class="docutils literal"><span class="pre">scope[&quot;url_route&quot;]</span></code>.</p>
+<p>In general, the scope is the place to get connection information and where
+middleware will put attributes it wants to let you access (in the same way
+that Django&#8217;s middleware adds things to <code class="docutils literal"><span class="pre">request</span></code>).</p>
+<p>For a full list of what can occur in a connection scope, look at the basic
+ASGI spec for the protocol you are terminating, plus any middleware or routing
+code you are using. The web (HTTP and WebSocket) scopes are available in
+<a class="reference external" href="https://github.com/django/asgiref/blob/master/specs/www.rst">the Web ASGI spec</a>.</p>
+</div>
+<div class="section" id="generic-consumers">
+<h2>Generic Consumers<a class="headerlink" href="#generic-consumers" title="本標題的永久連結">¶</a></h2>
+<p>What you see above is the basic layout of a consumer that works for any
+protocol. Much like Django&#8217;s <em>generic views</em>, Channels ships with
+<em>generic consumers</em> that wrap common functionality up so you don&#8217;t need to
+rewrite it, specifically for HTTP and WebSocket handling.</p>
+<div class="section" id="websocketconsumer">
+<h3>WebsocketConsumer<a class="headerlink" href="#websocketconsumer" title="本標題的永久連結">¶</a></h3>
+<p>Available as <code class="docutils literal"><span class="pre">channels.generic.websocket.WebsocketConsumer</span></code>, this
+wraps the verbose plain-ASGI message sending and receiving into handling that
+just deals with text and binary frames:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websocket</span> <span class="k">import</span> <span class="n">WebsocketConsumer</span>
+
+<span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;broadcast&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Called on connection.</span>
+        <span class="c1"># To accept the connection call:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="c1"># Or accept the connection and specify a chosen subprotocol.</span>
+        <span class="c1"># A list of subprotocols specified by the connecting client</span>
+        <span class="c1"># will be available in self.scope[&#39;subprotocols&#39;]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="s2">&quot;subprotocol&quot;</span><span class="p">)</span>
+        <span class="c1"># To reject the connection, call:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bytes_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Called with either text_data or bytes_data for each frame</span>
+        <span class="c1"># You can call:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+        <span class="c1"># Or, to send a binary frame:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">bytes_data</span><span class="o">=</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+        <span class="c1"># Want to force-close the connection? Call:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Or add a custom WebSocket error code!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">4123</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="c1"># Called when the socket closes</span>
+</pre></div>
+</div>
+<p>You can also raise <code class="docutils literal"><span class="pre">channels.exceptions.AcceptConnection</span></code> or
+<code class="docutils literal"><span class="pre">channels.exceptions.DenyConnection</span></code> from anywhere inside the <code class="docutils literal"><span class="pre">connect</span></code>
+method in order to accept or reject a connection, if you want reuseable
+authentication or rate-limiting code that doesn&#8217;t need to use mixins.</p>
+<p>A <code class="docutils literal"><span class="pre">WebsocketConsumer</span></code>&#8216;s channel will automatically be added to (on connect)
+and removed from (on disconnect) any groups whose names appear in the
+consumer&#8217;s <code class="docutils literal"><span class="pre">groups</span></code> class attribute. <code class="docutils literal"><span class="pre">groups</span></code> must be an iterable, and a
+channel layer with support for groups must be set as the channel backend
+(<code class="docutils literal"><span class="pre">channels.layers.InMemoryChannelLayer</span></code> and
+<code class="docutils literal"><span class="pre">channels_redis.core.RedisChannelLayer</span></code> both support groups). If no channel
+layer is configured or the channel layer doesn&#8217;t support groups, connecting
+to a <code class="docutils literal"><span class="pre">WebsocketConsumer</span></code> with a non-empty <code class="docutils literal"><span class="pre">groups</span></code> attribute will raise
+<code class="docutils literal"><span class="pre">channels.exceptions.InvalidChannelLayerError</span></code>. See <a class="reference internal" href="channel_layers.html#groups"><span class="std std-ref">Groups</span></a> for more.</p>
+</div>
+<div class="section" id="asyncwebsocketconsumer">
+<h3>AsyncWebsocketConsumer<a class="headerlink" href="#asyncwebsocketconsumer" title="本標題的永久連結">¶</a></h3>
+<p>Available as <code class="docutils literal"><span class="pre">channels.generic.websocket.AsyncWebsocketConsumer</span></code>, this has
+the exact same methods and signature as <code class="docutils literal"><span class="pre">WebsocketConsumer</span></code> but everything
+is async, and the functions you need to write have to be as well:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.websocket</span> <span class="k">import</span> <span class="n">AsyncWebsocketConsumer</span>
+
+<span class="k">class</span> <span class="nc">MyConsumer</span><span class="p">(</span><span class="n">AsyncWebsocketConsumer</span><span class="p">):</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;broadcast&quot;</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Called on connection.</span>
+        <span class="c1"># To accept the connection call:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="c1"># Or accept the connection and specify a chosen subprotocol.</span>
+        <span class="c1"># A list of subprotocols specified by the connecting client</span>
+        <span class="c1"># will be available in self.scope[&#39;subprotocols&#39;]</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="s2">&quot;subprotocol&quot;</span><span class="p">)</span>
+        <span class="c1"># To reject the connection, call:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bytes_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Called with either text_data or bytes_data for each frame</span>
+        <span class="c1"># You can call:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+        <span class="c1"># Or, to send a binary frame:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">bytes_data</span><span class="o">=</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+        <span class="c1"># Want to force-close the connection? Call:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Or add a custom WebSocket error code!</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">4123</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="c1"># Called when the socket closes</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="jsonwebsocketconsumer">
+<h3>JsonWebsocketConsumer<a class="headerlink" href="#jsonwebsocketconsumer" title="本標題的永久連結">¶</a></h3>
+<p>Available as <code class="docutils literal"><span class="pre">channels.generic.websocket.JsonWebsocketConsumer</span></code>, this
+works like <code class="docutils literal"><span class="pre">WebsocketConsumer</span></code>, except it will auto-encode and decode
+to JSON sent as WebSocket text frames.</p>
+<p>The only API differences are:</p>
+<ul class="simple">
+<li>Your <code class="docutils literal"><span class="pre">receive_json</span></code> method must take a single argument, <code class="docutils literal"><span class="pre">content</span></code>, that
+is the decoded JSON object.</li>
+<li><code class="docutils literal"><span class="pre">self.send_json</span></code> takes only a single argument, <code class="docutils literal"><span class="pre">content</span></code>, which will be
+encoded to JSON for you.</li>
+</ul>
+<p>If you want to customise the JSON encoding and decoding, you can override
+the <code class="docutils literal"><span class="pre">encode_json</span></code> and <code class="docutils literal"><span class="pre">decode_json</span></code> classmethods.</p>
+</div>
+<div class="section" id="asyncjsonwebsocketconsumer">
+<h3>AsyncJsonWebsocketConsumer<a class="headerlink" href="#asyncjsonwebsocketconsumer" title="本標題的永久連結">¶</a></h3>
+<p>An async version of <code class="docutils literal"><span class="pre">JsonWebsocketConsumer</span></code>, available as
+<code class="docutils literal"><span class="pre">channels.generic.websocket.AsyncJsonWebsocketConsumer</span></code>. Note that even
+<code class="docutils literal"><span class="pre">encode_json</span></code> and <code class="docutils literal"><span class="pre">decode_json</span></code> are async functions.</p>
+</div>
+<div class="section" id="asynchttpconsumer">
+<h3>AsyncHttpConsumer<a class="headerlink" href="#asynchttpconsumer" title="本標題的永久連結">¶</a></h3>
+<p>Available as <code class="docutils literal"><span class="pre">channels.generic.http.AsyncHttpConsumer</span></code>, this offers basic
+primitives to implement a HTTP endpoint:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.generic.http</span> <span class="k">import</span> <span class="n">AsyncHttpConsumer</span>
+
+<span class="k">class</span> <span class="nc">BasicHttpConsumer</span><span class="p">(</span><span class="n">AsyncHttpConsumer</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Your response bytes&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">),</span>
+        <span class="p">])</span>
+</pre></div>
+</div>
+<p>You are expected to implement your own <code class="docutils literal"><span class="pre">handle</span></code> method. The
+method receives the whole request body as a single bytestring.  Headers
+may either be passed as a list of tuples or as a dictionary. The
+response body content is expected to be a bytestring.</p>
+<p>You can also implement a <code class="docutils literal"><span class="pre">disconnect</span></code> method if you want to run code on
+disconnect - for example, to shut down any coroutines you launched. This will
+run even on an unclean disconnection, so don&#8217;t expect that <code class="docutils literal"><span class="pre">handle</span></code> has
+finished running cleanly.</p>
+<p>If you need more control over the response, e.g. for implementing long
+polling, use the lower level <code class="docutils literal"><span class="pre">self.send_headers</span></code> and <code class="docutils literal"><span class="pre">self.send_body</span></code>
+methods instead. This example already mentions channel layers which will
+be explained in detail later:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">channels.generic.http</span> <span class="k">import</span> <span class="n">AsyncHttpConsumer</span>
+
+<span class="k">class</span> <span class="nc">LongPollConsumer</span><span class="p">(</span><span class="n">AsyncHttpConsumer</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;application/json&quot;</span><span class="p">),</span>
+        <span class="p">])</span>
+        <span class="c1"># Headers are only sent after the first body event.</span>
+        <span class="c1"># Set &quot;more_body&quot; to tell the interface server to not</span>
+        <span class="c1"># finish the response yet:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_body</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">more_body</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># Send JSON and finish the response:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_body</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Of course you can also use those primitives to implement a HTTP endpoint for
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">channels.generic.http</span> <span class="k">import</span> <span class="n">AsyncHttpConsumer</span>
+
+<span class="k">class</span> <span class="nc">ServerSentEventsConsumer</span><span class="p">(</span><span class="n">AsyncHttpConsumer</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;Cache-Control&quot;</span><span class="p">,</span> <span class="s2">&quot;no-cache&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/event-stream&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;Transfer-Encoding&quot;</span><span class="p">,</span> <span class="s2">&quot;chunked&quot;</span><span class="p">),</span>
+        <span class="p">])</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="s2">&quot;data: </span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_body</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">more_body</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">消費者</a><ul>
+<li><a class="reference internal" href="#basic-layout">Basic Layout</a><ul>
+<li><a class="reference internal" href="#closing-consumers">Closing Consumers</a></li>
+<li><a class="reference internal" href="#channel-layers">Channel Layers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scope">Scope</a></li>
+<li><a class="reference internal" href="#generic-consumers">Generic Consumers</a><ul>
+<li><a class="reference internal" href="#websocketconsumer">WebsocketConsumer</a></li>
+<li><a class="reference internal" href="#asyncwebsocketconsumer">AsyncWebsocketConsumer</a></li>
+<li><a class="reference internal" href="#jsonwebsocketconsumer">JsonWebsocketConsumer</a></li>
+<li><a class="reference internal" href="#asyncjsonwebsocketconsumer">AsyncJsonWebsocketConsumer</a></li>
+<li><a class="reference internal" href="#asynchttpconsumer">AsyncHttpConsumer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="../tutorial/part_4.html"
+                        title="上一章">教學第四章: 自動化測試</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="routing.html"
+                        title="下一章">路由</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/consumers.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="../tutorial/part_4.html" title="教學第四章: 自動化測試"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

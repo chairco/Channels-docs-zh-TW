@@ -1,0 +1,551 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../channel_layer_spec.rst:3
+msgid "Channel Layer Specification"
+msgstr "Channel Layer 規範"
+
+#: ../../channel_layer_spec.rst:7
+msgid ""
+"Channel layers are now internal only to Channels, and not used as part of "
+"ASGI. This spec defines what Channels and applications written using it "
+"expect a channel layer to provide."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:12
+msgid "Abstract"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:14
+msgid ""
+"This document outlines a set of standardized definitions for *channels* and "
+"a *channel layer* which provides a mechanism to send and receive messages "
+"over them. They allow inter-process communication between different "
+"processes to help build applications that have messaging and events between "
+"different clients."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:21
+msgid "Overview"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:24
+msgid "Messages"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:26
+msgid ""
+"Messages must be a ``dict``. Because these messages are sometimes sent over "
+"a network, they need to be serializable, and so they are only allowed to "
+"contain the following types:"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:30
+msgid "Byte strings"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:31
+msgid "Unicode strings"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:32
+msgid "Integers (within the signed 64 bit range)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:33
+msgid "Floating point numbers (within the IEEE 754 double precision range)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:34
+msgid "Lists (tuples should be encoded as lists)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:35
+msgid "Dicts (keys must be unicode strings)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:36
+msgid "Booleans"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:37
+msgid "None"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:40
+msgid "Channels"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:42
+msgid ""
+"Channels are identified by a unicode string name consisting only of ASCII "
+"letters, ASCII numerical digits, periods (``.``), dashes (``-``) and "
+"underscores (``_``), plus an optional type character (see below)."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:46
+msgid ""
+"Channels are a first-in, first out queue with at-most-once delivery "
+"semantics. They can have multiple writers and multiple readers; only a "
+"single reader should get each written message. Implementations must never "
+"deliver a message more than once or to more than one reader, and must drop "
+"messages if this is necessary to achieve this restriction."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:52
+msgid ""
+"In order to aid with scaling and network architecture, a distinction is made"
+" between channels that have multiple readers and *process-specific channels*"
+" that are read from a single known process."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:56
+msgid ""
+"*Normal channel* names contain no type characters, and can be routed however"
+" the backend wishes; in particular, they do not have to appear globally "
+"consistent, and backends may shard their contents out to different servers "
+"so that a querying client only sees some portion of the messages. Calling "
+"``receive`` on these channels does not guarantee that you will get the "
+"messages in order or that you will get anything if the channel is non-empty."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:63
+msgid ""
+"*Process-specific channel* names contain an exclamation mark (``!``) that "
+"separates a remote and local part. These channels are received differently; "
+"only the name up to and including the ``!`` character is passed to the "
+"``receive()`` call, and it will receive any message on any channel with that"
+" prefix. This allows a process, such as a HTTP terminator, to listen on a "
+"single process-specific channel, and then distribute incoming requests to "
+"the appropriate client sockets using the local part (the part after the "
+"``!``). The local parts must be generated and managed by the process that "
+"consumes them. These channels, like single-reader channels, are guaranteed "
+"to give any extant messages in order if received from a single process."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:74
+msgid ""
+"Messages should expire after a set time sitting unread in a channel; the "
+"recommendation is one minute, though the best value depends on the channel "
+"layer and the way it is deployed, and it is recommended that users are "
+"allowed to configure the expiry time."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:79
+msgid ""
+"The maximum message size is 1MB if the message were encoded as JSON; if more"
+" data than this needs to be transmitted it must be chunked into smaller "
+"messages. All channel layers must support messages up to this size, but "
+"channel layer users are encouraged to keep well below it."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:88
+msgid "Extensions"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:90
+msgid ""
+"Extensions are functionality that is not required for basic application code"
+" and nearly all protocol server code, and so has been made optional in order"
+" to enable lightweight channel layers for applications that don't need the "
+"full feature set defined here."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:96
+msgid "The extensions defined here are:"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:98
+msgid ""
+"``groups``: Allows grouping of channels to allow broadcast; see below for "
+"more."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:99
+msgid "``flush``: Allows easier testing and development with channel layers."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:101
+msgid ""
+"There is potential to add further extensions; these may be defined by a "
+"separate specification, or a new version of this specification."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:104
+msgid ""
+"If application code requires an extension, it should check for it as soon as"
+" possible, and hard error if it is not provided. Frameworks should encourage"
+" optional use of extensions, while attempting to move any extension-not-"
+"found errors to process startup rather than message handling."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:111
+msgid "Asynchronous Support"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:113
+msgid ""
+"All channel layers must provide asynchronous (coroutine) methods for their "
+"primary endpoints. End-users will be able to achieve synchronous versions "
+"using the ``asgiref.sync.async_to_sync`` wrapper."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:119
+msgid "Groups"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:121
+msgid ""
+"While the basic channel model is sufficient to handle basic application "
+"needs, many more advanced uses of asynchronous messaging require notifying "
+"many users at once when an event occurs - imagine a live blog, for example, "
+"where every viewer should get a long poll response or WebSocket packet when "
+"a new entry is posted."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:127
+msgid ""
+"Thus, there is an *optional* groups extension which allows easier broadcast "
+"messaging to groups of channels. End-users are free, of course, to use just "
+"channel names and direct sending and build their own persistence/broadcast "
+"system instead."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:134
+msgid "Capacity"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:136
+msgid ""
+"To provide backpressure, each channel in a channel layer may have a "
+"capacity, defined however the layer wishes (it is recommended that it is "
+"configurable by the user using keyword arguments to the channel layer "
+"constructor, and furthermore configurable per channel name or name prefix)."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:141
+msgid ""
+"When a channel is at or over capacity, trying to send() to that channel may "
+"raise ChannelFull, which indicates to the sender the channel is over "
+"capacity. How the sender wishes to deal with this will depend on context; "
+"for example, a web application trying to send a response body will likely "
+"wait until it empties out again, while a HTTP interface server trying to "
+"send in a request would drop the request and return a 503 error."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:148
+msgid ""
+"Process-local channels must apply their capacity on the non-local part (that"
+" is, up to and including the ``!`` character), and so capacity is shared "
+"among all of the \"virtual\" channels inside it."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:152
+msgid ""
+"Sending to a group never raises ChannelFull; instead, it must silently drop "
+"the message if it is over capacity, as per ASGI's at-most-once delivery "
+"policy."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:158
+msgid "Specification Details"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:160
+msgid ""
+"A *channel layer* must provide an object with these attributes (all function"
+" arguments are positional):"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:163
+msgid ""
+"``coroutine send(channel, message)``, that takes two arguments: the channel "
+"to send on, as a unicode string, and the message to send, as a serializable "
+"``dict``."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:167
+msgid ""
+"``coroutine receive(channel)``, that takes a single channel name and returns"
+" the next received message on that channel."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:170
+msgid ""
+"``coroutine new_channel()``, which returns a new process-specific channel "
+"that can be used to give to a local coroutine or receiver."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:173
+msgid ""
+"``MessageTooLarge``, the exception raised when a send operation fails "
+"because the encoded message is over the layer's size limit."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:176
+msgid ""
+"``ChannelFull``, the exception raised when a send operation fails because "
+"the destination channel is over capacity."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:179
+msgid ""
+"``extensions``, a list of unicode string names indicating which extensions "
+"this layer provides, or an empty list if it supports none. The possible "
+"extensions can be seen in :ref:`asgi_extensions`."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:183
+msgid ""
+"A channel layer implementing the ``groups`` extension must also provide:"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:185
+msgid ""
+"``coroutine group_add(group, channel)``, that takes a ``channel`` and adds "
+"it to the group given by ``group``. Both are unicode strings. If the channel"
+" is already in the group, the function should return normally."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:189
+msgid ""
+"``coroutine group_discard(group, channel)``, that removes the ``channel`` "
+"from the ``group`` if it is in it, and does nothing otherwise."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:192
+msgid ""
+"``coroutine group_send(group, message)``, that takes two positional "
+"arguments; the group to send to, as a unicode string, and the message to "
+"send, as a serializable ``dict``. It may raise MessageTooLarge but cannot "
+"raise ChannelFull."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:197
+msgid ""
+"``group_expiry``, an integer number of seconds that specifies how long group"
+" membership is valid for after the most recent ``group_add`` call (see "
+"*Persistence* below)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:201
+msgid ""
+"A channel layer implementing the ``flush`` extension must also provide:"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:203
+msgid ""
+"``coroutine flush()``, that resets the channel layer to a blank state, "
+"containing no messages and no groups (if the groups extension is "
+"implemented). This call must block until the system is cleared and will "
+"consistently look empty to any client, if the channel layer is distributed."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:210
+msgid "Channel Semantics"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:212
+msgid "Channels **must**:"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:214
+msgid ""
+"Preserve ordering of messages perfectly with only a single reader and writer"
+" if the channel is a *single-reader* or *process-specific* channel."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:217
+msgid "Never deliver a message more than once."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:219
+msgid ""
+"Never block on message send (though they may raise ChannelFull or "
+"MessageTooLarge)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:222
+msgid ""
+"Be able to handle messages of at least 1MB in size when encoded as JSON (the"
+" implementation may use better encoding or compression, as long as it meets "
+"the equivalent size)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:226
+msgid "Have a maximum name length of at least 100 bytes."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:228
+msgid ""
+"They should attempt to preserve ordering in all cases as much as possible, "
+"but perfect global ordering is obviously not possible in the distributed "
+"case."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:231
+#, python-format
+msgid ""
+"They are not expected to deliver all messages, but a success rate of at "
+"least 99.99% is expected under normal circumstances. Implementations may "
+"want to have a \"resilience testing\" mode where they deliberately drop more"
+" messages than usual so developers can test their code's handling of these "
+"scenarios."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:238
+msgid "Persistence"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:240
+msgid ""
+"Channel layers do not need to persist data long-term; group memberships only"
+" need to live as long as a connection does, and messages only as long as the"
+" message expiry time, which is usually a couple of minutes."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:244
+msgid ""
+"If a channel layer implements the ``groups`` extension, it must persist "
+"group membership until at least the time when the member channel has a "
+"message expire due to non-consumption, after which it may drop membership at"
+" any time. If a channel subsequently has a successful delivery, the channel "
+"layer must then not drop group membership until another message expires on "
+"that channel."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:250
+msgid ""
+"Channel layers must also drop group membership after a configurable long "
+"timeout after the most recent ``group_add`` call for that membership, the "
+"default being 86,400 seconds (one day). The value of this timeout is exposed"
+" as the ``group_expiry`` property on the channel layer."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:257
+msgid "Approximate Global Ordering"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:259
+msgid ""
+"While maintaining true global (across-channels) ordering of messages is "
+"entirely unreasonable to expect of many implementations, they should strive "
+"to prevent busy channels from overpowering quiet channels."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:263
+msgid ""
+"For example, imagine two channels, ``busy``, which spikes to 1000 messages a"
+" second, and ``quiet``, which gets one message a second. There's a single "
+"consumer running ``receive(['busy', 'quiet'])`` which can handle around 200 "
+"messages a second."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:268
+msgid ""
+"In a simplistic for-loop implementation, the channel layer might always "
+"check ``busy`` first; it always has messages available, and so the consumer "
+"never even gets to see a message from ``quiet``, even if it was sent with "
+"the first batch of ``busy`` messages."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:273
+msgid ""
+"A simple way to solve this is to randomize the order of the channel list "
+"when looking for messages inside the channel layer; other, better methods "
+"are also available, but whatever is chosen, it should try to avoid a "
+"scenario where a message doesn't get received purely because another channel"
+" is busy."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:280
+msgid "Strings and Unicode"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:282
+msgid ""
+"In this document, and all sub-specifications, *byte string* refers to "
+"``str`` on Python 2 and ``bytes`` on Python 3. If this type still supports "
+"Unicode codepoints due to the underlying implementation, then any values "
+"should be kept within the 0 - 255 range."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:287
+msgid ""
+"*Unicode string* refers to ``unicode`` on Python 2 and ``str`` on Python 3. "
+"This document will never specify just *string* - all strings are one of the "
+"two exact types."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:291
+msgid ""
+"Some serializers, such as ``json``, cannot differentiate between byte "
+"strings and unicode strings; these should include logic to box one type as "
+"the other (for example, encoding byte strings as base64 unicode strings with"
+" a preceding special character, e.g. U+FFFF)."
+msgstr ""
+
+#: ../../channel_layer_spec.rst:296
+msgid ""
+"Channel and group names are always unicode strings, with the additional "
+"limitation that they only use the following characters:"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:299
+msgid "ASCII letters"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:300
+msgid "The digits ``0`` through ``9``"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:301
+msgid "Hyphen ``-``"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:302
+msgid "Underscore ``_``"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:303
+msgid "Period ``.``"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:304
+msgid ""
+"Question mark ``?`` (only to delineiate single-reader channel names, and "
+"only one per name)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:306
+msgid ""
+"Exclamation mark ``!`` (only to delineate process-specific channel names, "
+"and only one per name)"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:311
+msgid "Copyright"
+msgstr ""
+
+#: ../../channel_layer_spec.rst:313
+msgid "This document has been placed in the public domain."
+msgstr ""

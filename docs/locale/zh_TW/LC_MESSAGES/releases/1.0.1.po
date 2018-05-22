@@ -1,45 +1,46 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Yuan CHAO <yuanchao@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: ../../releases/1.0.1.rst:2
 msgid "1.0.1 Release Notes"
-msgstr "1.0.1 發布說明"
+msgstr ""
 
 #: ../../releases/1.0.1.rst:4
 msgid "Channels 1.0.1 is a minor bugfix release, released on 2017/01/09."
-msgstr "Channels 1.0.1 是一個修正臭蟲的小更新版，於 2017/01/09 發佈。"
+msgstr ""
 
 #: ../../releases/1.0.1.rst:7
 msgid "Changes"
-msgstr "修正內容"
+msgstr ""
 
 #: ../../releases/1.0.1.rst:9
 msgid ""
-"WebSocket generic views now accept connections by default in their connect "
-"handler for better backwards compatibility."
-msgstr "WebSocket 的通用 views 現在在 connect handler 預設接受連線，可以有比較好的向下相容性。"
+"WebSocket generic views now accept connections by default in their "
+"connect handler for better backwards compatibility."
+msgstr ""
 
 #: ../../releases/1.0.1.rst:14
 msgid "Backwards Incompatible Changes"
-msgstr "向下不相容的修正"
+msgstr ""
 
 #: ../../releases/1.0.1.rst:16
 msgid "None."
-msgstr "無"
+msgstr ""
+

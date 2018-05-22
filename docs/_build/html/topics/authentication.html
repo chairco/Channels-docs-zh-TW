@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>認證 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="安全性" href="security.html" />
+    <link rel="prev" title="對談 (Sessions)" href="sessions.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="security.html" title="安全性"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="sessions.html" title="對談 (Sessions)"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="authentication">
+<h1>認證<a class="headerlink" href="#authentication" title="本標題的永久連結">¶</a></h1>
+<p>Channels supports standard Django authentication out-of-the-box for HTTP and
+WebSocket consumers, and you can write your own middleware or handling code
+if you want to support a different authentication scheme (for example,
+tokens in the URL).</p>
+<div class="section" id="django-authentication">
+<h2>Django authentication<a class="headerlink" href="#django-authentication" title="本標題的永久連結">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">AuthMiddleware</span></code> in Channels supports standard Django authentication,
+where the user details are stored in the session. It allows read-only access
+to a user object in the <code class="docutils literal"><span class="pre">scope</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">AuthMiddleware</span></code> requires <code class="docutils literal"><span class="pre">SessionMiddleware</span></code> to function, which itself
+requires <code class="docutils literal"><span class="pre">CookieMiddleware</span></code>. For convenience, these are also provided
+as a combined callable called <code class="docutils literal"><span class="pre">AuthMiddlewareStack</span></code> that includes all three.</p>
+<p>To use the middleware, wrap it around the appropriate level of consumer
+in your <code class="docutils literal"><span class="pre">routing.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span><span class="p">,</span> <span class="n">URLRouter</span>
+<span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">AuthMiddlewareStack</span>
+
+<span class="kn">from</span> <span class="nn">myapp</span> <span class="k">import</span> <span class="n">consumers</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">AuthMiddlewareStack</span><span class="p">(</span>
+        <span class="n">URLRouter</span><span class="p">([</span>
+            <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^front(end)/$&quot;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">AsyncChatConsumer</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">),</span>
+
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>While you can wrap the middleware around each consumer individually,
+it&#8217;s recommended you wrap it around a higher-level application component,
+like in this case the <code class="docutils literal"><span class="pre">URLRouter</span></code>.</p>
+<p>Note that the <code class="docutils literal"><span class="pre">AuthMiddleware</span></code> will only work on protocols that provide
+HTTP headers in their <code class="docutils literal"><span class="pre">scope</span></code> - by default, this is HTTP and WebSocket.</p>
+<p>To access the user, just use <code class="docutils literal"><span class="pre">self.scope[&quot;user&quot;]</span></code> in your consumer code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-authentication">
+<h2>Custom Authentication<a class="headerlink" href="#custom-authentication" title="本標題的永久連結">¶</a></h2>
+<p>If you have a custom authentication scheme, you can write a custom middleware
+to parse the details and put a user object (or whatever other object you need)
+into your scope.</p>
+<p>Middleware is written as a callable that takes an ASGI application and wraps
+it to return another ASGI application. Most authentication can just be done
+on the scope, so all you need to do is override the initial constructor
+that takes a scope, rather than the event-running coroutine.</p>
+<p>Here&#8217;s a simple example of a middleware that just takes a user ID out of the
+query string and uses that:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">close_old_connections</span>
+
+<span class="k">class</span> <span class="nc">QueryAuthMiddleware</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom middleware (insecure) that takes user IDs from the query string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">):</span>
+        <span class="c1"># Store the ASGI application we were passed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner</span> <span class="o">=</span> <span class="n">inner</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">):</span>
+        <span class="c1"># Look up user from query string (you should also do things like</span>
+        <span class="c1"># check it&#39;s a valid user ID, or if scope[&quot;user&quot;] is already populated)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;query_string&quot;</span><span class="p">]))</span>
+        <span class="n">close_old_connections</span><span class="p">()</span>
+        <span class="c1"># Return the inner application directly and let it run everything else</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">Right now you will need to call <code class="docutils literal"><span class="pre">close_old_connections()</span></code> after any
+database code you call inside a middleware&#8217;s scope-setup method to ensure
+you don&#8217;t leak idle database connections. We hope to call this automatically
+in future versions of Channels.</p>
+</div>
+<p>The same principles can be applied to authenticate over non-HTTP protocols;
+for example, you might want to use someone&#8217;s chat username from a chat protocol
+to turn it into a user.</p>
+</div>
+<div class="section" id="how-to-log-a-user-in-out">
+<h2>How to log a user in/out<a class="headerlink" href="#how-to-log-a-user-in-out" title="本標題的永久連結">¶</a></h2>
+<p>Channels provides direct login and logout functions (much like Django&#8217;s
+<code class="docutils literal"><span class="pre">contrib.auth</span></code> package does) as <code class="docutils literal"><span class="pre">channels.auth.login</span></code> and
+<code class="docutils literal"><span class="pre">channels.auth.logout</span></code>.</p>
+<p>Within your consumer you can await <code class="docutils literal"><span class="pre">login(scope,</span> <span class="pre">user,</span> <span class="pre">backend=None)</span></code>
+to log a user in. This requires that your scope has a <code class="docutils literal"><span class="pre">session</span></code> object;
+the best way to do this is to ensure your consumer is wrapped in a
+<code class="docutils literal"><span class="pre">SessionMiddlewareStack</span></code> or a <code class="docutils literal"><span class="pre">AuthMiddlewareStack</span></code>.</p>
+<p>You can logout a user with the <code class="docutils literal"><span class="pre">logout(scope)</span></code> async function.</p>
+<p>If you are in a WebSocket consumer, or logging-in after the first response
+has been sent in a http consumer, the session is populated
+<strong>but will not be saved automatically</strong> - you must call
+<code class="docutils literal"><span class="pre">scope[&quot;session&quot;].save()</span></code> after login in your consumer code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">login</span>
+
+<span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">AsyncWebsocketConsumer</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="c1"># login the user to this session.</span>
+        <span class="k">await</span> <span class="n">login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+        <span class="c1"># save the session (if the session backend does not access the db you can use `sync_to_async`)</span>
+        <span class="k">await</span> <span class="n">database_sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">)()</span>
+</pre></div>
+</div>
+<p>When calling <code class="docutils literal"><span class="pre">login(scope,</span> <span class="pre">user)</span></code>, <code class="docutils literal"><span class="pre">logout(scope)</span></code> or <code class="docutils literal"><span class="pre">get_user(scope)</span></code>
+from a synchronous function you will need to wrap them in <code class="docutils literal"><span class="pre">async_to_sync</span></code>,
+as we only provide async versions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="k">import</span> <span class="n">async_to_sync</span>
+<span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">login</span>
+
+<span class="k">class</span> <span class="nc">SyncChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="n">login</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">If you are using a long running consumer, websocket or long-polling
+HTTP it is possible that the user will be logged out of their session
+elsewhere while your consumer is running. You can periodically use
+<code class="docutils literal"><span class="pre">get_user(scope)</span></code> to be sure that the user is still logged in.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">認證</a><ul>
+<li><a class="reference internal" href="#django-authentication">Django authentication</a></li>
+<li><a class="reference internal" href="#custom-authentication">Custom Authentication</a></li>
+<li><a class="reference internal" href="#how-to-log-a-user-in-out">How to log a user in/out</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="sessions.html"
+                        title="上一章">對談 (Sessions)</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="security.html"
+                        title="下一章">安全性</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/authentication.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="security.html" title="安全性"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="sessions.html" title="對談 (Sessions)"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

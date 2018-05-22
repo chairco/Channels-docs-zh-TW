@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../releases/2.0.0.rst:2
+msgid "2.0.0 Release Notes"
+msgstr ""
+
+#: ../../releases/2.0.0.rst:4
+msgid "Channels 2.0 is a major rewrite of Channels, introducing a large amount of changes to the fundamental design and architecture of Channels. Notably:"
+msgstr ""
+
+#: ../../releases/2.0.0.rst:7
+msgid "Data is no longer transported over a channel layer between protocol server and application; instead, applications run inside their protocol servers (like with WSGI)."
+msgstr ""
+
+#: ../../releases/2.0.0.rst:11
+msgid "To achieve this, the entire core of channels is now built around Python's ``asyncio`` framework and runs async-native down until it hits either a Django view or a synchronous consumer."
+msgstr ""
+
+#: ../../releases/2.0.0.rst:15
+msgid "Python 2.7 and 3.4 are no longer supported."
+msgstr ""
+
+#: ../../releases/2.0.0.rst:17
+msgid "More detailed information on the changes and tips on how to port your applications can be found in our :doc:`/one-to-two` documentation."
+msgstr ""
+
+#: ../../releases/2.0.0.rst:22
+msgid "Backwards Incompatible Changes"
+msgstr ""
+
+#: ../../releases/2.0.0.rst:24
+msgid "Channels 2 is regrettably not backwards-compatible at all with Channels 1 applications due to the large amount of re-architecting done to the code and the switch from synchronous to asynchronous runtimes."
+msgstr ""
+
+#: ../../releases/2.0.0.rst:28
+msgid "A :doc:`migration guide </one-to-two>` is available, and a lot of the basic concepts are the same, but the basic class structure and imports have changed."
+msgstr ""
+
+#: ../../releases/2.0.0.rst:31
+msgid "Our apologies for having to make a breaking change like this, but it was the only way to fix some of the fundamental design issues in Channels 1. Channels 1 will continue to receive security and data-loss fixes for the foreseeable future, but no new features will be added."
+msgstr ""
+

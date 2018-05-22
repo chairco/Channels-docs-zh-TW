@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../deploying.rst:2
+msgid "Deploying"
+msgstr ""
+
+#: ../../deploying.rst:4
+msgid "Channels 2 (ASGI) applications deploy similarly to WSGI applications - you load them into a server, like Daphne, and you can scale the number of server processes up and down."
+msgstr ""
+
+#: ../../deploying.rst:8
+msgid "The one optional extra requirement for a Channels project is to provision a :doc:`channel layer </topics/channel_layers>`. Both steps are covered below."
+msgstr ""
+
+#: ../../deploying.rst:13
+msgid "Configuring the ASGI application"
+msgstr ""
+
+#: ../../deploying.rst:15
+msgid "The one setting that Channels needs to run is ``ASGI_APPLICATION``, which tells Channels what the *root application* of your project is. As discussed in :doc:`/topics/routing`, this is almost certainly going to be your top-level (Protocol Type) router."
+msgstr ""
+
+#: ../../deploying.rst:20
+msgid "It should be a dotted path to the instance of the router; this is generally going to be in a file like ``myproject/routing.py``::"
+msgstr ""
+
+#: ../../deploying.rst:27
+msgid "Setting up a channel backend"
+msgstr ""
+
+#: ../../deploying.rst:31
+msgid "This step is optional. If you aren't using the channel layer, skip this section."
+msgstr ""
+
+#: ../../deploying.rst:34
+msgid "Typically a channel backend will connect to one or more central servers that serve as the communication layer - for example, the Redis backend connects to a Redis server. All this goes into the ``CHANNEL_LAYERS`` setting; here's an example for a remote Redis server::"
+msgstr ""
+
+#: ../../deploying.rst:48
+msgid "To use the Redis backend you have to install it::"
+msgstr ""
+
+#: ../../deploying.rst:54
+msgid "Run protocol servers"
+msgstr ""
+
+#: ../../deploying.rst:56
+msgid "In order to talk to the outside world, your Channels/ASGI application needs to be loaded into a *protocol server*. These can be like WSGI servers and run your application in a HTTP mode, but they can also bridge to any number of other protocols (chat protocols, IoT protocols, even radio networks)."
+msgstr ""
+
+#: ../../deploying.rst:61
+msgid "All these servers have their own configuration options, but they all have one thing in common - they will want you to pass them an ASGI application to run. Because Django needs to run setup for things like models when it loads in, you can't just pass in the same variable as you configured in ``ASGI_APPLICATION`` above; you need a bit more code to get Django ready."
+msgstr ""
+
+#: ../../deploying.rst:67
+msgid "In your project directory, you'll already have a file called ``wsgi.py`` that does this to present Django as a WSGI application. Make a new file alongside it called ``asgi.py`` and put this in it::"
+msgstr ""
+
+#: ../../deploying.rst:84
+msgid "If you have any customizations in your ``wsgi.py`` to do additional things on application start, or different ways of loading settings, you can do those in here as well."
+msgstr ""
+
+#: ../../deploying.rst:88
+msgid "Now you have this file, all you need to do is pass the ``application`` object inside it to your protocol server as the application it should run::"
+msgstr ""
+
+#: ../../deploying.rst:95
+msgid "HTTP and WebSocket"
+msgstr ""
+
+#: ../../deploying.rst:97
+msgid "While ASGI is a general protocol and we can't cover all possible servers here, it's very likely you will want to deploy a Channels project to work over HTTP and potentially WebSocket, so we'll cover that in some more detail."
+msgstr ""
+
+#: ../../deploying.rst:101
+msgid "The Channels project maintains an official ASGI HTTP/WebSocket server, `Daphne <https://github.com/django/daphne>`_, and it's this that we'll talk about configuring. Other HTTP/WebSocket ASGI servers are possible and will work just as well provided they follow the spec, but will have different configuration."
+msgstr ""
+
+#: ../../deploying.rst:106
+msgid "You can choose to either use Daphne for all requests - HTTP and WebSocket - or if you are conservative about stability, keep running standard HTTP requests through a WSGI server and use Daphne only for things WSGI cannot do, like HTTP long-polling and WebSockets. If you do split, you'll need to put something in front of Daphne and your WSGI server to work out what requests to send to each (using HTTP path or domain) - that's not covered here, just know you can do it."
+msgstr ""
+
+#: ../../deploying.rst:114
+msgid "If you use Daphne for all traffic, it auto-negotiates between HTTP and WebSocket, so there's no need to have your WebSockets on a separate domain or path (and they'll be able to share cookies with your normal view code, which isn't possible if you separate by domain rather than path)."
+msgstr ""
+
+#: ../../deploying.rst:119
+msgid "To run Daphne, it just needs to be supplied with an application, much like a WSGI server would need to be. Make sure you have an ``asgi.py`` file as outlined above."
+msgstr ""
+
+#: ../../deploying.rst:123
+msgid "Then, you can run Daphne and supply the channel layer as the argument::"
+msgstr ""
+
+#: ../../deploying.rst:127
+msgid "You should run Daphne inside either a process supervisor (systemd, supervisord) or a container orchestration system (kubernetes, nomad) to ensure that it gets restarted if needed and to allow you to scale the number of processes."
+msgstr ""
+
+#: ../../deploying.rst:131
+msgid "If you want to bind multiple Daphne instances to the same port on a machine, use a process supervisor that can listen on ports and pass the file descriptors to launched processes, and then pass the file descriptor with ``--fd NUM``."
+msgstr ""
+
+#: ../../deploying.rst:135
+msgid "You can also specify the port and IP that Daphne binds to::"
+msgstr ""
+
+#: ../../deploying.rst:139
+msgid "You can see more about Daphne and its options `on GitHub <https://github.com/django/daphne>`_."
+msgstr ""
+

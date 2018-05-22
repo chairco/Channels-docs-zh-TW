@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>貢獻 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
+    <title>貢獻力量 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.5',
+        VERSION:     '2.1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="發行版本說明" href="releases/index.html" />
+    <link rel="next" title="發行說明" href="releases/index.html" />
     <link rel="prev" title="社群專案" href="community.html" /> 
   </head>
   <body role="document">
@@ -38,12 +38,12 @@
           <a href="genindex.html" title="總索引"
              accesskey="I">索引</a></li>
         <li class="right" >
-          <a href="releases/index.html" title="發行版本說明"
+          <a href="releases/index.html" title="發行說明"
              accesskey="N">下一頁</a> |</li>
         <li class="right" >
           <a href="community.html" title="社群專案"
              accesskey="P">上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -53,20 +53,18 @@
           <div class="body" role="main">
             
   <div class="section" id="contributing">
-<h1>貢獻<a class="headerlink" href="#contributing" title="本標題的永久連結">¶</a></h1>
-<p>若你正在尋找Channels合作方式，請繼續閱讀-我們提倡各種合作任何規模，從新聞到經驗豐富的開發人員。</p>
+<h1>貢獻力量<a class="headerlink" href="#contributing" title="本標題的永久連結">¶</a></h1>
+<p>If you&#8217;re looking to contribute to Channels, then please read on - we encourage
+contributions both large and small, from both novice and seasoned developers.</p>
 <div class="section" id="what-can-i-work-on">
-<h2>我可以運用在什麼？<a class="headerlink" href="#what-can-i-work-on" title="本標題的永久連結">¶</a></h2>
-<p>我們正在尋找以下領域的幫助:</p>
+<h2>What can I work on?<a class="headerlink" href="#what-can-i-work-on" title="本標題的永久連結">¶</a></h2>
+<p>We&#8217;re looking for help with the following areas:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p class="first">文件與教程書寫</p>
-</li>
-<li><p class="first">錯誤修正與測試</p>
-</li>
+<li>Documentation and tutorial writing</li>
+<li>Bugfixing and testing</li>
 <li>Feature polish and occasional new feature design</li>
-<li><p class="first">案例研究及書寫</p>
-</li>
+<li>Case studies and writeups</li>
 </ul>
 </div></blockquote>
 <p>You can find what we&#8217;re looking to work on in the GitHub issues list for each
@@ -76,12 +74,10 @@ of the Channels sub-projects:</p>
 <li><a class="reference external" href="https://github.com/django/channels/issues/">Channels issues</a>, for the Django integration and overall project efforts</li>
 <li><a class="reference external" href="https://github.com/django/daphne/issues/">Daphne issues</a>, for the HTTP and Websocket termination</li>
 <li><a class="reference external" href="https://github.com/django/asgiref/issues/">asgiref issues</a>, for the base ASGI library/memory backend</li>
-<li><a class="reference external" href="https://github.com/django/asgi_redis/issues/">asgi_redis issues</a>, for the Redis channel backend</li>
-<li><a class="reference external" href="https://github.com/proofit404/asgi_rabbitmq/">asgi_rabbitmq</a>, for the RabbitMQ channel backend</li>
-<li><a class="reference external" href="https://github.com/django/asgi_ipc/issues/">asgi_ipc issues</a>, for the POSIX IPC channel backend</li>
+<li><a class="reference external" href="https://github.com/django/channels_redis/issues/">channels_redis issues</a>, for the Redis channel backend</li>
 </ul>
 </div></blockquote>
-<p>議題依層級分類：</p>
+<p>Issues are categorized by difficulty level:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">exp/beginner</span></code>: Easy issues suitable for a first-time contributor.</li>
@@ -108,14 +104,14 @@ wish to do and discuss it first if it&#8217;s relatively large (but if you just 
 a small bug and want to fix it, sending us a pull request straight away is fine).</p>
 </div>
 <div class="section" id="i-m-a-novice-contributor-developer-can-i-help">
-<h2>我是一個初階 合作/開發人員 - 我可以幫什麼？<a class="headerlink" href="#i-m-a-novice-contributor-developer-can-i-help" title="本標題的永久連結">¶</a></h2>
+<h2>I&#8217;m a novice contributor/developer - can I help?<a class="headerlink" href="#i-m-a-novice-contributor-developer-can-i-help" title="本標題的永久連結">¶</a></h2>
 <p>Of course! The issues labelled with <code class="docutils literal"><span class="pre">exp/beginner</span></code> are a perfect place to
 get started, as they&#8217;re usually small and well defined. If you want help with
 one of them, pop into the IRC channel at <code class="docutils literal"><span class="pre">#django-channels</span></code> on Freenode or
 get in touch with Andrew directly at <a class="reference external" href="mailto:andrew&#37;&#52;&#48;aeracode&#46;org">andrew<span>&#64;</span>aeracode<span>&#46;</span>org</a>.</p>
 </div>
 <div class="section" id="can-you-pay-me-for-my-time">
-<h2>你能支付我的時間嗎？<a class="headerlink" href="#can-you-pay-me-for-my-time" title="本標題的永久連結">¶</a></h2>
+<h2>Can you pay me for my time?<a class="headerlink" href="#can-you-pay-me-for-my-time" title="本標題的永久連結">¶</a></h2>
 <p>Thanks to Mozilla, we have a reasonable budget to pay people for their time
 working on all of the above sorts of tasks and more. Generally, we&#8217;d prefer
 to fund larger projects (you can find these labelled as <code class="docutils literal"><span class="pre">epic-project</span></code> in the
@@ -142,10 +138,10 @@ and if they would be sensible to do.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">貢獻</a><ul>
-<li><a class="reference internal" href="#what-can-i-work-on">我可以運用在什麼？</a></li>
-<li><a class="reference internal" href="#i-m-a-novice-contributor-developer-can-i-help">我是一個初階 合作/開發人員 - 我可以幫什麼？</a></li>
-<li><a class="reference internal" href="#can-you-pay-me-for-my-time">你能支付我的時間嗎？</a></li>
+<li><a class="reference internal" href="#">貢獻力量</a><ul>
+<li><a class="reference internal" href="#what-can-i-work-on">What can I work on?</a></li>
+<li><a class="reference internal" href="#i-m-a-novice-contributor-developer-can-i-help">I&#8217;m a novice contributor/developer - can I help?</a></li>
+<li><a class="reference internal" href="#can-you-pay-me-for-my-time">Can you pay me for my time?</a></li>
 </ul>
 </li>
 </ul>
@@ -155,7 +151,7 @@ and if they would be sensible to do.</p>
                         title="上一章">社群專案</a></p>
   <h4>下一個主題</h4>
   <p class="topless"><a href="releases/index.html"
-                        title="下一章">發行版本說明</a></p>
+                        title="下一章">發行說明</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -184,12 +180,12 @@ and if they would be sensible to do.</p>
           <a href="genindex.html" title="總索引"
              >索引</a></li>
         <li class="right" >
-          <a href="releases/index.html" title="發行版本說明"
+          <a href="releases/index.html" title="發行說明"
              >下一頁</a> |</li>
         <li class="right" >
           <a href="community.html" title="社群專案"
              >上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

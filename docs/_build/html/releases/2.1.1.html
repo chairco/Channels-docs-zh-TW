@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2.1.1 Release Notes &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="prev" title="2.1.0 Release Notes" href="2.1.0.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="2.1.0.html" title="2.1.0 Release Notes"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">發行說明</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="release-notes">
+<h1>2.1.1 Release Notes<a class="headerlink" href="#release-notes" title="本標題的永久連結">¶</a></h1>
+<p>Channels 2.1.1 is a bugfix release for an important bug in the new async
+authentication code.</p>
+<div class="section" id="major-changes">
+<h2>Major Changes<a class="headerlink" href="#major-changes" title="本標題的永久連結">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="bugfixes-small-changes">
+<h2>Bugfixes &amp; Small Changes<a class="headerlink" href="#bugfixes-small-changes" title="本標題的永久連結">¶</a></h2>
+<p>Previously, the object in <code class="docutils literal"><span class="pre">scope[&quot;user&quot;]</span></code> was one of Django&#8217;s
+SimpleLazyObjects, which then called our <code class="docutils literal"><span class="pre">get_user</span></code> async function via
+<code class="docutils literal"><span class="pre">async_to_sync</span></code>.</p>
+<p>This worked fine when called from SyncConsumers, but because
+async environments do not run attribute access in an async fashion, when
+the body of an async consumer tried to call it, the <code class="docutils literal"><span class="pre">asgiref</span></code> library
+flagged an error where the code was trying to call a synchronous function
+during a async context.</p>
+<p>To fix this, the User object is now loaded non-lazily on application startup.
+This introduces a blocking call during the synchronous application
+constructor, so the ASGI spec has been updated to recommend that constructors
+for ASGI apps are called in a threadpool and Daphne 2.1.1 implements this
+and is recommended for use with this release.</p>
+</div>
+<div class="section" id="backwards-incompatible-changes">
+<h2>Backwards Incompatible Changes<a class="headerlink" href="#backwards-incompatible-changes" title="本標題的永久連結">¶</a></h2>
+<p>None.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.1.1 Release Notes</a><ul>
+<li><a class="reference internal" href="#major-changes">Major Changes</a></li>
+<li><a class="reference internal" href="#bugfixes-small-changes">Bugfixes &amp; Small Changes</a></li>
+<li><a class="reference internal" href="#backwards-incompatible-changes">Backwards Incompatible Changes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="2.1.0.html"
+                        title="上一章">2.1.0 Release Notes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releases/2.1.1.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="2.1.0.html" title="2.1.0 Release Notes"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >發行說明</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

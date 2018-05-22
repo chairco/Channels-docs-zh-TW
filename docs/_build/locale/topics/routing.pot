@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../topics/routing.rst:2
+msgid "Routing"
+msgstr ""
+
+#: ../../topics/routing.rst:4
+msgid "While consumers are valid :doc:`ASGI </asgi>` applications, you don't want to just write one and have that be the only thing you can give to protocol servers like Daphne. Channels provides routing classes that allow you to combine and stack your consumers (and any other valid ASGI application) to dispatch based on what the connection is."
+msgstr ""
+
+#: ../../topics/routing.rst:12
+msgid "Channels routers only work on the *scope* level, not on the level of individual *events*, which means you can only have one consumer for any given connection. Routing is to work out what single consumer to give a connection, not how to spread events from one connection across multiple consumers."
+msgstr ""
+
+#: ../../topics/routing.rst:18
+msgid "Routers are themselves valid ASGI applications, and it's possible to nest them. We suggest that you have a ``ProtocolTypeRouter`` as the root application of your project - the one that you pass to protocol servers - and nest other, more protocol-specific routing underneath there."
+msgstr ""
+
+#: ../../topics/routing.rst:23
+msgid "Channels expects you to be able to define a single *root application*, and provide the path to it as the ``ASGI_APPLICATION`` setting (think of this as being analagous to the ``ROOT_URLCONF`` setting in Django). There's no fixed rule as to where you need to put the routing and the root application, but we recommend putting them in a project-level file called ``routing.py``, next to ``urls.py``. You can read more about deploying Channels projects and settings in :doc:`/deploying`."
+msgstr ""
+
+#: ../../topics/routing.rst:31
+msgid "Here's an example of what that ``routing.py`` might look like::"
+msgstr ""
+
+#: ../../topics/routing.rst:56
+msgid "It's possible to have routers from third-party apps, too, or write your own, but we'll go over the built-in Channels ones here."
+msgstr ""
+
+#: ../../topics/routing.rst:61
+msgid "ProtocolTypeRouter"
+msgstr ""
+
+#: ../../topics/routing.rst:63
+msgid "``channels.routing.ProtocolTypeRouter``"
+msgstr ""
+
+#: ../../topics/routing.rst:65
+msgid "This should be the top level of your ASGI application stack and the main entry in your routing file."
+msgstr ""
+
+#: ../../topics/routing.rst:68
+msgid "It lets you dispatch to one of a number of other ASGI applications based on the ``type`` value present in the ``scope``. Protocols will define a fixed type value that their scope contains, so you can use this to distinguish between incoming connection types."
+msgstr ""
+
+#: ../../topics/routing.rst:73
+msgid "It takes a single argument - a dictionary mapping type names to ASGI applications that serve them::"
+msgstr ""
+
+#: ../../topics/routing.rst:81
+msgid "If a ``http`` argument is not provided, it will default to the Django view system's ASGI interface, ``channels.http.AsgiHandler``, which means that for most projects that aren't doing custom long-poll HTTP handling, you can simply not specify a ``http`` option and leave it to work the \"normal\" Django way."
+msgstr ""
+
+#: ../../topics/routing.rst:86
+msgid "If you want to split HTTP handling between long-poll handlers and Django views, use a URLRouter with ``channels.http.AsgiHandler`` specified as the last entry with a match-everything pattern."
+msgstr ""
+
+#: ../../topics/routing.rst:92
+msgid "URLRouter"
+msgstr ""
+
+#: ../../topics/routing.rst:94
+msgid "``channels.routing.URLRouter``"
+msgstr ""
+
+#: ../../topics/routing.rst:96
+msgid "Routes ``http`` or ``websocket`` type connections via their HTTP path. Takes a single argument, a list of Django URL objects (either ``path()`` or ``url()``)::"
+msgstr ""
+
+#: ../../topics/routing.rst:105
+msgid "Any captured groups will be provided in ``scope`` as the key ``url_route``, a dict with a ``kwargs`` key containing a dict of the named regex groups and an ``args`` key with a list of positional regex groups. Note that named and unnamed groups cannot be mixed: Positional groups are discarded as soon as a single named group is matched."
+msgstr ""
+
+#: ../../topics/routing.rst:111
+msgid "For example, to pull out the named group ``stream`` in the example above, you would do this::"
+msgstr ""
+
+#: ../../topics/routing.rst:116
+msgid "Please note that ``URLRouter`` nesting will not work properly with ``path()`` routes if inner routers are wrapped by additional middleware."
+msgstr ""
+
+#: ../../topics/routing.rst:121
+msgid "ChannelNameRouter"
+msgstr ""
+
+#: ../../topics/routing.rst:123
+msgid "``channels.routing.ChannelNameRouter``"
+msgstr ""
+
+#: ../../topics/routing.rst:125
+msgid "Routes ``channel`` type scopes based on the value of the ``channel`` key in their scope. Intended for use with the :doc:`/topics/worker`."
+msgstr ""
+
+#: ../../topics/routing.rst:128
+msgid "It takes a single argument - a dictionary mapping channel names to ASGI applications that serve them::"
+msgstr ""
+

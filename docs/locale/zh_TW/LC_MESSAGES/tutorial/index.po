@@ -1,0 +1,40 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../tutorial/index.rst:2
+msgid "Tutorial"
+msgstr "教學"
+
+#: ../../tutorial/index.rst:4
+msgid ""
+"Channels allows you to use WebSockets and other non-HTTP protocols in your "
+"Django site. For example you might want to use WebSockets to allow a page on"
+" your site to immediately receive updates from your Django server without "
+"using HTTP long-polling or other expensive techniques."
+msgstr ""
+
+#: ../../tutorial/index.rst:9
+msgid ""
+"In this tutorial we will build a simple chat server, where you can join an "
+"online room, post messages to the room, and have others in the same room see"
+" those messages immediately."
+msgstr ""

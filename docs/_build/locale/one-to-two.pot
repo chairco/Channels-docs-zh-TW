@@ -1,0 +1,226 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../one-to-two.rst:2
+msgid "What's new in Channels 2?"
+msgstr ""
+
+#: ../../one-to-two.rst:4
+msgid "Channels 1 and Channels 2 are substantially different codebases, and the upgrade **is a major one**. While we have attempted to keep things as familiar and backwards-compatible as possible, major architectural shifts mean you will need at least some code changes to upgrade."
+msgstr ""
+
+#: ../../one-to-two.rst:11
+msgid "Requirements"
+msgstr ""
+
+#: ../../one-to-two.rst:13
+msgid "First of all, Channels 2 is *Python 3.5 and up only*."
+msgstr ""
+
+#: ../../one-to-two.rst:15
+msgid "If you are using Python 2, or a previous version of Python 3, you cannot use Channels 2 as it relies on the ``asyncio`` library and native Python async support. This decision was a tough one, but ultimately Channels is a library built around async functionality and so to not use these features would be foolish in the long run."
+msgstr ""
+
+#: ../../one-to-two.rst:21
+msgid "Apart from that, there are no major changed requirements, and in fact Channels 2 deploys do not need separate worker and server processes and so should be easier to manage."
+msgstr ""
+
+#: ../../one-to-two.rst:27
+msgid "Conceptual Changes"
+msgstr ""
+
+#: ../../one-to-two.rst:29
+msgid "The fundamental layout and concepts of how Channels work have been significantly changed; you'll need to understand how and why to help in upgrading."
+msgstr ""
+
+#: ../../one-to-two.rst:34
+msgid "Channel Layers and Processes"
+msgstr ""
+
+#: ../../one-to-two.rst:36
+msgid "Channels 1 terminated HTTP and WebSocket connections in a separate process to the one that ran Django code, and shuffled requests and events between them over a cross-process *channel layer*, based on Redis or similar."
+msgstr ""
+
+#: ../../one-to-two.rst:40
+msgid "This not only meant that all request data had to be re-serialized over the network, but that you needed to deploy and scale two separate sets of servers. Channels 2 changes this by running the Django code in-process via a threadpool, meaning that the network termination and application logic are combined, like WSGI."
+msgstr ""
+
+#: ../../one-to-two.rst:48
+msgid "Application Instances"
+msgstr ""
+
+#: ../../one-to-two.rst:50
+msgid "Because of this, all processing for a socket happens in the same process, so ASGI applications are now instantiated once per socket and can use local variables on ``self`` to store information, rather than the ``channel_session`` storage provided before (that is now gone entirely)."
+msgstr ""
+
+#: ../../one-to-two.rst:55
+msgid "The channel layer is now only used to communicate between processes for things like broadcast messaging - in particular, you can talk to other application instances in direct events, rather than having to send directly to client sockets."
+msgstr ""
+
+#: ../../one-to-two.rst:59
+msgid "This means, for example, to broadcast a chat message, you would now send a new-chat-message event to every application instance that needed it, and the application code can handle that event, serialize the message down to the socket format, and send it out (and apply things like multiplexing)."
+msgstr ""
+
+#: ../../one-to-two.rst:66
+msgid "New Consumers"
+msgstr ""
+
+#: ../../one-to-two.rst:68
+msgid "Because of these changes, the way consumers work has also significantly changed. Channels 2 is now a turtles-all-the-way-down design; every aspect of the system is designed as a valid ASGI application, including consumers and the routing system."
+msgstr ""
+
+#: ../../one-to-two.rst:73
+msgid "The consumer base classes have changed, though if you were using the generic consumers before, the way they work is broadly similar. However, the way that user authentication, sessions, multiplexing, and similar features work has changed."
+msgstr ""
+
+#: ../../one-to-two.rst:80
+msgid "Full Async"
+msgstr ""
+
+#: ../../one-to-two.rst:82
+msgid "Channels 2 is also built on a fundamental async foundation, and all servers are actually running an asynchronous event loop and only jumping to synchronous code when you interact with the Django view system or ORM. That means that you, too, can write fully asychronous code if you wish."
+msgstr ""
+
+#: ../../one-to-two.rst:87
+msgid "It's not a requirement, but it's there if you need it. We also provide convenience methods that let you jump between synchronous and asynchronous worlds easily, with correct blocking semantics, so you can write most of a consumer in an async style and then have one method that calls the Django ORM run synchronously."
+msgstr ""
+
+#: ../../one-to-two.rst:95
+msgid "Removed Components"
+msgstr ""
+
+#: ../../one-to-two.rst:97
+msgid "The binding framework has been removed entirely - it was a simplistic implementation, and it being in the core package prevented people from exploring their own solutions. It's likely similar concepts and APIs will appear in a third-party (non-official-Django) package as an option for those who want them."
+msgstr ""
+
+#: ../../one-to-two.rst:104
+msgid "How to Upgrade"
+msgstr ""
+
+#: ../../one-to-two.rst:106
+msgid "While this is not an exhaustive guide, here are some rough rules on how to proceed with an upgrade."
+msgstr ""
+
+#: ../../one-to-two.rst:109
+msgid "Given the major changes to the architecture and layout of Channels 2, it is likely that upgrading will be a significant rewrite of your code, depending on what you are doing."
+msgstr ""
+
+#: ../../one-to-two.rst:113
+msgid "It is **not** a drop-in replacement; we would have done this if we could, but changing to ``asyncio`` and Python 3 made it almost impossible to keep things backwards-compatible, and we wanted to correct some major design decisions."
+msgstr ""
+
+#: ../../one-to-two.rst:120
+msgid "Function-based consumers and Routing"
+msgstr ""
+
+#: ../../one-to-two.rst:122
+msgid "Channels 1 allowed you to route by event type (e.g. ``websocket.connect``) and pass individual functions with routing that looked like this::"
+msgstr ""
+
+#: ../../one-to-two.rst:129
+msgid "And function-based consumers that looked like this::"
+msgstr ""
+
+#: ../../one-to-two.rst:134
+msgid "You'll need to convert these to be class-based consumers, as routing is now done once, at connection time, and so all the event handlers have to be together in a single ASGI application. In addition, URL arguments are no longer passed down into the individual functions - instead, they will be provided in ``scope`` as the key ``url_route``, a dict with an ``args`` key containing a list of positional regex groups and a ``kwargs`` key with a dict of the named groups."
+msgstr ""
+
+#: ../../one-to-two.rst:141
+msgid "Routing is also now the main entry point, so you will need to change routing to have a ProtocolTypeRouter with URLRouters nested inside it. See :doc:`/topics/routing` for more."
+msgstr ""
+
+#: ../../one-to-two.rst:147
+msgid "channel_session and enforce_ordering"
+msgstr ""
+
+#: ../../one-to-two.rst:149
+msgid "Any use of the ``channel_session`` or ``enforce_ordering`` decorators can be removed; ordering is now always followed as protocols are handled in the same process, and ``channel_session`` is not needed as the same application instance now handles all traffic from a single client."
+msgstr ""
+
+#: ../../one-to-two.rst:154
+msgid "Anywhere you stored information in the ``channel_session`` can be replaced by storing it on ``self`` inside a consumer."
+msgstr ""
+
+#: ../../one-to-two.rst:159
+msgid "HTTP sessions and Django auth"
+msgstr ""
+
+#: ../../one-to-two.rst:161
+msgid "All :doc:`authentication </topics/authentication>` and :doc:`sessions </topics/session>` are now done with middleware. You can remove any decorators that handled them, like ``http_session``, ``channel_session_user`` and so on (in fact, there are no decorators in Channels 2 - it's all middleware)."
+msgstr ""
+
+#: ../../one-to-two.rst:166
+msgid "To get auth now, wrap your URLRouter in an ``AuthMiddlewareStack``::"
+msgstr ""
+
+#: ../../one-to-two.rst:179
+msgid "You need to replace accesses to ``message.http_session`` with ``self.scope[\"session\"]``, and ``message.user`` with ``self.scope[\"user\"]``. There is no need to do a handoff like ``channel_session_user_from_http`` any more - just wrap the auth middleware around and the user will be in the scope for the lifetime of the connection."
+msgstr ""
+
+#: ../../one-to-two.rst:187
+msgid "Channel Layers"
+msgstr ""
+
+#: ../../one-to-two.rst:189
+msgid "Channel layers are now an optional part of Channels, and the interface they need to provide has changed to be async. Only ``channels_redis``, formerly known as ``asgi_redis``, has been updated to match so far."
+msgstr ""
+
+#: ../../one-to-two.rst:193
+msgid "Settings are still similar to before, but there is no longer a ``ROUTING`` key (the base routing is instead defined with ``ASGI_APPLICATION``)::"
+msgstr ""
+
+#: ../../one-to-two.rst:205
+msgid "All consumers have a ``self.channel_layer`` and ``self.channel_name`` object that is populated if you've configured a channel layer. Any messages you send to the ``channel_name`` will now go to the consumer rather than directly to the client - see the :doc:`/topics/channel_layers` documentation for more."
+msgstr ""
+
+#: ../../one-to-two.rst:210
+msgid "The method names are largely the same, but they're all now awaitables rather than synchronous functions, and ``send_group`` is now ``group_send``."
+msgstr ""
+
+#: ../../one-to-two.rst:215
+msgid "Group objects"
+msgstr ""
+
+#: ../../one-to-two.rst:217
+msgid "Group objects no longer exist; instead you should use the ``group_add``, ``group_discard``, and ``group_send`` methods on the ``self.channel_layer`` object inside of a consumer directly. As an example::"
+msgstr ""
+
+#: ../../one-to-two.rst:233
+msgid "Delay server"
+msgstr ""
+
+#: ../../one-to-two.rst:235
+msgid "If you used the delay server before to put things on hold for a few seconds, you can now instead use an ``AsyncConsumer`` and ``asyncio.sleep``::"
+msgstr ""
+
+#: ../../one-to-two.rst:248
+msgid "Testing"
+msgstr ""
+
+#: ../../one-to-two.rst:250
+msgid "The :doc:`testing framework </topics/testing>` has been entirely rewritten to be async-based."
+msgstr ""
+
+#: ../../one-to-two.rst:253
+msgid "While this does make writing tests a lot easier and cleaner, it means you must entirely rewrite any consumer tests completely - there is no backwards-compatible interface with the old testing client as it was synchronous. You can read more about the new testing framework in the :doc:`testing documentation </topics/testing>`."
+msgstr ""
+
+#: ../../one-to-two.rst:259
+msgid "Also of note is that the live test case class has been renamed from ``ChannelLiveServerTestCase`` to ``ChannelsLiveServerTestCase`` - note the extra ``s``."
+msgstr ""
+

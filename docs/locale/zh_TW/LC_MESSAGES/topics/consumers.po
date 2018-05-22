@@ -1,0 +1,398 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../topics/consumers.rst:2
+msgid "Consumers"
+msgstr "消費者"
+
+#: ../../topics/consumers.rst:4
+msgid ""
+"While Channels is built around a basic low-level spec called :doc:`ASGI "
+"</asgi>`, it's more designed for interoperability than for writing complex "
+"applications in. So, Channels provides you with Consumers, a rich "
+"abstraction that allows you to make ASGI applications easily."
+msgstr ""
+
+#: ../../topics/consumers.rst:9
+msgid "Consumers do a couple of things in particular:"
+msgstr ""
+
+#: ../../topics/consumers.rst:11
+msgid ""
+"Structures your code as a series of functions to be called whenever an event"
+" happens, rather than making you write an event loop."
+msgstr ""
+
+#: ../../topics/consumers.rst:14
+msgid ""
+"Allow you to write synchronous or async code and deals with handoffs and "
+"threading for you."
+msgstr ""
+
+#: ../../topics/consumers.rst:17
+msgid ""
+"Of course, you are free to ignore consumers and use the other parts of "
+"Channels - like routing, session handling and authentication - with any ASGI"
+" app, but they're generally the best way to write your application code."
+msgstr ""
+
+#: ../../topics/consumers.rst:25
+msgid "Basic Layout"
+msgstr ""
+
+#: ../../topics/consumers.rst:27
+msgid ""
+"A consumer is a subclass of either ``channels.consumer.AsyncConsumer`` or "
+"``channels.consumer.SyncConsumer``. As these names suggest, one will expect "
+"you to write async-capable code, while the other will run your code "
+"synchronously in a threadpool for you."
+msgstr ""
+
+#: ../../topics/consumers.rst:32
+msgid "Let's look at a basic example of a ``SyncConsumer``::"
+msgstr ""
+
+#: ../../topics/consumers.rst:49
+msgid ""
+"This is a very simple WebSocket echo server - it will accept all incoming "
+"WebSocket connections, and then reply to all incoming WebSocket text frames "
+"with the same text."
+msgstr ""
+
+#: ../../topics/consumers.rst:53
+msgid ""
+"Consumers are structured around a series of named methods corresponding to "
+"the ``type`` value of the messages they are going to receive, with any ``.``"
+" replaced by ``_``. The two handlers above are handling "
+"``websocket.connect`` and ``websocket.receive`` messages respectively."
+msgstr ""
+
+#: ../../topics/consumers.rst:58
+msgid ""
+"How did we know what event types we were going to get and what would be in "
+"them (like ``websocket.receive`` having a ``text``) key? That's because we "
+"designed this against the ASGI WebSocket specification, which tells us how "
+"WebSockets are presented - read more about it in :doc:`ASGI </asgi>` - and "
+"protected this application with a router that checks for a scope type of "
+"``websocket`` - see more about that in :doc:`/topics/routing`."
+msgstr ""
+
+#: ../../topics/consumers.rst:65
+msgid ""
+"Apart from that, the only other basic API is ``self.send(event)``. This lets"
+" you send events back to the client or protocol server as defined by the "
+"protocol - if you read the WebSocket protocol, you'll see that the dict we "
+"send above is how you send a text frame to the client."
+msgstr ""
+
+#: ../../topics/consumers.rst:70
+msgid ""
+"The ``AsyncConsumer`` is laid out very similarly, but all the handler "
+"methods must be coroutines, and ``self.send`` is a coroutine::"
+msgstr ""
+
+#: ../../topics/consumers.rst:88
+msgid ""
+"When should you use ``AsyncConsumer`` and when should you use "
+"``SyncConsumer``? The main thing to consider is what you're talking to. If "
+"you call a slow synchronous function from inside an ``AsyncConsumer`` you're"
+" going to hold up the entire event loop, so they're only useful if you're "
+"also calling async code (for example, using ``aiohttp`` to fetch 20 pages in"
+" parallel)."
+msgstr ""
+
+#: ../../topics/consumers.rst:94
+msgid ""
+"If you're calling any part of Django's ORM or other synchronous code, you "
+"should use a ``SyncConsumer``, as this will run the whole consumer in a "
+"thread and stop your ORM queries blocking the entire server."
+msgstr ""
+
+#: ../../topics/consumers.rst:98
+msgid ""
+"We recommend that you **write SyncConsumers by default**, and only use "
+"AsyncConsumers in cases where you know you are doing something that would be"
+" improved by async handling (long-running tasks that could be done in "
+"parallel) *and* you are only using async-native libraries."
+msgstr ""
+
+#: ../../topics/consumers.rst:103
+msgid ""
+"If you really want to call a synchronous function from an ``AsyncConsumer``,"
+" take a look at ``asgiref.sync.sync_to_async``, which is the utility that "
+"Channels uses to run ``SyncConsumers`` in threadpools, and can turn any "
+"synchronous callable into an asynchronous coroutine."
+msgstr ""
+
+#: ../../topics/consumers.rst:110
+msgid ""
+"If you want to call the Django ORM from an ``AsyncConsumer`` (or any other "
+"synchronous code), you should use the ``database_sync_to_async`` adapter "
+"instead. See :doc:`/topics/databases` for more."
+msgstr ""
+
+#: ../../topics/consumers.rst:116
+msgid "Closing Consumers"
+msgstr ""
+
+#: ../../topics/consumers.rst:118
+msgid ""
+"When the socket or connection attached to your consumer is closed - either "
+"by you or the client - you will likely get an event sent to you (for "
+"example, ``http.disconnect`` or ``websocket.disconnect``), and your "
+"application instance will be given a short amount of time to act on it."
+msgstr ""
+
+#: ../../topics/consumers.rst:123
+msgid ""
+"Once you have finished doing your post-disconnect cleanup, you need to raise"
+" ``channels.exceptions.StopConsumer`` to halt the ASGI application cleanly "
+"and let the server clean it up. If you leave it running - by not raising "
+"this exception - the server will reach its application close timeout (which "
+"is 10 seconds by default in Daphne) and then kill your application and raise"
+" a warning."
+msgstr ""
+
+#: ../../topics/consumers.rst:130
+msgid ""
+"The generic consumers below do this for you, so this is only needed if you "
+"are writing your own consumer class based on ``AsyncConsumer`` or "
+"``SyncConsumer``. However, if you override their ``__call__`` method, or "
+"block the handling methods that it calls from returning, you may still run "
+"into this; take a look at their source code if you want more information."
+msgstr ""
+
+#: ../../topics/consumers.rst:136
+msgid ""
+"Additionally, if you launch your own background coroutines, make sure to "
+"also shut them down when the connection is finished, or you'll leak "
+"coroutines into the server."
+msgstr ""
+
+#: ../../topics/consumers.rst:142
+msgid "Channel Layers"
+msgstr ""
+
+#: ../../topics/consumers.rst:144
+msgid ""
+"Consumers also let you deal with Channel's *channel layers*, to let them "
+"send messages between each other either one-to-one or via a broadcast system"
+" called groups. You can read more in :doc:`/topics/channel_layers`."
+msgstr ""
+
+#: ../../topics/consumers.rst:152
+msgid "Scope"
+msgstr ""
+
+#: ../../topics/consumers.rst:154
+msgid ""
+"Consumers receive the connection's ``scope`` when they are initialised, "
+"which contains a lot of the information you'd find on the ``request`` object"
+" in a Django view. It's available as ``self.scope`` inside the consumer's "
+"methods."
+msgstr ""
+
+#: ../../topics/consumers.rst:158
+msgid ""
+"Scopes are part of the :doc:`ASGI specification </asgi>`, but here are some "
+"common things you might want to use:"
+msgstr ""
+
+#: ../../topics/consumers.rst:161
+msgid "``scope[\"path\"]``, the path on the request. *(HTTP and WebSocket)*"
+msgstr ""
+
+#: ../../topics/consumers.rst:162
+msgid ""
+"``scope[\"headers\"]``, raw name/value header pairs from the request *(HTTP "
+"and WebSocket)*"
+msgstr ""
+
+#: ../../topics/consumers.rst:163
+msgid "``scope[\"method\"]``, the method name used for the request. *(HTTP)*"
+msgstr ""
+
+#: ../../topics/consumers.rst:165
+msgid ""
+"If you enable things like :doc:`authentication`, you'll also be able to "
+"access the user object as ``scope[\"user\"]``, and the URLRouter, for "
+"example, will put captured groups from the URL into "
+"``scope[\"url_route\"]``."
+msgstr ""
+
+#: ../../topics/consumers.rst:169
+msgid ""
+"In general, the scope is the place to get connection information and where "
+"middleware will put attributes it wants to let you access (in the same way "
+"that Django's middleware adds things to ``request``)."
+msgstr ""
+
+#: ../../topics/consumers.rst:173
+msgid ""
+"For a full list of what can occur in a connection scope, look at the basic "
+"ASGI spec for the protocol you are terminating, plus any middleware or "
+"routing code you are using. The web (HTTP and WebSocket) scopes are "
+"available in `the Web ASGI spec "
+"<https://github.com/django/asgiref/blob/master/specs/www.rst>`_."
+msgstr ""
+
+#: ../../topics/consumers.rst:180
+msgid "Generic Consumers"
+msgstr ""
+
+#: ../../topics/consumers.rst:182
+msgid ""
+"What you see above is the basic layout of a consumer that works for any "
+"protocol. Much like Django's *generic views*, Channels ships with *generic "
+"consumers* that wrap common functionality up so you don't need to rewrite "
+"it, specifically for HTTP and WebSocket handling."
+msgstr ""
+
+#: ../../topics/consumers.rst:189
+msgid "WebsocketConsumer"
+msgstr ""
+
+#: ../../topics/consumers.rst:191
+msgid ""
+"Available as ``channels.generic.websocket.WebsocketConsumer``, this wraps "
+"the verbose plain-ASGI message sending and receiving into handling that just"
+" deals with text and binary frames::"
+msgstr ""
+
+#: ../../topics/consumers.rst:225
+msgid ""
+"You can also raise ``channels.exceptions.AcceptConnection`` or "
+"``channels.exceptions.DenyConnection`` from anywhere inside the ``connect`` "
+"method in order to accept or reject a connection, if you want reuseable "
+"authentication or rate-limiting code that doesn't need to use mixins."
+msgstr ""
+
+#: ../../topics/consumers.rst:230
+msgid ""
+"A ``WebsocketConsumer``'s channel will automatically be added to (on "
+"connect) and removed from (on disconnect) any groups whose names appear in "
+"the consumer's ``groups`` class attribute. ``groups`` must be an iterable, "
+"and a channel layer with support for groups must be set as the channel "
+"backend (``channels.layers.InMemoryChannelLayer`` and "
+"``channels_redis.core.RedisChannelLayer`` both support groups). If no "
+"channel layer is configured or the channel layer doesn't support groups, "
+"connecting to a ``WebsocketConsumer`` with a non-empty ``groups`` attribute "
+"will raise ``channels.exceptions.InvalidChannelLayerError``. See "
+":ref:`groups` for more."
+msgstr ""
+
+#: ../../topics/consumers.rst:242
+msgid "AsyncWebsocketConsumer"
+msgstr ""
+
+#: ../../topics/consumers.rst:244
+msgid ""
+"Available as ``channels.generic.websocket.AsyncWebsocketConsumer``, this has"
+" the exact same methods and signature as ``WebsocketConsumer`` but "
+"everything is async, and the functions you need to write have to be as "
+"well::"
+msgstr ""
+
+#: ../../topics/consumers.rst:280
+msgid "JsonWebsocketConsumer"
+msgstr ""
+
+#: ../../topics/consumers.rst:282
+msgid ""
+"Available as ``channels.generic.websocket.JsonWebsocketConsumer``, this "
+"works like ``WebsocketConsumer``, except it will auto-encode and decode to "
+"JSON sent as WebSocket text frames."
+msgstr ""
+
+#: ../../topics/consumers.rst:286
+msgid "The only API differences are:"
+msgstr ""
+
+#: ../../topics/consumers.rst:288
+msgid ""
+"Your ``receive_json`` method must take a single argument, ``content``, that "
+"is the decoded JSON object."
+msgstr ""
+
+#: ../../topics/consumers.rst:291
+msgid ""
+"``self.send_json`` takes only a single argument, ``content``, which will be "
+"encoded to JSON for you."
+msgstr ""
+
+#: ../../topics/consumers.rst:294
+msgid ""
+"If you want to customise the JSON encoding and decoding, you can override "
+"the ``encode_json`` and ``decode_json`` classmethods."
+msgstr ""
+
+#: ../../topics/consumers.rst:299
+msgid "AsyncJsonWebsocketConsumer"
+msgstr ""
+
+#: ../../topics/consumers.rst:301
+msgid ""
+"An async version of ``JsonWebsocketConsumer``, available as "
+"``channels.generic.websocket.AsyncJsonWebsocketConsumer``. Note that even "
+"``encode_json`` and ``decode_json`` are async functions."
+msgstr ""
+
+#: ../../topics/consumers.rst:307
+msgid "AsyncHttpConsumer"
+msgstr ""
+
+#: ../../topics/consumers.rst:309
+msgid ""
+"Available as ``channels.generic.http.AsyncHttpConsumer``, this offers basic "
+"primitives to implement a HTTP endpoint::"
+msgstr ""
+
+#: ../../topics/consumers.rst:321
+msgid ""
+"You are expected to implement your own ``handle`` method. The method "
+"receives the whole request body as a single bytestring.  Headers may either "
+"be passed as a list of tuples or as a dictionary. The response body content "
+"is expected to be a bytestring."
+msgstr ""
+
+#: ../../topics/consumers.rst:326
+msgid ""
+"You can also implement a ``disconnect`` method if you want to run code on "
+"disconnect - for example, to shut down any coroutines you launched. This "
+"will run even on an unclean disconnection, so don't expect that ``handle`` "
+"has finished running cleanly."
+msgstr ""
+
+#: ../../topics/consumers.rst:331
+msgid ""
+"If you need more control over the response, e.g. for implementing long "
+"polling, use the lower level ``self.send_headers`` and ``self.send_body`` "
+"methods instead. This example already mentions channel layers which will be "
+"explained in detail later::"
+msgstr ""
+
+#: ../../topics/consumers.rst:353
+msgid ""
+"Of course you can also use those primitives to implement a HTTP endpoint for"
+" `Server-sent events <https://developer.mozilla.org/en-US/docs/Web/API"
+"/Server-sent_events>`_::"
+msgstr ""

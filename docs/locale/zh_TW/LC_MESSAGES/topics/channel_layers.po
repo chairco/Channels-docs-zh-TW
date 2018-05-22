@@ -1,0 +1,276 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../topics/channel_layers.rst:2
+msgid "Channel Layers"
+msgstr "Channel Layers"
+
+#: ../../topics/channel_layers.rst:4
+msgid ""
+"Channel layers allow you to talk between different instances of an "
+"application. They're a useful part of making a distributed realtime "
+"application if you don't want to have to shuttle all of your messages or "
+"events through a database."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:8
+msgid ""
+"Additionally, they can also be used in combination with a worker process to "
+"make a basic task queue or to offload tasks - read more in "
+":doc:`/topics/worker`."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:12
+msgid ""
+"Channels does not ship with any channel layers you can use out of the box, "
+"as each one depends on a different way of transporting data across a "
+"network. We would recommend you use ``channels_redis``, which is an offical "
+"Django-maintained layer that uses Redis as a transport and what we'll focus "
+"the examples on here."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:19
+msgid ""
+"Channel layers are an entirely optional part of Channels as of version 2.0. "
+"If you don't want to use them, just leave ``CHANNEL_LAYERS`` unset, or set "
+"it to the empty dict ``{}``."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:23
+msgid ""
+"Messages across channel layers also go to consumers/ASGI application "
+"instances, just like events from the client, and so they now need a ``type``"
+" key as well. See more below."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:30
+msgid ""
+"Channel layers have a purely async interface (for both send and receive); "
+"you will need to wrap them in a converter if you want to call them from "
+"synchronous code (see below)."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:36
+msgid "Configuration"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:38
+msgid ""
+"Channel layers are configured via the ``CHANNEL_LAYERS`` Django setting. It "
+"generally looks something like this::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:50
+msgid ""
+"You can get the default channel layer from a project with "
+"``channels.layers.get_channel_layer()``, but if you are using consumers a "
+"copy is automatically provided for you on the consumer as "
+"``self.channel_layer``."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:56
+msgid "Synchronous Functions"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:58
+msgid ""
+"By default the ``send()``, ``group_send()``, ``group_add()`` and other "
+"functions are async functions, meaning you have to ``await`` them. If you "
+"need to call them from synchronous code, you'll need to use the handy "
+"``asgiref.sync.async_to_sync`` wrapper::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:69
+msgid "What To Send Over The Channel Layer"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:71
+msgid ""
+"Unlike in Channels 1, the channel layer is only for high-level application-"
+"to-application communication. When you send a message, it is received by the"
+" consumers listening to the group or channel on the other end, and not "
+"transported to that consumer's socket directly."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:76
+msgid ""
+"What this means is that you should send high-level events over the channel "
+"layer, and then have consumers handle those events and do appropriate low-"
+"level networking to their attached client."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:80
+msgid ""
+"For example, the `multichat example <https://github.com/andrewgodwin"
+"/channels-examples/tree/master/multichat>`_ in Andrew Godwin's ``channels-"
+"examples`` repository sends events like this over the channel layer::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:94
+msgid ""
+"And then the consumers define a handling function to receive those events "
+"and turn them into WebSocket frames::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:111
+msgid ""
+"Any consumer based on Channels' ``SyncConsumer`` or ``AsyncConsumer`` will "
+"automatically provide you a ``self.channel_layer`` and ``self.channel_name``"
+" attribute, which contains a pointer to the channel layer instance and the "
+"channel name that will reach the consumer respectively."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:116
+msgid ""
+"Any message sent to that channel name - or to a group the channel name was "
+"added to - will be received by the consumer much like an event from its "
+"connected client, and dispatched to a named method on the consumer. The name"
+" of the method will be the ``type`` of the event with periods replaced by "
+"underscores - so, for example, an event coming in over the channel layer "
+"with a ``type`` of ``chat.join`` will be handled by the method "
+"``chat_join``."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:125
+msgid ""
+"If you are inheriting from the ``AsyncConsumer`` class tree, all your event "
+"handlers, including ones for events over the channel layer, must be "
+"asynchronous (``async def``). If you are in the ``SyncConsumer`` class tree "
+"instead, they must all be synchronous (``def``)."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:132
+msgid "Single Channels"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:134
+msgid ""
+"Each application instance - so, for example, each long-running HTTP request "
+"or open WebSocket - results in a single Consumer instance, and if you have "
+"channel layers enabled, Consumers will generate a unique *channel name* for "
+"themselves, and start listening on it for events."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:139
+msgid ""
+"This means you can send those consumers events from outside the process - "
+"from other consumers, maybe, or from management commands - and they will "
+"react to them and run code just like they would events from their client "
+"connection."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:143
+msgid ""
+"The channel name is available on a consumer as ``self.channel_name``. Here's"
+" an example of writing the channel name into a database upon connection, and"
+" then specifying a handler method for events on it::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:162
+msgid ""
+"Note that, because you're mixing event handling from the channel layer and "
+"from the protocol connection, you need to make sure that your type names do "
+"not clash. It's recommended you prefix type names (like we did here with "
+"``chat.``) to avoid clashes."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:167
+msgid ""
+"To send to a single channel, just find its channel name (for the example "
+"above, we could crawl the database), and use ``channel_layer.send``::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:182
+msgid "Groups"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:184
+msgid ""
+"Obviously, sending to individual channels isn't particularly useful - in "
+"most cases you'll want to send to multiple channels/consumers at once as a "
+"broadcast. Not only for cases like a chat where you want to send incoming "
+"messages to everyone in the room, but even for sending to an individual user"
+" who might have more than one browser tab or device connected."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:190
+msgid ""
+"You can construct your own solution for this if you like, using your "
+"existing datastores, or use the Groups system built-in to some channel "
+"layers. Groups are a broadcast system that:"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:194
+msgid ""
+"Allows you to add and remove channel names from named groups, and send to "
+"those named groups."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:197
+msgid ""
+"Provides group expiry for clean-up of connections whose disconnect handler "
+"didn't get to run (e.g. power failure)"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:200
+msgid ""
+"They do not allow you to enumerate or list the channels in a group; it's a "
+"pure broadcast system. If you need more precise control or need to know who "
+"is connected, you should build your own system or use a suitable third-party"
+" one."
+msgstr ""
+
+#: ../../topics/channel_layers.rst:205
+msgid ""
+"You use groups by adding a channel to them during connection, and removing "
+"it during disconnection, illustrated here on the WebSocket generic "
+"consumer::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:220
+msgid ""
+"Then, to send to a group, use ``group_send``, like in this small example "
+"which broadcasts chat messages to every connected socket when combined with "
+"the code above::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:242
+msgid "Using Outside Of Consumers"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:244
+msgid ""
+"You'll often want to send to the channel layer from outside of the scope of "
+"a consumer, and so you won't have ``self.channel_layer``. In this case, you "
+"should use the ``get_channel_layer`` function to retrieve it::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:251
+msgid ""
+"Then, once you have it, you can just call methods on it. Remember that "
+"**channel layers only support async methods**, so you can either call it "
+"from your own asynchronous context::"
+msgstr ""
+
+#: ../../topics/channel_layers.rst:261
+msgid "Or you'll need to use async_to_sync::"
+msgstr ""

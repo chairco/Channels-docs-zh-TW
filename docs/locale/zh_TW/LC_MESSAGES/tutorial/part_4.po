@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../tutorial/part_4.rst:2
+msgid "Tutorial Part 4: Automated Testing"
+msgstr "教學第四章: 自動化測試"
+
+#: ../../tutorial/part_4.rst:4
+msgid ""
+"This tutorial begins where :doc:`Tutorial 3 </tutorial/part_3>` left off. "
+"We've built a simple chat server and now we'll create some automated tests "
+"for it."
+msgstr ""
+
+#: ../../tutorial/part_4.rst:8
+msgid "Testing the views"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:10
+msgid ""
+"To ensure that the chat server keeps working, we will write some tests."
+msgstr ""
+
+#: ../../tutorial/part_4.rst:12
+msgid ""
+"We will write a suite of end-to-end tests using Selenium to control a Chrome"
+" web browser. These tests will ensure that:"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:15
+msgid ""
+"when a chat message is posted then it is seen by everyone in the same room"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:16
+msgid ""
+"when a chat message is posted then it is not seen by anyone in a different "
+"room"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:18
+msgid "`Install the Chrome web browser`_, if you do not already have it."
+msgstr ""
+
+#: ../../tutorial/part_4.rst:20
+msgid "`Install chromedriver`_."
+msgstr ""
+
+#: ../../tutorial/part_4.rst:22
+msgid "Install Selenium. Run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:29
+msgid ""
+"Create a new file ``chat/tests.py``. Your app directory should now look "
+"like::"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:43
+msgid "Put the following code in ``chat/tests.py``::"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:140
+msgid ""
+"Our test suite extends ``ChannelsLiveServerTestCase`` rather than Django's "
+"usual suites for end-to-end tests (``StaticLiveServerTestCase`` or "
+"``LiveServerTestCase``) so that URLs inside the Channels routing "
+"configuration like ``/ws/room/ROOM_NAME/`` will work inside the suite."
+msgstr ""
+
+#: ../../tutorial/part_4.rst:145
+msgid "To run the tests, run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:149
+msgid "You should see output that looks like::"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:160
+msgid "You now have a tested chat server!"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:163
+msgid "What's next?"
+msgstr ""
+
+#: ../../tutorial/part_4.rst:165
+msgid ""
+"Congratulations! You've fully implemented a chat server, made it performant "
+"by writing it in asynchronous style, and written automated tests to ensure "
+"it won't break."
+msgstr ""
+
+#: ../../tutorial/part_4.rst:169
+msgid ""
+"This is the end of the tutorial. At this point you should know enough to "
+"start an app of your own that uses Channels and start fooling around. As you"
+" need to learn new tricks, come back to rest of the :ref:`documentation "
+"<topics>`."
+msgstr ""

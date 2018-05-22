@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Jason <chairco@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: ../../releases/1.0.2.rst:2
 msgid "1.0.2 Release Notes"
@@ -34,18 +34,18 @@ msgstr ""
 msgid ""
 "Websockets can now be closed from anywhere using the new "
 "``WebsocketCloseException``, available as "
-"``channels.exceptions.WebsocketCloseException(code=None)``. There is also a "
-"generic ``ChannelSocketException`` you can base any exceptions on that, if "
-"it is caught, gets handed the current ``message`` in a ``run`` method, so "
-"you can do custom behaviours."
+"``channels.exceptions.WebsocketCloseException(code=None)``. There is also"
+" a generic ``ChannelSocketException`` you can base any exceptions on "
+"that, if it is caught, gets handed the current ``message`` in a ``run`` "
+"method, so you can do custom behaviours."
 msgstr ""
 
 #: ../../releases/1.0.2.rst:15
 msgid ""
-"Calling ``Channel.send`` or ``Group.send`` from outside a consumer context "
-"(i.e. in tests or management commands) will once again send the message "
-"immediately, rather than putting it into the consumer message buffer to be "
-"flushed when the consumer ends (which never happens)"
+"Calling ``Channel.send`` or ``Group.send`` from outside a consumer "
+"context (i.e. in tests or management commands) will once again send the "
+"message immediately, rather than putting it into the consumer message "
+"buffer to be flushed when the consumer ends (which never happens)"
 msgstr ""
 
 #: ../../releases/1.0.2.rst:20
@@ -60,4 +60,5 @@ msgstr ""
 
 #: ../../releases/1.0.2.rst:27
 msgid "None."
-msgstr "None"
+msgstr ""
+

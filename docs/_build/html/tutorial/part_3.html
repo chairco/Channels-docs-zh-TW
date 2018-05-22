@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>教學第三章: 改用非同步重寫 Chat Server &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="教學第四章: 自動化測試" href="part_4.html" />
+    <link rel="prev" title="教學第二章: 實現一個 Chat Server" href="part_2.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="part_4.html" title="教學第四章: 自動化測試"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="part_2.html" title="教學第二章: 實現一個 Chat Server"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">教學</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorial-part-3-rewrite-chat-server-as-asynchronous">
+<h1>教學第三章: 改用非同步重寫 Chat Server<a class="headerlink" href="#tutorial-part-3-rewrite-chat-server-as-asynchronous" title="本標題的永久連結">¶</a></h1>
+<p>This tutorial begins where <a class="reference internal" href="part_2.html"><span class="doc">Tutorial 2</span></a> left off.
+We&#8217;ll rewrite the consumer code to be asynchronous rather than synchronous
+to improve its performance.</p>
+<div class="section" id="rewrite-the-consumer-to-be-asynchronous">
+<h2>Rewrite the consumer to be asynchronous<a class="headerlink" href="#rewrite-the-consumer-to-be-asynchronous" title="本標題的永久連結">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">ChatConsumer</span></code> that we have written is currently synchronous. Synchronous
+consumers are convenient because they can call regular synchronous I/O functions
+such as those that access Django models without writing special code. However
+asynchronous consumers can provide a higher level of performance since they
+don&#8217;t need create additional threads when handling requests.</p>
+<p><code class="docutils literal"><span class="pre">ChatConsumer</span></code> only uses async-native libraries (Channels and the channel layer)
+and in particular it does not access synchronous Django models. Therefore it can
+be rewritten to be asynchronous without complications.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">Even if <code class="docutils literal"><span class="pre">ChatConsumer</span></code> <em>did</em> access Django models or other synchronous code it
+would still be possible to rewrite it as asynchronous. Utilities like
+<a class="reference internal" href="../topics/consumers.html#sync-to-async"><span class="std std-ref">asgiref.sync.sync_to_async</span></a> and
+<a class="reference internal" href="../topics/databases.html"><span class="doc">channels.db.database_sync_to_async</span></a> can be
+used to call synchronous code from an asynchronous consumer. The performance
+gains however would be less than if it only used async-native libraries.</p>
+</div>
+<p>Let&#8217;s rewrite <code class="docutils literal"><span class="pre">ChatConsumer</span></code> to be asynchronous.
+Put the following code in <code class="docutils literal"><span class="pre">chat/consumers.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/consumers.py</span>
+<span class="kn">from</span> <span class="nn">channels.generic.websocket</span> <span class="k">import</span> <span class="n">AsyncWebsocketConsumer</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">AsyncWebsocketConsumer</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s1">&#39;url_route&#39;</span><span class="p">][</span><span class="s1">&#39;kwargs&#39;</span><span class="p">][</span><span class="s1">&#39;room_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span> <span class="o">=</span> <span class="s1">&#39;chat_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">room_name</span>
+
+        <span class="c1"># Join room group</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_add</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span>
+        <span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="c1"># Leave room group</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_discard</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Receive message from WebSocket</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="p">):</span>
+        <span class="n">text_data_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text_data</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">text_data_json</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Send message to room group</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_send</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;chat_message&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Receive message from room group</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Send message to WebSocket</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">}))</span>
+</pre></div>
+</div>
+<p>This new code is for ChatConsumer is very similar to the original code, with the following differences:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">ChatConsumer</span></code> now inherits from <code class="docutils literal"><span class="pre">AsyncWebsocketConsumer</span></code> rather than
+<code class="docutils literal"><span class="pre">WebsocketConsumer</span></code>.</li>
+<li>All methods are <code class="docutils literal"><span class="pre">async</span> <span class="pre">def</span></code> rather than just <code class="docutils literal"><span class="pre">def</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">await</span></code> is used to call asynchronous functions that perform I/O.</li>
+<li><code class="docutils literal"><span class="pre">async_to_sync</span></code> is no longer needed when calling methods on the channel layer.</li>
+</ul>
+<p>Let&#8217;s verify that the consumer for the <code class="docutils literal"><span class="pre">/ws/chat/ROOM_NAME/</span></code> path still works.
+To start the Channels development server, run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py runserver
+</pre></div>
+</div>
+<p>Open a browser tab to the room page at <a class="reference external" href="http://127.0.0.1:8000/chat/lobby/">http://127.0.0.1:8000/chat/lobby/</a>.
+Open a second browser tab to the same room page.</p>
+<p>In the second browser tab, type the message &#8220;hello&#8221; and press enter. You should
+now see &#8220;hello&#8221; echoed in the chat log in both the second browser tab and in the
+first browser tab.</p>
+<p>Now your chat server is fully asynchronous!</p>
+<p>This tutorial continues in <a class="reference internal" href="part_4.html"><span class="doc">Tutorial 4</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">教學第三章: 改用非同步重寫 Chat Server</a><ul>
+<li><a class="reference internal" href="#rewrite-the-consumer-to-be-asynchronous">Rewrite the consumer to be asynchronous</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="part_2.html"
+                        title="上一章">教學第二章: 實現一個 Chat Server</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="part_4.html"
+                        title="下一章">教學第四章: 自動化測試</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorial/part_3.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="part_4.html" title="教學第四章: 自動化測試"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="part_2.html" title="教學第二章: 實現一個 Chat Server"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >教學</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

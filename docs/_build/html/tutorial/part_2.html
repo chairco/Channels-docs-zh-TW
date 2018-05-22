@@ -1,0 +1,590 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>教學第二章: 實現一個 Chat Server &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="教學第三章: 改用非同步重寫 Chat Server" href="part_3.html" />
+    <link rel="prev" title="教學第一章: 基礎設定" href="part_1.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="part_3.html" title="教學第三章: 改用非同步重寫 Chat Server"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="part_1.html" title="教學第一章: 基礎設定"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">教學</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorial-part-2-implement-a-chat-server">
+<h1>教學第二章: 實現一個 Chat Server<a class="headerlink" href="#tutorial-part-2-implement-a-chat-server" title="本標題的永久連結">¶</a></h1>
+<p>This tutorial begins where <a class="reference internal" href="part_1.html"><span class="doc">Tutorial 1</span></a> left off.
+We&#8217;ll get the room page working so that you can chat with yourself and others
+in the same room.</p>
+<div class="section" id="add-the-room-view">
+<h2>Add the room view<a class="headerlink" href="#add-the-room-view" title="本標題的永久連結">¶</a></h2>
+<p>We will now create the second view, a room view that lets you see messages
+posted in a particular chat room.</p>
+<p>Create a new file <code class="docutils literal"><span class="pre">chat/templates/chat/room.html</span></code>.
+Your app directory should now look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">templates</span><span class="o">/</span>
+        <span class="n">chat</span><span class="o">/</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Create the view template for the room view in <code class="docutils literal"><span class="pre">chat/templates/chat/room.html</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;!-- chat/templates/chat/room.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;/&gt;
+    &lt;title&gt;Chat Room&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;textarea id=&quot;chat-log&quot; cols=&quot;100&quot; rows=&quot;20&quot;&gt;&lt;/textarea&gt;&lt;br/&gt;
+    &lt;input id=&quot;chat-message-input&quot; type=&quot;text&quot; size=&quot;100&quot;/&gt;&lt;br/&gt;
+    &lt;input id=&quot;chat-message-submit&quot; type=&quot;button&quot; value=&quot;Send&quot;/&gt;
+&lt;/body&gt;
+&lt;script&gt;
+    var roomName = {{ room_name_json }};
+
+    var chatSocket = new WebSocket(
+        &#39;ws://&#39; + window.location.host +
+        &#39;/ws/chat/&#39; + roomName + &#39;/&#39;);
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data[&#39;message&#39;];
+        document.querySelector(&#39;#chat-log&#39;).value += (message + &#39;\n&#39;);
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error(&#39;Chat socket closed unexpectedly&#39;);
+    };
+
+    document.querySelector(&#39;#chat-message-input&#39;).focus();
+    document.querySelector(&#39;#chat-message-input&#39;).onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector(&#39;#chat-message-submit&#39;).click();
+        }
+    };
+
+    document.querySelector(&#39;#chat-message-submit&#39;).onclick = function(e) {
+        var messageInputDom = document.querySelector(&#39;#chat-message-input&#39;);
+        var message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            &#39;message&#39;: message
+        }));
+
+        messageInputDom.value = &#39;&#39;;
+    };
+&lt;/script&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+<p>Create the view function for the room view in <code class="docutils literal"><span class="pre">chat/views.py</span></code>.
+Add the imports of <code class="docutils literal"><span class="pre">mark_safe</span></code> and <code class="docutils literal"><span class="pre">json</span></code> and add the <code class="docutils literal"><span class="pre">room</span></code> view function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/views.py</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="k">import</span> <span class="n">mark_safe</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chat/index.html&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+<span class="k">def</span> <span class="nf">room</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">room_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chat/room.html&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;room_name_json&#39;</span><span class="p">:</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">room_name</span><span class="p">))</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+<p>Create the route for the room view in <code class="docutils literal"><span class="pre">chat/urls.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;room_name&gt;[^/]+)/$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">room</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;room&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Start the Channels development server:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py runserver
+</pre></div>
+</div>
+<p>Go to <a class="reference external" href="http://127.0.0.1:8000/chat/">http://127.0.0.1:8000/chat/</a> in your browser and to see the index page.</p>
+<p>Type in &#8220;lobby&#8221; as the room name and press enter. You should be redirected to
+the room page at <a class="reference external" href="http://127.0.0.1:8000/chat/lobby/">http://127.0.0.1:8000/chat/lobby/</a> which now displays an empty
+chat log.</p>
+<p>Type the message &#8220;hello&#8221; and press enter. Nothing happens. In particular the
+message does not appear in the chat log. Why?</p>
+<p>The room view is trying to open a WebSocket to the URL
+<code class="docutils literal"><span class="pre">ws://127.0.0.1:8000/ws/chat/lobby/</span></code> but we haven&#8217;t created a consumer that
+accepts WebSocket connections yet. If you open your browser&#8217;s JavaScript
+console, you should see an error that looks like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">WebSocket</span> <span class="n">connection</span> <span class="n">to</span> <span class="s1">&#39;ws://127.0.0.1:8000/ws/chat/lobby/&#39;</span> <span class="n">failed</span><span class="p">:</span> <span class="n">Unexpected</span> <span class="n">response</span> <span class="n">code</span><span class="p">:</span> <span class="mi">500</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-your-first-consumer">
+<h2>Write your first consumer<a class="headerlink" href="#write-your-first-consumer" title="本標題的永久連結">¶</a></h2>
+<p>When Django accepts an HTTP request, it consults the root URLconf to lookup a
+view function, and then calls the view function to handle the request.
+Similarly, when Channels accepts a WebSocket connection, it consults the root
+routing configuration to lookup a consumer, and then calls various functions on
+the consumer to handle events from the connection.</p>
+<p>We will write a basic consumer that accepts WebSocket connections on the path
+<code class="docutils literal"><span class="pre">/ws/chat/ROOM_NAME/</span></code> that takes any message it receives on the WebSocket and
+echos it back to the same WebSocket.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p>It is good practice to use a common path prefix like <code class="docutils literal"><span class="pre">/ws/</span></code> to distinguish
+WebSocket connections from ordinary HTTP connections because it will make
+deploying Channels to a production environment in certain configurations
+easier.</p>
+<p>In particular for large sites it will be possible to configure a
+production-grade HTTP server like nginx to route requests based on path to
+either (1) a production-grade WSGI server like Gunicorn+Django for ordinary
+HTTP requests or (2) a production-grade ASGI server like Daphne+Channels
+for WebSocket requests.</p>
+<p class="last">Note that for smaller sites you can use a simpler deployment strategy where
+Daphne serves all requests - HTTP and WebSocket - rather than having a
+separate WSGI server. In this deployment configuration no common path prefix
+like is <code class="docutils literal"><span class="pre">/ws/</span></code> is necessary.</p>
+</div>
+<p>Create a new file <code class="docutils literal"><span class="pre">chat/consumers.py</span></code>. Your app directory should now look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">consumers</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">templates</span><span class="o">/</span>
+        <span class="n">chat</span><span class="o">/</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Put the following code in <code class="docutils literal"><span class="pre">chat/consumers.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/consumers.py</span>
+<span class="kn">from</span> <span class="nn">channels.generic.websocket</span> <span class="k">import</span> <span class="n">WebsocketConsumer</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="p">):</span>
+        <span class="n">text_data_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text_data</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">text_data_json</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">}))</span>
+</pre></div>
+</div>
+<p>This is a synchronous WebSocket consumer that accepts all connections, receives
+messages from its client, and echos those messages back to the same client. For
+now it does not broadcast messages to other clients in the same room.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">Channels also supports writing <em>asynchronous</em> consumers for greater
+performance. However any asynchronous consumer must be careful to avoid
+directly performing blocking operations, such as accessing a Django model.
+See the <a class="reference internal" href="../topics/consumers.html"><span class="doc">消費者</span></a> reference for more information about writing asynchronous
+consumers.</p>
+</div>
+<p>We need to create a routing configuration for the <code class="docutils literal"><span class="pre">chat</span></code> app that has a route to
+the consumer. Create a new file <code class="docutils literal"><span class="pre">chat/routing.py</span></code>. Your app directory should now
+look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">consumers</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">routing</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">templates</span><span class="o">/</span>
+        <span class="n">chat</span><span class="o">/</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Put the following code in <code class="docutils literal"><span class="pre">chat/routing.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/routing.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">consumers</span>
+
+<span class="n">websocket_urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^ws/chat/(?P&lt;room_name&gt;[^/]+)/$&#39;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">ChatConsumer</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The next step is to point the root routing configuration at the <strong>chat.routing</strong>
+module. In <code class="docutils literal"><span class="pre">mysite/routing.py</span></code>, import <code class="docutils literal"><span class="pre">AuthMiddlewareStack</span></code>, <code class="docutils literal"><span class="pre">URLRouter</span></code>,
+and <code class="docutils literal"><span class="pre">chat.routing</span></code>; and insert a <code class="docutils literal"><span class="pre">'websocket'</span></code> key in the
+<code class="docutils literal"><span class="pre">ProtocolTypeRouter</span></code> list in the following format:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/routing.py</span>
+<span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">AuthMiddlewareStack</span>
+<span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span><span class="p">,</span> <span class="n">URLRouter</span>
+<span class="kn">import</span> <span class="nn">chat.routing</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+    <span class="c1"># (http-&gt;django views is added by default)</span>
+    <span class="s1">&#39;websocket&#39;</span><span class="p">:</span> <span class="n">AuthMiddlewareStack</span><span class="p">(</span>
+        <span class="n">URLRouter</span><span class="p">(</span>
+            <span class="n">chat</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">websocket_urlpatterns</span>
+        <span class="p">)</span>
+    <span class="p">),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>This root routing configuration specifies that when a connection is made to the
+Channels development server, the <code class="docutils literal"><span class="pre">ProtocolTypeRouter</span></code> will first inspect the type
+of connection. If it is a WebSocket connection (<strong>ws://</strong> or <strong>wss://</strong>), the connection
+will be given to the <code class="docutils literal"><span class="pre">AuthMiddlewareStack</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">AuthMiddlewareStack</span></code> will populate the connection&#8217;s <strong>scope</strong> with a reference to
+the currently authenticated user, similar to how Django&#8217;s
+<code class="docutils literal"><span class="pre">AuthenticationMiddleware</span></code> populates the <strong>request</strong> object of a view function with
+the currently authenticated user. (Scopes will be discussed later in this
+tutorial.) Then the connection will be given to the <code class="docutils literal"><span class="pre">URLRouter</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">URLRouter</span></code> will examine the HTTP path of the connection to route it to a
+particular consumer, based on the provided <code class="docutils literal"><span class="pre">url</span></code> patterns.</p>
+<p>Let&#8217;s verify that the consumer for the <code class="docutils literal"><span class="pre">/ws/chat/ROOM_NAME/</span></code> path works. Start the
+Channels development server:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py runserver
+</pre></div>
+</div>
+<p>Go to the room page at <a class="reference external" href="http://127.0.0.1:8000/chat/lobby/">http://127.0.0.1:8000/chat/lobby/</a> which now displays an
+empty chat log.</p>
+<p>Type the message &#8220;hello&#8221; and press enter. You should now see &#8220;hello&#8221; echoed in
+the chat log.</p>
+<p>However if you open a second browser tab to the same room page at
+<a class="reference external" href="http://127.0.0.1:8000/chat/lobby/">http://127.0.0.1:8000/chat/lobby/</a> and type in a message, the message will not
+appear in the first tab. For that to work, we need to have multiple instances of
+the same <code class="docutils literal"><span class="pre">ChatConsumer</span></code> be able to talk to each other. Channels provides a
+<strong>channel layer</strong> abstraction that enables this kind of communication between
+consumers.</p>
+<p>Go to the terminal where you ran the <code class="docutils literal"><span class="pre">runserver</span></code> command and press Control-C to
+stop the server.</p>
+</div>
+<div class="section" id="enable-a-channel-layer">
+<h2>Enable a channel layer<a class="headerlink" href="#enable-a-channel-layer" title="本標題的永久連結">¶</a></h2>
+<p>A channel layer is a kind of communication system. It allows multiple consumer
+instances to talk with each other, and with other parts of Django.</p>
+<p>A channel layer provides the following abstractions:</p>
+<ul class="simple">
+<li>A <strong>channel</strong> is a mailbox where messages can be sent to. Each channel has a name.
+Anyone who has the name of a channel can send a message to the channel.</li>
+<li>A <strong>group</strong> is a group of related channels. A group has a name. Anyone who has the
+name of a group can add/remove a channel to the group by name and send
+a message to all channels in the group. It is not possible to enumerate what
+channels are in a particular group.</li>
+</ul>
+<p>Every consumer instance has an automatically generated unique channel name, and
+so can be communicated with via a channel layer.</p>
+<p>In our chat application we want to have multiple instances of <code class="docutils literal"><span class="pre">ChatConsumer</span></code> in
+the same room communicate with each other. To do that we will have each
+ChatConsumer add its channel to a group whose name is based on the room name.
+That will allow ChatConsumers to transmit messages to all other ChatConsumers in
+the same room.</p>
+<p>We will use a channel layer that uses Redis as its backing store. To start a
+Redis server on port 6379, run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker run -p 6379:6379 -d redis:2.8
+</pre></div>
+</div>
+<p>We need to install channels_redis so that Channels knows how to interface with
+Redis. Run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip3 install channels_redis
+</pre></div>
+</div>
+<p>Before we can use a channel layer, we must configure it. Edit the
+<code class="docutils literal"><span class="pre">mysite/settings.py</span></code> file and add a <code class="docutils literal"><span class="pre">CHANNEL_LAYERS</span></code> setting to the bottom.
+It should look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/settings.py</span>
+<span class="c1"># Channels</span>
+<span class="n">ASGI_APPLICATION</span> <span class="o">=</span> <span class="s1">&#39;mysite.routing.application&#39;</span>
+<span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;BACKEND&#39;</span><span class="p">:</span> <span class="s1">&#39;channels_redis.core.RedisChannelLayer&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;CONFIG&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">It is possible to have multiple channel layers configured.
+However most projects will just use a single <code class="docutils literal"><span class="pre">'default'</span></code> channel layer.</p>
+</div>
+<p>Let&#8217;s make sure that the channel layer can communicate with Redis. Open a Django
+shell and run the following commands:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py shell
+&gt;&gt;&gt; import channels.layers
+&gt;&gt;&gt; channel_layer = channels.layers.get_channel_layer()
+&gt;&gt;&gt; from asgiref.sync import async_to_sync
+&gt;&gt;&gt; async_to_sync(channel_layer.send)(&#39;test_channel&#39;, {&#39;type&#39;: &#39;hello&#39;})
+&gt;&gt;&gt; async_to_sync(channel_layer.receive)(&#39;test_channel&#39;)
+{&#39;type&#39;: &#39;hello&#39;}
+</pre></div>
+</div>
+<p>Type Control-D to exit the Django shell.</p>
+<p>Now that we have a channel layer, let&#8217;s use it in <code class="docutils literal"><span class="pre">ChatConsumer</span></code>. Put the
+following code in <code class="docutils literal"><span class="pre">chat/consumers.py</span></code>, replacing the old code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/consumers.py</span>
+<span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="k">import</span> <span class="n">async_to_sync</span>
+<span class="kn">from</span> <span class="nn">channels.generic.websocket</span> <span class="k">import</span> <span class="n">WebsocketConsumer</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s1">&#39;url_route&#39;</span><span class="p">][</span><span class="s1">&#39;kwargs&#39;</span><span class="p">][</span><span class="s1">&#39;room_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span> <span class="o">=</span> <span class="s1">&#39;chat_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">room_name</span>
+
+        <span class="c1"># Join room group</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_add</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="c1"># Leave room group</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_discard</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Receive message from WebSocket</span>
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="p">):</span>
+        <span class="n">text_data_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text_data</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">text_data_json</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Send message to room group</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_send</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room_group_name</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;chat_message&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Receive message from room group</span>
+    <span class="k">def</span> <span class="nf">chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Send message to WebSocket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">}))</span>
+</pre></div>
+</div>
+<p>When a user posts a message, a JavaScript function will transmit the message
+over WebSocket to a ChatConsumer. The ChatConsumer will receive that message and
+forward it to the group corresponding to the room name. Every ChatConsumer in
+the same group (and thus in the same room) will then receive the message from
+the group and forward it over WebSocket back to JavaScript, where it will be
+appended to the chat log.</p>
+<p>Several parts of the new <code class="docutils literal"><span class="pre">ChatConsumer</span></code> code deserve further explanation:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>self.scope[&#8216;url_route&#8217;][&#8216;kwargs&#8217;][&#8216;room_name&#8217;]</dt>
+<dd><ul class="first last">
+<li>Obtains the <code class="docutils literal"><span class="pre">'room_name'</span></code> parameter from the URL route in <code class="docutils literal"><span class="pre">chat/routes.py</span></code>
+that opened the WebSocket connection to the consumer.</li>
+<li>Every consumer has a <a class="reference internal" href="../topics/consumers.html#scope"><span class="std std-ref">scope</span></a> that contains information about its connection,
+including in particular any positional or keyword arguments from the URL
+route and the currently authenticated user if any.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>self.room_group_name = &#8216;chat_%s&#8217; % self.room_name</dt>
+<dd><ul class="first last">
+<li>Constructs a Channels group name directly from the user-specified room
+name, without any quoting or escaping.</li>
+<li>Group names may only contain letters, digits, hyphens, and periods.
+Therefore this example code will fail on room names that have other
+characters.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>async_to_sync(self.channel_layer.group_add)(...)</dt>
+<dd><ul class="first last">
+<li>Joins a group.</li>
+<li>The async_to_sync(...) wrapper is required because ChatConsumer is a
+synchronous WebsocketConsumer but it is calling an asynchronous channel
+layer method. (All channel layer methods are asynchronous.)</li>
+<li>Group names are restricted to ASCII alphanumerics, hyphens, and periods
+only. Since this code constructs a group name directly from the room name,
+it will fail if the room name contains any characters that aren&#8217;t valid in
+a group name.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>self.accept()</dt>
+<dd><ul class="first last">
+<li>Accepts the WebSocket connection.</li>
+<li>If you do not call accept() within the connect() method then the
+connection will be rejected and closed. You might want to reject a connection
+for example because the requesting user is not authorized to perform the
+requested action.</li>
+<li>It is recommended that accept() be called as the <em>last</em> action in connect()
+if you choose to accept the connection.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>async_to_sync(self.channel_layer.group_discard)(...)</dt>
+<dd><ul class="first last">
+<li>Leaves a group.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>async_to_sync(self.channel_layer.group_send)</dt>
+<dd><ul class="first last">
+<li>Sends an event to a group.</li>
+<li>An event has a special <code class="docutils literal"><span class="pre">'type'</span></code> key corresponding to the name of the method
+that should be invoked on consumers that receive the event.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Let&#8217;s verify that the new consumer for the <code class="docutils literal"><span class="pre">/ws/chat/ROOM_NAME/</span></code> path works.
+To start the Channels development server, run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py runserver
+</pre></div>
+</div>
+<p>Open a browser tab to the room page at <a class="reference external" href="http://127.0.0.1:8000/chat/lobby/">http://127.0.0.1:8000/chat/lobby/</a>.
+Open a second browser tab to the same room page.</p>
+<p>In the second browser tab, type the message &#8220;hello&#8221; and press enter. You should
+now see &#8220;hello&#8221; echoed in the chat log in both the second browser tab and in the
+first browser tab.</p>
+<p>You now have a basic fully-functional chat server!</p>
+<p>This tutorial continues in <a class="reference internal" href="part_3.html"><span class="doc">Tutorial 3</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">教學第二章: 實現一個 Chat Server</a><ul>
+<li><a class="reference internal" href="#add-the-room-view">Add the room view</a></li>
+<li><a class="reference internal" href="#write-your-first-consumer">Write your first consumer</a></li>
+<li><a class="reference internal" href="#enable-a-channel-layer">Enable a channel layer</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="part_1.html"
+                        title="上一章">教學第一章: 基礎設定</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="part_3.html"
+                        title="下一章">教學第三章: 改用非同步重寫 Chat Server</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorial/part_2.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="part_3.html" title="教學第三章: 改用非同步重寫 Chat Server"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="part_1.html" title="教學第一章: 基礎設定"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >教學</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../topics/databases.rst:2
+msgid "Database Access"
+msgstr "資料庫存取"
+
+#: ../../topics/databases.rst:4
+msgid ""
+"The Django ORM is a synchronous piece of code, and so if you want to access "
+"it from asynchronous code you need to do special handling to make sure its "
+"connections are closed properly."
+msgstr ""
+
+#: ../../topics/databases.rst:8
+msgid ""
+"If you're using ``SyncConsumer``, or anything based on it - like "
+"``JsonWebsocketConsumer`` - you don't need to do anything special, as all "
+"your code is already run in a synchronous mode and Channels will do the "
+"cleanup for you as part of the ``SyncConsumer`` code."
+msgstr ""
+
+#: ../../topics/databases.rst:13
+msgid ""
+"If you are writing asynchronous code, however, you will need to call "
+"database methods in a safe, synchronous context, using "
+"``database_sync_to_async``."
+msgstr ""
+
+#: ../../topics/databases.rst:18
+msgid "Database Connections"
+msgstr ""
+
+#: ../../topics/databases.rst:20
+msgid ""
+"Channels can potentially open a lot more database connections than you may "
+"be used to if you are using threaded consumers (synchronous ones) - it can "
+"open up to one connection per thread."
+msgstr ""
+
+#: ../../topics/databases.rst:22
+msgid ""
+"By default, the number of threads is set to \"the number of CPUs * 5\", so "
+"you may see up to this number of threads. If you want to change it, set the "
+"``ASGI_THREADS`` environment variable to the maximum number you wish to "
+"allow."
+msgstr ""
+
+#: ../../topics/databases.rst:24
+msgid ""
+"To avoid having too many threads idling in connections, you can instead "
+"rewrite your code to use async consumers and only dip into threads when you "
+"need to use Django's ORM (using ``database_sync_to_async``)."
+msgstr ""
+
+#: ../../topics/databases.rst:28
+msgid "database_sync_to_async"
+msgstr ""
+
+#: ../../topics/databases.rst:30
+msgid ""
+"``channels.db.database_sync_to_async`` is a version of "
+"``asgiref.sync.sync_to_async`` that also cleans up database connections on "
+"exit."
+msgstr ""
+
+#: ../../topics/databases.rst:33
+msgid ""
+"To use it, write your ORM queries in a separate function or method, and then"
+" call it with ``database_sync_to_async`` like so::"
+msgstr ""
+
+#: ../../topics/databases.rst:44
+msgid "You can also use it as a decorator::"
+msgstr ""

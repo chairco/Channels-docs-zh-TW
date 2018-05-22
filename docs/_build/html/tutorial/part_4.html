@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>教學第四章: 自動化測試 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="消費者" href="../topics/consumers.html" />
+    <link rel="prev" title="教學第三章: 改用非同步重寫 Chat Server" href="part_3.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../topics/consumers.html" title="消費者"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="part_3.html" title="教學第三章: 改用非同步重寫 Chat Server"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">教學</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorial-part-4-automated-testing">
+<h1>教學第四章: 自動化測試<a class="headerlink" href="#tutorial-part-4-automated-testing" title="本標題的永久連結">¶</a></h1>
+<p>This tutorial begins where <a class="reference internal" href="part_3.html"><span class="doc">Tutorial 3</span></a> left off.
+We&#8217;ve built a simple chat server and now we&#8217;ll create some automated tests for it.</p>
+<div class="section" id="testing-the-views">
+<h2>Testing the views<a class="headerlink" href="#testing-the-views" title="本標題的永久連結">¶</a></h2>
+<p>To ensure that the chat server keeps working, we will write some tests.</p>
+<p>We will write a suite of end-to-end tests using Selenium to control a Chrome web
+browser. These tests will ensure that:</p>
+<ul class="simple">
+<li>when a chat message is posted then it is seen by everyone in the same room</li>
+<li>when a chat message is posted then it is not seen by anyone in a different room</li>
+</ul>
+<p><a class="reference external" href="https://www.google.com/chrome/">Install the Chrome web browser</a>, if you do not already have it.</p>
+<p><a class="reference external" href="https://sites.google.com/a/chromium.org/chromedriver/getting-started">Install chromedriver</a>.</p>
+<p>Install Selenium. Run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip3 install selenium
+</pre></div>
+</div>
+<p>Create a new file <code class="docutils literal"><span class="pre">chat/tests.py</span></code>. Your app directory should now look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">consumers</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">routing</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">templates</span><span class="o">/</span>
+        <span class="n">chat</span><span class="o">/</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">tests</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Put the following code in <code class="docutils literal"><span class="pre">chat/tests.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/tests.py</span>
+<span class="kn">from</span> <span class="nn">channels.testing</span> <span class="k">import</span> <span class="n">ChannelsLiveServerTestCase</span>
+<span class="kn">from</span> <span class="nn">selenium</span> <span class="k">import</span> <span class="n">webdriver</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.common.action_chains</span> <span class="k">import</span> <span class="n">ActionChains</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.support.wait</span> <span class="k">import</span> <span class="n">WebDriverWait</span>
+
+<span class="k">class</span> <span class="nc">ChatTests</span><span class="p">(</span><span class="n">ChannelsLiveServerTestCase</span><span class="p">):</span>
+    <span class="n">serve_static</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># emulate StaticLiveServerTestCase</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># NOTE: Requires &quot;chromedriver&quot; binary to be installed in $PATH</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Chrome</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">test_when_chat_message_posted_then_seen_by_everyone_in_same_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enter_chat_room</span><span class="p">(</span><span class="s1">&#39;room_1&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_open_new_window</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enter_chat_room</span><span class="p">(</span><span class="s1">&#39;room_1&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch_to_window</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_post_message</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+            <span class="n">WebDriverWait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span>
+                <span class="s1">&#39;hello&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat_log_value</span><span class="p">,</span>
+                <span class="s1">&#39;Message was not received by window 1 from window 1&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch_to_window</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">WebDriverWait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span>
+                <span class="s1">&#39;hello&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat_log_value</span><span class="p">,</span>
+                <span class="s1">&#39;Message was not received by window 2 from window 1&#39;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close_all_new_windows</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">test_when_chat_message_posted_then_not_seen_by_anyone_in_different_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enter_chat_room</span><span class="p">(</span><span class="s1">&#39;room_1&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_open_new_window</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enter_chat_room</span><span class="p">(</span><span class="s1">&#39;room_2&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch_to_window</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_post_message</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+            <span class="n">WebDriverWait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span>
+                <span class="s1">&#39;hello&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat_log_value</span><span class="p">,</span>
+                <span class="s1">&#39;Message was not received by window 1 from window 1&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch_to_window</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_post_message</span><span class="p">(</span><span class="s1">&#39;world&#39;</span><span class="p">)</span>
+            <span class="n">WebDriverWait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span>
+                <span class="s1">&#39;world&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat_log_value</span><span class="p">,</span>
+                <span class="s1">&#39;Message was not received by window 2 from window 2&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat_log_value</span><span class="p">,</span>
+                <span class="s1">&#39;Message was improperly received by window 2 from window 1&#39;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close_all_new_windows</span><span class="p">()</span>
+
+    <span class="c1"># === Utility ===</span>
+
+    <span class="k">def</span> <span class="nf">_enter_chat_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">live_server_url</span> <span class="o">+</span> <span class="s1">&#39;/chat/&#39;</span><span class="p">)</span>
+        <span class="n">ActionChains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="n">room_name</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">perform</span><span class="p">()</span>
+        <span class="n">WebDriverWait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span>
+            <span class="n">room_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">current_url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_open_new_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s1">&#39;window.open(&quot;about:blank&quot;, &quot;_blank&quot;);&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">switch_to_window</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">window_handles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_close_all_new_windows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">window_handles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">switch_to_window</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">window_handles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s1">&#39;window.close();&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">window_handles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">switch_to_window</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">window_handles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_switch_to_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">switch_to_window</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">window_handles</span><span class="p">[</span><span class="n">window_index</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_post_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="n">ActionChains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="n">message</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">perform</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_chat_log_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_css_selector</span><span class="p">(</span><span class="s1">&#39;#chat-log&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Our test suite extends <code class="docutils literal"><span class="pre">ChannelsLiveServerTestCase</span></code> rather than Django&#8217;s usual
+suites for end-to-end tests (<code class="docutils literal"><span class="pre">StaticLiveServerTestCase</span></code> or <code class="docutils literal"><span class="pre">LiveServerTestCase</span></code>) so
+that URLs inside the Channels routing configuration like <code class="docutils literal"><span class="pre">/ws/room/ROOM_NAME/</span></code>
+will work inside the suite.</p>
+<p>To run the tests, run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py test chat.tests
+</pre></div>
+</div>
+<p>You should see output that looks like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+<span class="o">..</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">Ran</span> <span class="mi">2</span> <span class="n">tests</span> <span class="ow">in</span> <span class="mf">5.014</span><span class="n">s</span>
+
+<span class="n">OK</span>
+<span class="n">Destroying</span> <span class="n">test</span> <span class="n">database</span> <span class="k">for</span> <span class="n">alias</span> <span class="s1">&#39;default&#39;</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>You now have a tested chat server!</p>
+</div>
+<div class="section" id="what-s-next">
+<h2>What&#8217;s next?<a class="headerlink" href="#what-s-next" title="本標題的永久連結">¶</a></h2>
+<p>Congratulations! You&#8217;ve fully implemented a chat server, made it performant by
+writing it in asynchronous style, and written automated tests to ensure it won&#8217;t
+break.</p>
+<p>This is the end of the tutorial. At this point you should know enough to start
+an app of your own that uses Channels and start fooling around.
+As you need to learn new tricks, come back to rest of the
+<a class="reference internal" href="../index.html#topics"><span class="std std-ref">documentation</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">教學第四章: 自動化測試</a><ul>
+<li><a class="reference internal" href="#testing-the-views">Testing the views</a></li>
+<li><a class="reference internal" href="#what-s-next">What&#8217;s next?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="part_3.html"
+                        title="上一章">教學第三章: 改用非同步重寫 Chat Server</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="../topics/consumers.html"
+                        title="下一章">消費者</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorial/part_4.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../topics/consumers.html" title="消費者"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="part_3.html" title="教學第三章: 改用非同步重寫 Chat Server"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >教學</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

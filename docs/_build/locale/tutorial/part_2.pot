@@ -1,0 +1,314 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../tutorial/part_2.rst:2
+msgid "Tutorial Part 2: Implement a Chat Server"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:4
+msgid "This tutorial begins where :doc:`Tutorial 1 </tutorial/part_1>` left off. We'll get the room page working so that you can chat with yourself and others in the same room."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:9
+msgid "Add the room view"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:11
+msgid "We will now create the second view, a room view that lets you see messages posted in a particular chat room."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:14
+msgid "Create a new file ``chat/templates/chat/room.html``. Your app directory should now look like::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:26
+msgid "Create the view template for the room view in ``chat/templates/chat/room.html``::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:76
+msgid "Create the view function for the room view in ``chat/views.py``. Add the imports of ``mark_safe`` and ``json`` and add the ``room`` view function::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:92
+msgid "Create the route for the room view in ``chat/urls.py``::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:104
+msgid "Start the Channels development server::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:108
+msgid "Go to http://127.0.0.1:8000/chat/ in your browser and to see the index page."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:110
+msgid "Type in \"lobby\" as the room name and press enter. You should be redirected to the room page at http://127.0.0.1:8000/chat/lobby/ which now displays an empty chat log."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:114
+msgid "Type the message \"hello\" and press enter. Nothing happens. In particular the message does not appear in the chat log. Why?"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:117
+msgid "The room view is trying to open a WebSocket to the URL ``ws://127.0.0.1:8000/ws/chat/lobby/`` but we haven't created a consumer that accepts WebSocket connections yet. If you open your browser's JavaScript console, you should see an error that looks like::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:125
+msgid "Write your first consumer"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:127
+msgid "When Django accepts an HTTP request, it consults the root URLconf to lookup a view function, and then calls the view function to handle the request. Similarly, when Channels accepts a WebSocket connection, it consults the root routing configuration to lookup a consumer, and then calls various functions on the consumer to handle events from the connection."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:133
+msgid "We will write a basic consumer that accepts WebSocket connections on the path ``/ws/chat/ROOM_NAME/`` that takes any message it receives on the WebSocket and echos it back to the same WebSocket."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:138
+msgid "It is good practice to use a common path prefix like ``/ws/`` to distinguish WebSocket connections from ordinary HTTP connections because it will make deploying Channels to a production environment in certain configurations easier."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:143
+msgid "In particular for large sites it will be possible to configure a production-grade HTTP server like nginx to route requests based on path to either (1) a production-grade WSGI server like Gunicorn+Django for ordinary HTTP requests or (2) a production-grade ASGI server like Daphne+Channels for WebSocket requests."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:149
+msgid "Note that for smaller sites you can use a simpler deployment strategy where Daphne serves all requests - HTTP and WebSocket - rather than having a separate WSGI server. In this deployment configuration no common path prefix like is ``/ws/`` is necessary."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:154
+msgid "Create a new file ``chat/consumers.py``. Your app directory should now look like::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:166
+msgid "Put the following code in ``chat/consumers.py``::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:187
+msgid "This is a synchronous WebSocket consumer that accepts all connections, receives messages from its client, and echos those messages back to the same client. For now it does not broadcast messages to other clients in the same room."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:192
+msgid "Channels also supports writing *asynchronous* consumers for greater performance. However any asynchronous consumer must be careful to avoid directly performing blocking operations, such as accessing a Django model. See the :doc:`/topics/consumers` reference for more information about writing asynchronous consumers."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:198
+msgid "We need to create a routing configuration for the ``chat`` app that has a route to the consumer. Create a new file ``chat/routing.py``. Your app directory should now look like::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:213
+msgid "Put the following code in ``chat/routing.py``::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:224
+msgid "The next step is to point the root routing configuration at the **chat.routing** module. In ``mysite/routing.py``, import ``AuthMiddlewareStack``, ``URLRouter``, and ``chat.routing``; and insert a ``'websocket'`` key in the ``ProtocolTypeRouter`` list in the following format::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:243
+msgid "This root routing configuration specifies that when a connection is made to the Channels development server, the ``ProtocolTypeRouter`` will first inspect the type of connection. If it is a WebSocket connection (**ws://** or **wss://**), the connection will be given to the ``AuthMiddlewareStack``."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:248
+msgid "The ``AuthMiddlewareStack`` will populate the connection's **scope** with a reference to the currently authenticated user, similar to how Django's ``AuthenticationMiddleware`` populates the **request** object of a view function with the currently authenticated user. (Scopes will be discussed later in this tutorial.) Then the connection will be given to the ``URLRouter``."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:254
+msgid "The ``URLRouter`` will examine the HTTP path of the connection to route it to a particular consumer, based on the provided ``url`` patterns."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:257
+msgid "Let's verify that the consumer for the ``/ws/chat/ROOM_NAME/`` path works. Start the Channels development server::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:262
+msgid "Go to the room page at http://127.0.0.1:8000/chat/lobby/ which now displays an empty chat log."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:265
+msgid "Type the message \"hello\" and press enter. You should now see \"hello\" echoed in the chat log."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:268
+msgid "However if you open a second browser tab to the same room page at http://127.0.0.1:8000/chat/lobby/ and type in a message, the message will not appear in the first tab. For that to work, we need to have multiple instances of the same ``ChatConsumer`` be able to talk to each other. Channels provides a **channel layer** abstraction that enables this kind of communication between consumers."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:275
+msgid "Go to the terminal where you ran the ``runserver`` command and press Control-C to stop the server."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:279
+msgid "Enable a channel layer"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:281
+msgid "A channel layer is a kind of communication system. It allows multiple consumer instances to talk with each other, and with other parts of Django."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:284
+msgid "A channel layer provides the following abstractions:"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:286
+msgid "A **channel** is a mailbox where messages can be sent to. Each channel has a name. Anyone who has the name of a channel can send a message to the channel."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:289
+msgid "A **group** is a group of related channels. A group has a name. Anyone who has the name of a group can add/remove a channel to the group by name and send a message to all channels in the group. It is not possible to enumerate what channels are in a particular group."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:294
+msgid "Every consumer instance has an automatically generated unique channel name, and so can be communicated with via a channel layer."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:297
+msgid "In our chat application we want to have multiple instances of ``ChatConsumer`` in the same room communicate with each other. To do that we will have each ChatConsumer add its channel to a group whose name is based on the room name. That will allow ChatConsumers to transmit messages to all other ChatConsumers in the same room."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:303
+msgid "We will use a channel layer that uses Redis as its backing store. To start a Redis server on port 6379, run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:308
+msgid "We need to install channels_redis so that Channels knows how to interface with Redis. Run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:313
+msgid "Before we can use a channel layer, we must configure it. Edit the ``mysite/settings.py`` file and add a ``CHANNEL_LAYERS`` setting to the bottom. It should look like::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:330
+msgid "It is possible to have multiple channel layers configured. However most projects will just use a single ``'default'`` channel layer."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:333
+msgid "Let's make sure that the channel layer can communicate with Redis. Open a Django shell and run the following commands::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:344
+msgid "Type Control-D to exit the Django shell."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:346
+msgid "Now that we have a channel layer, let's use it in ``ChatConsumer``. Put the following code in ``chat/consumers.py``, replacing the old code::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:397
+msgid "When a user posts a message, a JavaScript function will transmit the message over WebSocket to a ChatConsumer. The ChatConsumer will receive that message and forward it to the group corresponding to the room name. Every ChatConsumer in the same group (and thus in the same room) will then receive the message from the group and forward it over WebSocket back to JavaScript, where it will be appended to the chat log."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:404
+msgid "Several parts of the new ``ChatConsumer`` code deserve further explanation:"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:411
+msgid "self.scope['url_route']['kwargs']['room_name']"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:407
+msgid "Obtains the ``'room_name'`` parameter from the URL route in ``chat/routes.py`` that opened the WebSocket connection to the consumer."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:409
+msgid "Every consumer has a :ref:`scope <scope>` that contains information about its connection, including in particular any positional or keyword arguments from the URL route and the currently authenticated user if any."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:418
+msgid "self.room_group_name = 'chat_%s' % self.room_name"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:414
+msgid "Constructs a Channels group name directly from the user-specified room name, without any quoting or escaping."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:416
+msgid "Group names may only contain letters, digits, hyphens, and periods. Therefore this example code will fail on room names that have other characters."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:428
+msgid "async_to_sync(self.channel_layer.group_add)(...)"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:421
+msgid "Joins a group."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:422
+msgid "The async_to_sync(...) wrapper is required because ChatConsumer is a synchronous WebsocketConsumer but it is calling an asynchronous channel layer method. (All channel layer methods are asynchronous.)"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:425
+msgid "Group names are restricted to ASCII alphanumerics, hyphens, and periods only. Since this code constructs a group name directly from the room name, it will fail if the room name contains any characters that aren't valid in a group name."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:437
+msgid "self.accept()"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:431
+msgid "Accepts the WebSocket connection."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:432
+msgid "If you do not call accept() within the connect() method then the connection will be rejected and closed. You might want to reject a connection for example because the requesting user is not authorized to perform the requested action."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:436
+msgid "It is recommended that accept() be called as the *last* action in connect() if you choose to accept the connection."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:440
+msgid "async_to_sync(self.channel_layer.group_discard)(...)"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:440
+msgid "Leaves a group."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:445
+msgid "async_to_sync(self.channel_layer.group_send)"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:443
+msgid "Sends an event to a group."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:444
+msgid "An event has a special ``'type'`` key corresponding to the name of the method that should be invoked on consumers that receive the event."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:447
+msgid "Let's verify that the new consumer for the ``/ws/chat/ROOM_NAME/`` path works. To start the Channels development server, run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:452
+msgid "Open a browser tab to the room page at http://127.0.0.1:8000/chat/lobby/. Open a second browser tab to the same room page."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:455
+msgid "In the second browser tab, type the message \"hello\" and press enter. You should now see \"hello\" echoed in the chat log in both the second browser tab and in the first browser tab."
+msgstr ""
+
+#: ../../tutorial/part_2.rst:459
+msgid "You now have a basic fully-functional chat server!"
+msgstr ""
+
+#: ../../tutorial/part_2.rst:461
+msgid "This tutorial continues in :doc:`Tutorial 3 </tutorial/part_3>`."
+msgstr ""
+

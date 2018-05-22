@@ -2,123 +2,130 @@
 host = https://www.transifex.com
 type = PO
 
-[Channels.asgipo]
+[Channels2.asgipo]
 file_filter = locale/<lang>/LC_MESSAGES/asgi.po
 source_file = _build/gettext/asgi.pot
 source_lang = en
 
-[Channels.backendspo]
-file_filter = locale/<lang>/LC_MESSAGES/backends.po
-source_file = _build/gettext/backends.pot
+[Channels2.channel_layer_specpo]
+file_filter = locale/<lang>/LC_MESSAGES/channel_layer_spec.po
+source_file = _build/gettext/channel_layer_spec.pot
 source_lang = en
 
-[Channels.bindingpo]
-file_filter = locale/<lang>/LC_MESSAGES/binding.po
-source_file = _build/gettext/binding.pot
-source_lang = en
-
-[Channels.communitypo]
+[Channels2.communitypo]
 file_filter = locale/<lang>/LC_MESSAGES/community.po
 source_file = _build/gettext/community.pot
 source_lang = en
 
-[Channels.conceptspo]
-file_filter = locale/<lang>/LC_MESSAGES/concepts.po
-source_file = _build/gettext/concepts.pot
-source_lang = en
-
-[Channels.contributingpo]
+[Channels2.contributingpo]
 file_filter = locale/<lang>/LC_MESSAGES/contributing.po
 source_file = _build/gettext/contributing.pot
 source_lang = en
 
-[Channels.delaypo]
-file_filter = locale/<lang>/LC_MESSAGES/delay.po
-source_file = _build/gettext/delay.pot
-source_lang = en
-
-[Channels.deployingpo]
+[Channels2.deployingpo]
 file_filter = locale/<lang>/LC_MESSAGES/deploying.po
 source_file = _build/gettext/deploying.pot
 source_lang = en
 
-[Channels.faqspo]
-file_filter = locale/<lang>/LC_MESSAGES/faqs.po
-source_file = _build/gettext/faqs.pot
-source_lang = en
-
-[Channels.genericspo]
-file_filter = locale/<lang>/LC_MESSAGES/generics.po
-source_file = _build/gettext/generics.pot
-source_lang = en
-
-[Channels.getting-startedpo]
-file_filter = locale/<lang>/LC_MESSAGES/getting-started.po
-source_file = _build/gettext/getting-started.pot
-source_lang = en
-
-[Channels.indexpo]
+[Channels2.indexpo]
 file_filter = locale/<lang>/LC_MESSAGES/index.po
 source_file = _build/gettext/index.pot
 source_lang = en
 
-[Channels.inshortpo]
-file_filter = locale/<lang>/LC_MESSAGES/inshort.po
-source_file = _build/gettext/inshort.pot
-source_lang = en
-
-[Channels.installationpo]
+[Channels2.installationpo]
 file_filter = locale/<lang>/LC_MESSAGES/installation.po
 source_file = _build/gettext/installation.pot
 source_lang = en
 
-[Channels.javascriptpo]
+[Channels2.introductionpo]
+file_filter = locale/<lang>/LC_MESSAGES/introduction.po
+source_file = _build/gettext/introduction.pot
+source_lang = en
+
+[Channels2.javascriptpo]
 file_filter = locale/<lang>/LC_MESSAGES/javascript.po
 source_file = _build/gettext/javascript.pot
 source_lang = en
 
-[Channels.referencepo]
-file_filter = locale/<lang>/LC_MESSAGES/reference.po
-source_file = _build/gettext/reference.pot
+[Channels2.one-to-twopo]
+file_filter = locale/<lang>/LC_MESSAGES/one-to-two.po
+source_file = _build/gettext/one-to-two.pot
 source_lang = en
 
-[Channels.routingpo]
-file_filter = locale/<lang>/LC_MESSAGES/routing.po
+
+[Channels2.indexpo_2]
+file_filter = locale/<lang>/LC_MESSAGES/tutorial/index.po
+source_file = _build/gettext/index.pot
+source_lang = en
+
+[Channels2.part_1po]
+file_filter = locale/<lang>/LC_MESSAGES/tutorial/part_1.po
+source_file = _build/gettext/part_1.pot
+source_lang = en
+
+[Channels2.part_2po]
+file_filter = locale/<lang>/LC_MESSAGES/tutorial/part_2.po
+source_file = _build/gettext/part_2.pot
+source_lang = en
+
+[Channels2.part_3po]
+file_filter = locale/<lang>/LC_MESSAGES/tutorial/part_3.po
+source_file = _build/gettext/part_3.pot
+source_lang = en
+
+[Channels2.part_4po]
+file_filter = locale/<lang>/LC_MESSAGES/tutorial/part_4.po
+source_file = _build/gettext/part_4.pot
+source_lang = en
+
+
+[Channels2.authenticationpo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/authentication.po
+source_file = _build/gettext/authentication.pot
+source_lang = en
+
+[Channels2.channel_layerspo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/channel_layers.po
+source_file = _build/gettext/channel_layers.pot
+source_lang = en
+
+[Channels2.consumerspo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/consumers.po
+source_file = _build/gettext/consumers.pot
+source_lang = en
+
+[Channels2.databasespo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/databases.po
+source_file = _build/gettext/databases.pot
+source_lang = en
+
+[Channels2.routingpo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/routing.po
 source_file = _build/gettext/routing.pot
 source_lang = en
 
-[Channels.testingpo]
-file_filter = locale/<lang>/LC_MESSAGES/testing.po
+[Channels2.securitypo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/security.po
+source_file = _build/gettext/security.pot
+source_lang = en
+
+[Channels2.sessionspo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/sessions.po
+source_file = _build/gettext/sessions.pot
+source_lang = en
+
+[Channels2.testingpo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/testing.po
 source_file = _build/gettext/testing.pot
 source_lang = en
 
-[Channels.releases--1_0_0po]
-file_filter = locale/<lang>/LC_MESSAGES/releases/1.0.0.po
-source_file = _build/gettext/releases/1.0.0.pot
+[Channels2.workerpo]
+file_filter = locale/<lang>/LC_MESSAGES/topics/worker.po
+source_file = _build/gettext/worker.pot
 source_lang = en
 
-[Channels.releases--1_0_1po]
-file_filter = locale/<lang>/LC_MESSAGES/releases/1.0.1.po
-source_file = _build/gettext/releases/1.0.1.pot
-source_lang = en
 
-[Channels.releases--1_0_2po]
-file_filter = locale/<lang>/LC_MESSAGES/releases/1.0.2.po
-source_file = _build/gettext/releases/1.0.2.pot
-source_lang = en
-
-[Channels.releases--1_0_3po]
-file_filter = locale/<lang>/LC_MESSAGES/releases/1.0.3.po
-source_file = _build/gettext/releases/1.0.3.pot
-source_lang = en
-
-[Channels.releases--1_1_0po]
-file_filter = locale/<lang>/LC_MESSAGES/releases/1.1.0.po
-source_file = _build/gettext/releases/1.1.0.pot
-source_lang = en
-
-[Channels.releases--indexpo]
+[Channels2.indexpo_1]
 file_filter = locale/<lang>/LC_MESSAGES/releases/index.po
-source_file = _build/gettext/releases/index.pot
+source_file = _build/gettext/index.pot
 source_lang = en
-

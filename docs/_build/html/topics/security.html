@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>安全性 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="Testing" href="testing.html" />
+    <link rel="prev" title="認證" href="authentication.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="authentication.html" title="認證"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="security">
+<h1>安全性<a class="headerlink" href="#security" title="本標題的永久連結">¶</a></h1>
+<p>This covers basic security for protocols you&#8217;re serving via Channels and
+helpers that we provide.</p>
+<div class="section" id="websockets">
+<h2>WebSockets<a class="headerlink" href="#websockets" title="本標題的永久連結">¶</a></h2>
+<p>WebSockets start out life as a HTTP request, including all the cookies
+and headers, and so you can use the standard <a class="reference internal" href="authentication.html"><span class="doc">認證</span></a>
+code in order to grab current sessions and check user IDs.</p>
+<p>There is also a risk of cross-site request forgery (CSRF) with WebSockets though,
+as they can be initiated from any site on the internet to your domain, and will
+still have the user&#8217;s cookies and session from your site. If you serve private
+data down the socket, you should restrict the sites which are allowed to open
+sockets to you.</p>
+<p>This is done via the <code class="docutils literal"><span class="pre">channels.security.websocket</span></code> package, and the two
+ASGI middlewares it contains, <code class="docutils literal"><span class="pre">OriginValidator</span></code> and
+<code class="docutils literal"><span class="pre">AllowedHostsOriginValidator</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">OriginValidator</span></code> lets you restrict the valid options for the <code class="docutils literal"><span class="pre">Origin</span></code>
+header that is sent with every WebSocket to say where it comes from. Just wrap
+it around your WebSocket application code like this, and pass it a list of
+valid domains as the second argument. You can pass only a single domain (for example,
+<code class="docutils literal"><span class="pre">.allowed-domain.com</span></code>) or a full origin, in the format <code class="docutils literal"><span class="pre">scheme://domain[:port]</span></code>
+(for example, <code class="docutils literal"><span class="pre">http://allowed-domain.com:80</span></code>). Port is optional, but recommended:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.security.websocket</span> <span class="k">import</span> <span class="n">OriginValidator</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">OriginValidator</span><span class="p">(</span>
+        <span class="n">AuthMiddlewareStack</span><span class="p">(</span>
+            <span class="n">URLRouter</span><span class="p">([</span>
+                <span class="o">...</span>
+            <span class="p">])</span>
+        <span class="p">),</span>
+        <span class="p">[</span><span class="s2">&quot;.goodsite.com&quot;</span><span class="p">,</span> <span class="s2">&quot;http://.goodsite.com:80&quot;</span><span class="p">,</span> <span class="s2">&quot;http://other.site.com&quot;</span><span class="p">],</span>
+    <span class="p">),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>Note: If you want to resolve any domain, then use the origin <code class="docutils literal"><span class="pre">*</span></code>.</p>
+<p>Often, the set of domains you want to restrict to is the same as the Django
+<code class="docutils literal"><span class="pre">ALLOWED_HOSTS</span></code> setting, which performs a similar security check for the
+<code class="docutils literal"><span class="pre">Host</span></code> header, and so <code class="docutils literal"><span class="pre">AllowedHostsOriginValidator</span></code> lets you use this
+setting without having to re-declare the list:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.security.websocket</span> <span class="k">import</span> <span class="n">AllowedHostsOriginValidator</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">AllowedHostsOriginValidator</span><span class="p">(</span>
+        <span class="n">AuthMiddlewareStack</span><span class="p">(</span>
+            <span class="n">URLRouter</span><span class="p">([</span>
+                <span class="o">...</span>
+            <span class="p">])</span>
+        <span class="p">),</span>
+    <span class="p">),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">AllowedHostsOriginValidator</span></code> will also automatically allow local connections
+through if the site is in <code class="docutils literal"><span class="pre">DEBUG</span></code> mode, much like Django&#8217;s host validation.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">安全性</a><ul>
+<li><a class="reference internal" href="#websockets">WebSockets</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="authentication.html"
+                        title="上一章">認證</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="testing.html"
+                        title="下一章">Testing</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/security.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="authentication.html" title="認證"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

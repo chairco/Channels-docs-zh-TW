@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Testing &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="Worker 與背景任務" href="worker.html" />
+    <link rel="prev" title="安全性" href="security.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="worker.html" title="Worker 與背景任務"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="安全性"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="本標題的永久連結">¶</a></h1>
+<p>Testing Channels consumers is a little trickier than testing normal Django
+views due to their underlying asynchronous nature.</p>
+<p>To help with testing, Channels provides test helpers called <em>Communicators</em>,
+which allow you to wrap up an ASGI application (like a consumer) into its own
+event loop and ask it questions.</p>
+<p>They do, however, require that you have asynchronous support in your test suite.
+While you can do this yourself, we recommend using <code class="docutils literal"><span class="pre">py.test</span></code> with its <code class="docutils literal"><span class="pre">asyncio</span></code>
+plugin, which is how we&#8217;ll illustrate tests below.</p>
+<div class="section" id="setting-up-async-tests">
+<h2>Setting Up Async Tests<a class="headerlink" href="#setting-up-async-tests" title="本標題的永久連結">¶</a></h2>
+<p>Firstly, you need to get <code class="docutils literal"><span class="pre">py.test</span></code> set up with async test support, and
+presumably Django test support as well. You can do this by installing the
+<code class="docutils literal"><span class="pre">pytest-django</span></code> and <code class="docutils literal"><span class="pre">pytest-asyncio</span></code> packages:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span><span class="o">-</span><span class="n">django</span> <span class="n">pytest</span><span class="o">-</span><span class="n">asyncio</span>
+</pre></div>
+</div>
+<p>Then, you need to decorate the tests you want to run async with
+<code class="docutils literal"><span class="pre">pytest.mark.asyncio</span></code>. Note that you can&#8217;t mix this with <code class="docutils literal"><span class="pre">unittest.TestCase</span></code>
+subclasses; you have to write async tests as top-level test functions in the
+native <code class="docutils literal"><span class="pre">py.test</span></code> style:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">channels.testing</span> <span class="k">import</span> <span class="n">HttpCommunicator</span>
+<span class="kn">from</span> <span class="nn">myproject.myapp.consumers</span> <span class="k">import</span> <span class="n">MyConsumer</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_my_consumer</span><span class="p">():</span>
+    <span class="n">communicator</span> <span class="o">=</span> <span class="n">HttpCommunicator</span><span class="p">(</span><span class="n">MyConsumer</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/test/&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">get_response</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;test response&quot;</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">200</span>
+</pre></div>
+</div>
+<p>If you have normal Django views, you can continue to test those with the
+standard Django test tools and client. You only need the async setup for
+code that&#8217;s written as consumers.</p>
+<p>There&#8217;s a few variants of the Communicator - a plain one for generic usage,
+and one each for HTTP and WebSockets specifically that have shortcut methods,</p>
+</div>
+<div class="section" id="applicationcommunicator">
+<h2>ApplicationCommunicator<a class="headerlink" href="#applicationcommunicator" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">ApplicationCommunicator</span></code> is the generic test helper for any ASGI application.
+It provides several basic methods for interaction as explained below.</p>
+<p>You should only need this generic class for non-HTTP/WebSocket tests, though
+you might need to fall back to it if you are testing things like HTTP chunked
+responses or long-polling, which aren&#8217;t supported in <code class="docutils literal"><span class="pre">HttpCommunicator</span></code> yet.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last"><code class="docutils literal"><span class="pre">ApplicationCommunicator</span></code> is actually provided by the base <code class="docutils literal"><span class="pre">asgiref</span></code>
+package, but we let you import it from <code class="docutils literal"><span class="pre">channels.testing</span></code> for convenience.</p>
+</div>
+<p>To construct it, pass it an application and a scope:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.testing</span> <span class="k">import</span> <span class="n">ApplicationCommunicator</span>
+<span class="n">communicator</span> <span class="o">=</span> <span class="n">ApplicationCommunicator</span><span class="p">(</span><span class="n">MyConsumer</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="section" id="send-input">
+<h3>send_input<a class="headerlink" href="#send-input" title="本標題的永久連結">¶</a></h3>
+<p>Call it to send an event to the application:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">send_input</span><span class="p">({</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http.request&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;chunk one </span><span class="se">\x01</span><span class="s2"> chunk two&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="receive-output">
+<h3>receive_output<a class="headerlink" href="#receive-output" title="本標題的永久連結">¶</a></h3>
+<p>Call it to receive an event from the application:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">event</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_output</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="receive-nothing">
+<span id="application-communicator-receive-nothing"></span><h3>receive_nothing<a class="headerlink" href="#receive-nothing" title="本標題的永久連結">¶</a></h3>
+<p>Call it to check that there is no event waiting to be received from the
+application:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">assert</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_nothing</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+<span class="c1"># Receive the rest of the http request from above</span>
+<span class="n">event</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_output</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.body&quot;</span>
+<span class="k">assert</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;more_body&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+<span class="n">event</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_output</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.body&quot;</span>
+<span class="k">assert</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;more_body&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="c1"># Check that there isn&#39;t another event</span>
+<span class="k">assert</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_nothing</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+<span class="c1"># You could continue to send and receive events</span>
+<span class="c1"># await communicator.send_input(...)</span>
+</pre></div>
+</div>
+<p>The method has two optional parameters:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">timeout</span></code>: number of seconds to wait to ensure the queue is empty. Defaults
+to 0.1.</li>
+<li><code class="docutils literal"><span class="pre">interval</span></code>: number of seconds to wait for another check for new events.
+Defaults to 0.01.</li>
+</ul>
+</div>
+<div class="section" id="wait">
+<h3>wait<a class="headerlink" href="#wait" title="本標題的永久連結">¶</a></h3>
+<p>Call it to wait for an application to exit (you&#8217;ll need to either do this or wait for
+it to send you output before you can see what it did using mocks or inspection):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you&#8217;re expecting your application to raise an exception, use <code class="docutils literal"><span class="pre">pytest.raises</span></code>
+around <code class="docutils literal"><span class="pre">wait</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="httpcommunicator">
+<h2>HttpCommunicator<a class="headerlink" href="#httpcommunicator" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">HttpCommunicator</span></code> is a subclass of <code class="docutils literal"><span class="pre">ApplicationCommunicator</span></code> specifically
+tailored for HTTP requests. You need only instantiate it with your desired
+options:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.testing</span> <span class="k">import</span> <span class="n">HttpCommunicator</span>
+<span class="n">communicator</span> <span class="o">=</span> <span class="n">HttpCommunicator</span><span class="p">(</span><span class="n">MyHttpConsumer</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/test/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then wait for its response:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">get_response</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;test response&quot;</span>
+</pre></div>
+</div>
+<p>You can pass the following arguments to the constructor:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">method</span></code>: HTTP method name (unicode string, required)</li>
+<li><code class="docutils literal"><span class="pre">path</span></code>: HTTP path (unicode string, required)</li>
+<li><code class="docutils literal"><span class="pre">body</span></code>: HTTP body (bytestring, optional)</li>
+</ul>
+<p>The response from the <code class="docutils literal"><span class="pre">get_response</span></code> method will be a dict with the following
+keys:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>* ``status``: HTTP status code (integer)
+* ``headers``: List of headers as (name, value) tuples (both bytestrings)
+* ``body``: HTTP response body (bytestring)
+</pre></div>
+</div>
+</div>
+<div class="section" id="websocketcommunicator">
+<h2>WebsocketCommunicator<a class="headerlink" href="#websocketcommunicator" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">WebsocketCommunicator</span></code> allows you to more easily test WebSocket consumers.
+It provides several convenience methods for interacting with a WebSocket
+application, as shown in this example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.testing</span> <span class="k">import</span> <span class="n">WebsocketCommunicator</span>
+<span class="n">communicator</span> <span class="o">=</span> <span class="n">WebsocketCommunicator</span><span class="p">(</span><span class="n">SimpleWebsocketApp</span><span class="p">,</span> <span class="s2">&quot;/testws/&quot;</span><span class="p">)</span>
+<span class="n">connected</span><span class="p">,</span> <span class="n">subprotocol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">connected</span>
+<span class="c1"># Test sending text</span>
+<span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">send_to</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_from</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;hello&quot;</span>
+<span class="c1"># Close</span>
+<span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">All of these methods are coroutines, which means you must <code class="docutils literal"><span class="pre">await</span></code> them.
+If you do not, your test will either time out (if you forgot to await a
+send) or try comparing things to a coroutine object (if you forgot to
+await a receive).</p>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">重要</p>
+<p class="last">If you don&#8217;t call <code class="docutils literal"><span class="pre">WebsocketCommunicator.disconnect()</span></code> before your test
+suite ends, you may find yourself getting <code class="docutils literal"><span class="pre">RuntimeWarnings</span></code> about
+things never being awaited, as you will be killing your app off in the
+middle of its lifecycle. You do not, however, have to <code class="docutils literal"><span class="pre">disconnect()</span></code> if
+your app already raised an error.</p>
+</div>
+<div class="section" id="connect">
+<h3>connect<a class="headerlink" href="#connect" title="本標題的永久連結">¶</a></h3>
+<p>Triggers the connection phase of the WebSocket and waits for the application
+to either accept or deny the connection. Takes no parameters and returns
+either:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">(True,</span> <span class="pre">&lt;chosen_subprotocol&gt;)</span></code> if the socket was accepted.
+<code class="docutils literal"><span class="pre">chosen_subprotocol</span></code> defaults to <code class="docutils literal"><span class="pre">None</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">(False,</span> <span class="pre">&lt;close_code&gt;)</span></code> if the socket was rejected.
+<code class="docutils literal"><span class="pre">close_code</span></code> defaults to <code class="docutils literal"><span class="pre">1000</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="send-to">
+<h3>send_to<a class="headerlink" href="#send-to" title="本標題的永久連結">¶</a></h3>
+<p>Sends a data frame to the application. Takes exactly one of <code class="docutils literal"><span class="pre">bytes_data</span></code>
+or <code class="docutils literal"><span class="pre">text_data</span></code> as parameters, and returns nothing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">send_to</span><span class="p">(</span><span class="n">bytes_data</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;hi</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This method will type-check your parameters for you to ensure what you are
+sending really is text or bytes.</p>
+</div>
+<div class="section" id="send-json-to">
+<h3>send_json_to<a class="headerlink" href="#send-json-to" title="本標題的永久連結">¶</a></h3>
+<p>Sends a JSON payload to the application as a text frame. Call it with
+an object and it will JSON-encode it for you, and return nothing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">send_json_to</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="receive-from">
+<h3>receive_from<a class="headerlink" href="#receive-from" title="本標題的永久連結">¶</a></h3>
+<p>Receives a frame from the application and gives you either <code class="docutils literal"><span class="pre">bytes</span></code> or
+<code class="docutils literal"><span class="pre">text</span></code> back depending on the frame type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_from</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Takes an optional <code class="docutils literal"><span class="pre">timeout</span></code> argument with a number of seconds to wait before
+timing out, which defaults to 1. It will typecheck your application&#8217;s responses
+for you as well, to ensure that text frames contain text data, and binary
+frames contain binary data.</p>
+</div>
+<div class="section" id="receive-json-from">
+<h3>receive_json_from<a class="headerlink" href="#receive-json-from" title="本標題的永久連結">¶</a></h3>
+<p>Receives a text frame from the application and decodes it for you:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">communicator</span><span class="o">.</span><span class="n">receive_json_from</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">response</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Takes an optional <code class="docutils literal"><span class="pre">timeout</span></code> argument with a number of seconds to wait before
+timing out, which defaults to 1.</p>
+</div>
+<div class="section" id="id1">
+<h3>receive_nothing<a class="headerlink" href="#id1" title="本標題的永久連結">¶</a></h3>
+<p>Checks that there is no frame waiting to be received from the application. For
+details see
+<a class="reference internal" href="#application-communicator-receive-nothing"><span class="std std-ref">ApplicationCommunicator</span></a>.</p>
+</div>
+<div class="section" id="disconnect">
+<h3>disconnect<a class="headerlink" href="#disconnect" title="本標題的永久連結">¶</a></h3>
+<p>Closes the socket from the client side. Takes nothing and returns nothing.</p>
+<p>You do not need to call this if the application instance you&#8217;re testing already
+exited (for example, if it errored), but if you do call it, it will just
+silently return control to you.</p>
+</div>
+</div>
+<div class="section" id="channelsliveservertestcase">
+<h2>ChannelsLiveServerTestCase<a class="headerlink" href="#channelsliveservertestcase" title="本標題的永久連結">¶</a></h2>
+<p>If you just want to run standard Selenium or other tests that require a
+webserver to be running for external programs, you can use
+<code class="docutils literal"><span class="pre">ChannelsLiveServerTestCase</span></code>, which is a drop-in replacement for the
+standard Django <code class="docutils literal"><span class="pre">LiveServerTestCase</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.testing</span> <span class="k">import</span> <span class="n">ChannelsLiveServerTestCase</span>
+
+<span class="k">class</span> <span class="nc">SomeLiveTests</span><span class="p">(</span><span class="n">ChannelsLiveServerTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_live_stuff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">call_external_testing_thing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">live_server_url</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p>You can&#8217;t use an in-memory database for your live tests. Therefore
+include a test database file name in your settings to tell Django to
+use a file database if you use SQLite:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s2">&quot;django.db.backends.sqlite3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s2">&quot;db.sqlite3&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;TEST&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s2">&quot;db_test.sqlite3&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="serve-static">
+<h3>serve_static<a class="headerlink" href="#serve-static" title="本標題的永久連結">¶</a></h3>
+<p>Subclass <code class="docutils literal"><span class="pre">ChannelsLiveServerTestCase</span></code> with <code class="docutils literal"><span class="pre">serve_static</span> <span class="pre">=</span> <span class="pre">True</span></code> in order
+to serve static files (comparable to Django&#8217;s <code class="docutils literal"><span class="pre">StaticLiveServerTestCase</span></code>, you
+don&#8217;t need to run collectstatic before or as a part of your tests setup).</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Testing</a><ul>
+<li><a class="reference internal" href="#setting-up-async-tests">Setting Up Async Tests</a></li>
+<li><a class="reference internal" href="#applicationcommunicator">ApplicationCommunicator</a><ul>
+<li><a class="reference internal" href="#send-input">send_input</a></li>
+<li><a class="reference internal" href="#receive-output">receive_output</a></li>
+<li><a class="reference internal" href="#receive-nothing">receive_nothing</a></li>
+<li><a class="reference internal" href="#wait">wait</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#httpcommunicator">HttpCommunicator</a></li>
+<li><a class="reference internal" href="#websocketcommunicator">WebsocketCommunicator</a><ul>
+<li><a class="reference internal" href="#connect">connect</a></li>
+<li><a class="reference internal" href="#send-to">send_to</a></li>
+<li><a class="reference internal" href="#send-json-to">send_json_to</a></li>
+<li><a class="reference internal" href="#receive-from">receive_from</a></li>
+<li><a class="reference internal" href="#receive-json-from">receive_json_from</a></li>
+<li><a class="reference internal" href="#id1">receive_nothing</a></li>
+<li><a class="reference internal" href="#disconnect">disconnect</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#channelsliveservertestcase">ChannelsLiveServerTestCase</a><ul>
+<li><a class="reference internal" href="#serve-static">serve_static</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="security.html"
+                        title="上一章">安全性</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="worker.html"
+                        title="下一章">Worker 與背景任務</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/testing.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="worker.html" title="Worker 與背景任務"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="安全性"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

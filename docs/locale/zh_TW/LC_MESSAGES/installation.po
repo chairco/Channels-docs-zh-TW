@@ -1,20 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 # 
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Adrian Liaw <adrianliaw2000@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
 "Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
@@ -24,32 +26,49 @@ msgstr "安裝"
 
 #: ../../installation.rst:4
 msgid "Channels is available on PyPI - to install it, just run::"
-msgstr "Channels 可以從 PyPI 上取得，執行以下指令來安裝::"
+msgstr ""
 
 #: ../../installation.rst:8
 msgid ""
 "Once that's done, you should add ``channels`` to your ``INSTALLED_APPS`` "
 "setting::"
-msgstr "安裝完成之後，需要新增 ``channels`` 到 ``INSTALLED_APPS`` 的設定中::"
+msgstr ""
 
 #: ../../installation.rst:20
+msgid "Then, make a default routing in ``myproject/routing.py``::"
+msgstr ""
+
+#: ../../installation.rst:28
+msgid ""
+"And finally, set your ``ASGI_APPLICATION`` setting to point to that routing "
+"object as your root application::"
+msgstr ""
+
+#: ../../installation.rst:33
 msgid ""
 "That's it! Once enabled, ``channels`` will integrate itself into Django and "
-"take control of the ``runserver`` command. See :doc:`getting-started` for "
-"more."
+"take control of the ``runserver`` command. See :doc:`introduction` for more."
 msgstr ""
-"這樣子就完成了！啟用之後， ``channels`` 將會整合到 Django 當中，並且控制 ``runserver`` 指令。詳細請見 :doc"
-":`getting-started` 的說明。"
 
-#: ../../installation.rst:25
+#: ../../installation.rst:37
+msgid ""
+"Please be wary of any other third-party apps that require an overloaded or "
+"replacement ``runserver`` command. Channels provides a separate "
+"``runserver`` command and may conflict with it. An example of such a "
+"conflict is with `whitenoise.runserver_nostatic "
+"<https://github.com/evansd/whitenoise/issues/77>`_ from `whitenoise "
+"<https://github.com/evansd/whitenoise>`_. In order to solve such issues, try"
+" moving ``channels`` to the top of your ``INSTALLED_APPS`` or remove the "
+"offending app altogether."
+msgstr ""
+
+#: ../../installation.rst:47
 msgid "Installing the latest development version"
-msgstr "安裝最新的開發中版本"
+msgstr ""
 
-#: ../../installation.rst:27
+#: ../../installation.rst:49
 msgid ""
 "To install the latest version of Channels, clone the repo, change to the "
 "repo, change to the repo directory, and pip install it into your current "
 "virtual environment::"
 msgstr ""
-"要安裝 Channels 的最新開發中版本，使用 git clone 將專案複製下來，並切換進該專案目錄，然後使用 pip install "
-"來安裝到您目前的虛擬環境之中::"

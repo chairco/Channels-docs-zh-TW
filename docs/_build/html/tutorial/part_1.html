@@ -1,0 +1,429 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>教學第一章: 基礎設定 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="教學第二章: 實現一個 Chat Server" href="part_2.html" />
+    <link rel="prev" title="教學" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="part_2.html" title="教學第二章: 實現一個 Chat Server"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="教學"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">教學</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorial-part-1-basic-setup">
+<h1>教學第一章: 基礎設定<a class="headerlink" href="#tutorial-part-1-basic-setup" title="本標題的永久連結">¶</a></h1>
+<p>In this tutorial we will build a simple chat server. It will have two pages:</p>
+<ul class="simple">
+<li>An index view that lets you type the name of a chat room to join.</li>
+<li>A room view that lets you see messages posted in a particular chat room.</li>
+</ul>
+<p>The room view will use a WebSocket to communicate with the Django server and
+listen for any messages that are posted.</p>
+<p>We assume that you are familar with basic concepts for building a Django site.
+If not we recommend you complete <a class="reference external" href="https://docs.djangoproject.com/en/2.0/intro/tutorial01/">the Django tutorial</a> first and then come back
+to this tutorial.</p>
+<p>We assume that you have <a class="reference external" href="https://docs.djangoproject.com/en/2.0/intro/install/">Django installed</a> already. You can tell Django is
+installed and which version by running the following command in a shell prompt
+(indicated by the <code class="docutils literal"><span class="pre">$</span></code> prefix):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 -m django --version
+</pre></div>
+</div>
+<p>We also assume that you have <a class="reference internal" href="../installation.html"><span class="doc">Channels installed</span></a> already. You can tell
+Channels is installed by running the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 -c &#39;import channels; print(channels.__version__)&#39;
+</pre></div>
+</div>
+<p>This tutorial is written for Channels 2.0, which supports Python 3.5+ and Django
+1.11+. If the Channels version does not match, you can refer to the tutorial for
+your version of Channels by using the version switcher at the bottom left corner
+of this page, or update Channels to the newest version.</p>
+<p>This tutorial also uses Docker to install and run Redis. We use Redis as the
+backing store for the channel layer, which is an optional component of the
+Channels library that we use in the tutorial. <a class="reference external" href="https://www.docker.com/get-docker">Install Docker</a> from its
+official website.</p>
+<div class="section" id="creating-a-project">
+<h2>Creating a project<a class="headerlink" href="#creating-a-project" title="本標題的永久連結">¶</a></h2>
+<p>If you don&#8217;t already have a Django project, you will need to create one.</p>
+<p>From the command line, <code class="docutils literal"><span class="pre">cd</span></code> into a directory where you&#8217;d like to store your
+code, then run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ django-admin startproject mysite
+</pre></div>
+</div>
+<p>This will create a <code class="docutils literal"><span class="pre">mysite</span></code> directory in your current directory with the
+following contents:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mysite</span><span class="o">/</span>
+    <span class="n">manage</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">mysite</span><span class="o">/</span>
+        <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">py</span>
+        <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+        <span class="n">wsgi</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-the-chat-app">
+<h2>Creating the Chat app<a class="headerlink" href="#creating-the-chat-app" title="本標題的永久連結">¶</a></h2>
+<p>We will put the code for the chat server in its own app.</p>
+<p>Make sure you&#8217;re in the same directory as <code class="docutils literal"><span class="pre">manage.py</span></code> and type this command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py startapp chat
+</pre></div>
+</div>
+<p>That&#8217;ll create a directory <code class="docutils literal"><span class="pre">chat</span></code>, which is laid out like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">admin</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">apps</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">migrations</span><span class="o">/</span>
+        <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">models</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">tests</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>For the purposes of this tutorial, we will only be working with <code class="docutils literal"><span class="pre">chat/views.py</span></code>
+and <code class="docutils literal"><span class="pre">chat/__init__.py</span></code>. So remove all other files from the <code class="docutils literal"><span class="pre">chat</span></code> directory.</p>
+<p>After removing unnecessary files, the <code class="docutils literal"><span class="pre">chat</span></code> directory should look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>We need to tell our project that the <code class="docutils literal"><span class="pre">chat</span></code> app is installed. Edit the
+<code class="docutils literal"><span class="pre">mysite/settings.py</span></code> file and add <code class="docutils literal"><span class="pre">'chat'</span></code> to the <strong>INSTALLED_APPS</strong> setting.
+It&#8217;ll look like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/settings.py</span>
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;chat&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-the-index-view">
+<h2>Add the index view<a class="headerlink" href="#add-the-index-view" title="本標題的永久連結">¶</a></h2>
+<p>We will now create the first view, an index view that lets you type the name of
+a chat room to join.</p>
+<p>Create a <code class="docutils literal"><span class="pre">templates</span></code> directory in your <code class="docutils literal"><span class="pre">chat</span></code> directory. Within the
+<code class="docutils literal"><span class="pre">templates</span></code> directory you have just created, create another directory called
+<code class="docutils literal"><span class="pre">chat</span></code>, and within that create a file called <code class="docutils literal"><span class="pre">index.html</span></code> to hold the
+template for the index view.</p>
+<p>Your chat directory should now look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">templates</span><span class="o">/</span>
+        <span class="n">chat</span><span class="o">/</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Put the following code in <code class="docutils literal"><span class="pre">chat/templates/chat/index.html</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;!-- chat/templates/chat/index.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;/&gt;
+    &lt;title&gt;Chat Rooms&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    What chat room would you like to enter?&lt;br/&gt;
+    &lt;input id=&quot;room-name-input&quot; type=&quot;text&quot; size=&quot;100&quot;/&gt;&lt;br/&gt;
+    &lt;input id=&quot;room-name-submit&quot; type=&quot;button&quot; value=&quot;Enter&quot;/&gt;
+&lt;/body&gt;
+&lt;script&gt;
+    document.querySelector(&#39;#room-name-input&#39;).focus();
+    document.querySelector(&#39;#room-name-input&#39;).onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector(&#39;#room-name-submit&#39;).click();
+        }
+    };
+
+    document.querySelector(&#39;#room-name-submit&#39;).onclick = function(e) {
+        var roomName = document.querySelector(&#39;#room-name-input&#39;).value;
+        window.location.pathname = &#39;/chat/&#39; + roomName + &#39;/&#39;;
+    };
+&lt;/script&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+<p>Create the view function for the room view.
+Put the following code in <code class="docutils literal"><span class="pre">chat/views.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/views.py</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chat/index.html&#39;</span><span class="p">,</span> <span class="p">{})</span>
+</pre></div>
+</div>
+<p>To call the view, we need to map it to a URL - and for this we need a URLconf.</p>
+<p>To create a URLconf in the chat directory, create a file called <code class="docutils literal"><span class="pre">urls.py</span></code>.
+Your app directory should now look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chat</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">templates</span><span class="o">/</span>
+        <span class="n">chat</span><span class="o">/</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>In the <code class="docutils literal"><span class="pre">chat/urls.py</span></code> file include the following code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># chat/urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The next step is to point the root URLconf at the <strong>chat.urls</strong> module.
+In <code class="docutils literal"><span class="pre">mysite/urls.py</span></code>, add an import for <strong>django.conf.urls.include</strong> and
+insert an <strong>include()</strong> in the <strong>urlpatterns</strong> list, so you have:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^chat/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;chat.urls&#39;</span><span class="p">)),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Let&#8217;s verify that the index view works. Run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py runserver
+</pre></div>
+</div>
+<p>You&#8217;ll see the following output on the command line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Performing</span> <span class="n">system</span> <span class="n">checks</span><span class="o">...</span>
+
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+
+<span class="n">You</span> <span class="n">have</span> <span class="mi">13</span> <span class="n">unapplied</span> <span class="n">migration</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span> <span class="n">Your</span> <span class="n">project</span> <span class="n">may</span> <span class="ow">not</span> <span class="n">work</span> <span class="n">properly</span> <span class="n">until</span> <span class="n">you</span> <span class="n">apply</span> <span class="n">the</span> <span class="n">migrations</span> <span class="k">for</span> <span class="n">app</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="n">admin</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">contenttypes</span><span class="p">,</span> <span class="n">sessions</span><span class="o">.</span>
+<span class="n">Run</span> <span class="s1">&#39;python manage.py migrate&#39;</span> <span class="n">to</span> <span class="n">apply</span> <span class="n">them</span><span class="o">.</span>
+
+<span class="n">February</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2018</span> <span class="o">-</span> <span class="mi">22</span><span class="p">:</span><span class="mi">08</span><span class="p">:</span><span class="mi">39</span>
+<span class="n">Django</span> <span class="n">version</span> <span class="mf">1.11</span><span class="o">.</span><span class="mi">10</span><span class="p">,</span> <span class="n">using</span> <span class="n">settings</span> <span class="s1">&#39;mysite.settings&#39;</span>
+<span class="n">Starting</span> <span class="n">development</span> <span class="n">server</span> <span class="n">at</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8000</span><span class="o">/</span>
+<span class="n">Quit</span> <span class="n">the</span> <span class="n">server</span> <span class="k">with</span> <span class="n">CONTROL</span><span class="o">-</span><span class="n">C</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">Ignore the warning about unapplied database migrations.
+We won&#8217;t be using a database in this tutorial.</p>
+</div>
+<p>Go to <a class="reference external" href="http://127.0.0.1:8000/chat/">http://127.0.0.1:8000/chat/</a> in your browser and you should see the text
+&#8220;What chat room would you like to enter?&#8221; along with a text input to provide a
+room name.</p>
+<p>Type in &#8220;lobby&#8221; as the room name and press enter. You should be redirected to
+the room view at <a class="reference external" href="http://127.0.0.1:8000/chat/lobby/">http://127.0.0.1:8000/chat/lobby/</a> but we haven&#8217;t written the
+room view yet, so you&#8217;ll get a &#8220;Page not found&#8221; error page.</p>
+<p>Go to the terminal where you ran the <code class="docutils literal"><span class="pre">runserver</span></code> command and press Control-C
+to stop the server.</p>
+</div>
+<div class="section" id="integrate-the-channels-library">
+<h2>Integrate the Channels library<a class="headerlink" href="#integrate-the-channels-library" title="本標題的永久連結">¶</a></h2>
+<p>So far we&#8217;ve just created a regular Django app; we haven&#8217;t used the Channels
+library at all. Now it&#8217;s time to integrate Channels.</p>
+<p>Let&#8217;s start by creating a root routing configuration for Channels. A Channels
+<a class="reference internal" href="../topics/routing.html"><span class="doc">routing configuration</span></a> is similar to a Django URLconf in that it tells Channels
+what code to run when an HTTP request is received by the Channels server.</p>
+<p>We&#8217;ll start with an empty routing configuration.
+Create a file <code class="docutils literal"><span class="pre">mysite/routing.py</span></code> and include the following code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/routing.py</span>
+<span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+    <span class="c1"># (http-&gt;django views is added by default)</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>Now add the Channels library to the list of installed apps.
+Edit the <code class="docutils literal"><span class="pre">mysite/settings.py</span></code> file and add <code class="docutils literal"><span class="pre">'channels'</span></code> to the
+<code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> setting. It&#8217;ll look like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/settings.py</span>
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chat&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>You&#8217;ll also need to point Channels at the root routing configuration.
+Edit the <code class="docutils literal"><span class="pre">mysite/settings.py</span></code> file again and add the following to the bottom
+of it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># mysite/settings.py</span>
+<span class="c1"># Channels</span>
+<span class="n">ASGI_APPLICATION</span> <span class="o">=</span> <span class="s1">&#39;mysite.routing.application&#39;</span>
+</pre></div>
+</div>
+<p>With Channels now in the installed apps, it will take control of the
+<code class="docutils literal"><span class="pre">runserver</span></code> command, replacing the standard Django development server with
+the Channels development server.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">The Channels development server will conflict with any other third-party
+apps that require an overloaded or replacement runserver command.
+An example of such a conflict is with <a class="reference external" href="https://github.com/evansd/whitenoise/issues/77">whitenoise.runserver_nostatic</a> from
+<a class="reference external" href="https://github.com/evansd/whitenoise">whitenoise</a>. In order to solve such issues, try moving <code class="docutils literal"><span class="pre">channels</span></code> to the
+top of your <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> or remove the offending app altogether.</p>
+</div>
+<p>Let&#8217;s ensure that the Channels development server is working correctly.
+Run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python3 manage.py runserver
+</pre></div>
+</div>
+<p>You&#8217;ll see the following output on the command line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Performing</span> <span class="n">system</span> <span class="n">checks</span><span class="o">...</span>
+
+<span class="n">System</span> <span class="n">check</span> <span class="n">identified</span> <span class="n">no</span> <span class="n">issues</span> <span class="p">(</span><span class="mi">0</span> <span class="n">silenced</span><span class="p">)</span><span class="o">.</span>
+
+<span class="n">You</span> <span class="n">have</span> <span class="mi">13</span> <span class="n">unapplied</span> <span class="n">migration</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span> <span class="n">Your</span> <span class="n">project</span> <span class="n">may</span> <span class="ow">not</span> <span class="n">work</span> <span class="n">properly</span> <span class="n">until</span> <span class="n">you</span> <span class="n">apply</span> <span class="n">the</span> <span class="n">migrations</span> <span class="k">for</span> <span class="n">app</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="n">admin</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">contenttypes</span><span class="p">,</span> <span class="n">sessions</span><span class="o">.</span>
+<span class="n">Run</span> <span class="s1">&#39;python manage.py migrate&#39;</span> <span class="n">to</span> <span class="n">apply</span> <span class="n">them</span><span class="o">.</span>
+
+<span class="n">February</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2018</span> <span class="o">-</span> <span class="mi">22</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">23</span>
+<span class="n">Django</span> <span class="n">version</span> <span class="mf">1.11</span><span class="o">.</span><span class="mi">10</span><span class="p">,</span> <span class="n">using</span> <span class="n">settings</span> <span class="s1">&#39;mysite.settings&#39;</span>
+<span class="n">Starting</span> <span class="n">ASGI</span><span class="o">/</span><span class="n">Channels</span> <span class="n">development</span> <span class="n">server</span> <span class="n">at</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8000</span><span class="o">/</span>
+<span class="n">Quit</span> <span class="n">the</span> <span class="n">server</span> <span class="k">with</span> <span class="n">CONTROL</span><span class="o">-</span><span class="n">C</span><span class="o">.</span>
+<span class="mi">2018</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">18</span> <span class="mi">22</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">23</span><span class="p">,</span><span class="mi">729</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">server</span> <span class="o">-</span> <span class="n">HTTP</span><span class="o">/</span><span class="mi">2</span> <span class="n">support</span> <span class="ow">not</span> <span class="n">enabled</span> <span class="p">(</span><span class="n">install</span> <span class="n">the</span> <span class="n">http2</span> <span class="ow">and</span> <span class="n">tls</span> <span class="n">Twisted</span> <span class="n">extras</span><span class="p">)</span>
+<span class="mi">2018</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">18</span> <span class="mi">22</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">23</span><span class="p">,</span><span class="mi">730</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">server</span> <span class="o">-</span> <span class="n">Configuring</span> <span class="n">endpoint</span> <span class="n">tcp</span><span class="p">:</span><span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">:</span><span class="n">interface</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
+<span class="mi">2018</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">18</span> <span class="mi">22</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">23</span><span class="p">,</span><span class="mi">731</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">server</span> <span class="o">-</span> <span class="n">Listening</span> <span class="n">on</span> <span class="n">TCP</span> <span class="n">address</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8000</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">Ignore the warning about unapplied database migrations.
+We won&#8217;t be using a database in this tutorial.</p>
+</div>
+<p>Notice the line beginning with
+<code class="docutils literal"><span class="pre">Starting</span> <span class="pre">ASGI/Channels</span> <span class="pre">development</span> <span class="pre">server</span> <span class="pre">at</span> <span class="pre">http://127.0.0.1:8000/</span></code>.
+This indicates that the Channels development server has taken over from the
+Django development server.</p>
+<p>Go to <a class="reference external" href="http://127.0.0.1:8000/chat/">http://127.0.0.1:8000/chat/</a> in your browser and you should still see the
+index page that we created before.</p>
+<p>Go to the terminal where you ran the <code class="docutils literal"><span class="pre">runserver</span></code> command and press Control-C
+to stop the server.</p>
+<p>This tutorial continues in <a class="reference internal" href="part_2.html"><span class="doc">Tutorial 2</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">教學第一章: 基礎設定</a><ul>
+<li><a class="reference internal" href="#creating-a-project">Creating a project</a></li>
+<li><a class="reference internal" href="#creating-the-chat-app">Creating the Chat app</a></li>
+<li><a class="reference internal" href="#add-the-index-view">Add the index view</a></li>
+<li><a class="reference internal" href="#integrate-the-channels-library">Integrate the Channels library</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="index.html"
+                        title="上一章">教學</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="part_2.html"
+                        title="下一章">教學第二章: 實現一個 Chat Server</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorial/part_1.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="part_2.html" title="教學第二章: 實現一個 Chat Server"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="教學"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >教學</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

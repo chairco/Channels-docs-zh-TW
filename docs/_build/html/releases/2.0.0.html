@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2.0.0 Release Notes &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="2.0.1 Release Notes" href="2.0.1.html" />
+    <link rel="prev" title="1.1.6 Release Notes" href="1.1.6.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="2.0.1.html" title="2.0.1 Release Notes"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="1.1.6.html" title="1.1.6 Release Notes"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">發行說明</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="release-notes">
+<h1>2.0.0 Release Notes<a class="headerlink" href="#release-notes" title="本標題的永久連結">¶</a></h1>
+<p>Channels 2.0 is a major rewrite of Channels, introducing a large amount of
+changes to the fundamental design and architecture of Channels. Notably:</p>
+<ul class="simple">
+<li>Data is no longer transported over a channel layer between protocol server
+and application; instead, applications run inside their protocol servers
+(like with WSGI).</li>
+<li>To achieve this, the entire core of channels is now built around Python&#8217;s
+<code class="docutils literal"><span class="pre">asyncio</span></code> framework and runs async-native down until it hits either a
+Django view or a synchronous consumer.</li>
+<li>Python 2.7 and 3.4 are no longer supported.</li>
+</ul>
+<p>More detailed information on the changes and tips on how to port your
+applications can be found in our <a class="reference internal" href="../one-to-two.html"><span class="doc">Channels 2 帶來那些新的改變？</span></a> documentation.</p>
+<div class="section" id="backwards-incompatible-changes">
+<h2>Backwards Incompatible Changes<a class="headerlink" href="#backwards-incompatible-changes" title="本標題的永久連結">¶</a></h2>
+<p>Channels 2 is regrettably not backwards-compatible at all with Channels 1
+applications due to the large amount of re-architecting done to the code and
+the switch from synchronous to asynchronous runtimes.</p>
+<p>A <a class="reference internal" href="../one-to-two.html"><span class="doc">migration guide</span></a> is available, and a lot of the basic
+concepts are the same, but the basic class structure and imports have changed.</p>
+<p>Our apologies for having to make a breaking change like this, but it was the
+only way to fix some of the fundamental design issues in Channels 1. Channels 1
+will continue to receive security and data-loss fixes for the foreseeable
+future, but no new features will be added.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.0.0 Release Notes</a><ul>
+<li><a class="reference internal" href="#backwards-incompatible-changes">Backwards Incompatible Changes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="1.1.6.html"
+                        title="上一章">1.1.6 Release Notes</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="2.0.1.html"
+                        title="下一章">2.0.1 Release Notes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releases/2.0.0.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="2.0.1.html" title="2.0.1 Release Notes"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="1.1.6.html" title="1.1.6 Release Notes"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >發行說明</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

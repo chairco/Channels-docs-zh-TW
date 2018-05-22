@@ -1,0 +1,88 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../topics/security.rst:2
+msgid "Security"
+msgstr "安全性"
+
+#: ../../topics/security.rst:4
+msgid ""
+"This covers basic security for protocols you're serving via Channels and "
+"helpers that we provide."
+msgstr ""
+
+#: ../../topics/security.rst:9
+msgid "WebSockets"
+msgstr ""
+
+#: ../../topics/security.rst:11
+msgid ""
+"WebSockets start out life as a HTTP request, including all the cookies and "
+"headers, and so you can use the standard :doc:`/topics/authentication` code "
+"in order to grab current sessions and check user IDs."
+msgstr ""
+
+#: ../../topics/security.rst:15
+msgid ""
+"There is also a risk of cross-site request forgery (CSRF) with WebSockets "
+"though, as they can be initiated from any site on the internet to your "
+"domain, and will still have the user's cookies and session from your site. "
+"If you serve private data down the socket, you should restrict the sites "
+"which are allowed to open sockets to you."
+msgstr ""
+
+#: ../../topics/security.rst:21
+msgid ""
+"This is done via the ``channels.security.websocket`` package, and the two "
+"ASGI middlewares it contains, ``OriginValidator`` and "
+"``AllowedHostsOriginValidator``."
+msgstr ""
+
+#: ../../topics/security.rst:25
+msgid ""
+"``OriginValidator`` lets you restrict the valid options for the ``Origin`` "
+"header that is sent with every WebSocket to say where it comes from. Just "
+"wrap it around your WebSocket application code like this, and pass it a list"
+" of valid domains as the second argument. You can pass only a single domain "
+"(for example, ``.allowed-domain.com``) or a full origin, in the format "
+"``scheme://domain[:port]`` (for example, ``http://allowed-domain.com:80``). "
+"Port is optional, but recommended::"
+msgstr ""
+
+#: ../../topics/security.rst:46
+msgid "Note: If you want to resolve any domain, then use the origin ``*``."
+msgstr ""
+
+#: ../../topics/security.rst:49
+msgid ""
+"Often, the set of domains you want to restrict to is the same as the Django "
+"``ALLOWED_HOSTS`` setting, which performs a similar security check for the "
+"``Host`` header, and so ``AllowedHostsOriginValidator`` lets you use this "
+"setting without having to re-declare the list::"
+msgstr ""
+
+#: ../../topics/security.rst:67
+msgid ""
+"``AllowedHostsOriginValidator`` will also automatically allow local "
+"connections through if the site is in ``DEBUG`` mode, much like Django's "
+"host validation."
+msgstr ""

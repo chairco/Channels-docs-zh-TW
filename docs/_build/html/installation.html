@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>安裝 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
+    <title>安裝 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.5',
+        VERSION:     '2.1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="Getting Started with Channels" href="getting-started.html" />
-    <link rel="prev" title="Channels 的概念" href="concepts.html" /> 
+    <link rel="next" title="教學" href="tutorial/index.html" />
+    <link rel="prev" title="簡介" href="introduction.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,12 +38,12 @@
           <a href="genindex.html" title="總索引"
              accesskey="I">索引</a></li>
         <li class="right" >
-          <a href="getting-started.html" title="Getting Started with Channels"
+          <a href="tutorial/index.html" title="教學"
              accesskey="N">下一頁</a> |</li>
         <li class="right" >
-          <a href="concepts.html" title="Channels 的概念"
+          <a href="introduction.html" title="簡介"
              accesskey="P">上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -54,11 +54,12 @@
             
   <div class="section" id="installation">
 <h1>安裝<a class="headerlink" href="#installation" title="本標題的永久連結">¶</a></h1>
-<p>Channels 可以從 PyPI 上取得，執行以下指令來安裝:</p>
+<p>Channels is available on PyPI - to install it, just run:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">channels</span>
 </pre></div>
 </div>
-<p>安裝完成之後，需要新增 <code class="docutils literal"><span class="pre">channels</span></code> 到 <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> 的設定中:</p>
+<p>Once that&#8217;s done, you should add <code class="docutils literal"><span class="pre">channels</span></code> to your
+<code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> setting:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
     <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
@@ -69,10 +70,36 @@
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>這樣子就完成了！啟用之後， <code class="docutils literal"><span class="pre">channels</span></code> 將會整合到 Django 當中，並且控制 <code class="docutils literal"><span class="pre">runserver</span></code> 指令。詳細請見 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 的說明。</p>
+<p>Then, make a default routing in <code class="docutils literal"><span class="pre">myproject/routing.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+    <span class="c1"># Empty for now (http-&gt;django views is added by default)</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>And finally, set your <code class="docutils literal"><span class="pre">ASGI_APPLICATION</span></code> setting to point to that routing
+object as your root application:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ASGI_APPLICATION</span> <span class="o">=</span> <span class="s2">&quot;myproject.routing.application&quot;</span>
+</pre></div>
+</div>
+<p>That&#8217;s it! Once enabled, <code class="docutils literal"><span class="pre">channels</span></code> will integrate itself into Django and
+take control of the <code class="docutils literal"><span class="pre">runserver</span></code> command. See <a class="reference internal" href="introduction.html"><span class="doc">簡介</span></a> for more.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">Please be wary of any other third-party apps that require an overloaded or
+replacement <code class="docutils literal"><span class="pre">runserver</span></code> command. Channels provides a separate
+<code class="docutils literal"><span class="pre">runserver</span></code> command and may conflict with it. An example
+of such a conflict is with <a class="reference external" href="https://github.com/evansd/whitenoise/issues/77">whitenoise.runserver_nostatic</a>
+from <a class="reference external" href="https://github.com/evansd/whitenoise">whitenoise</a>. In order to
+solve such issues, try moving <code class="docutils literal"><span class="pre">channels</span></code> to the top of your <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code>
+or remove the offending app altogether.</p>
+</div>
 <div class="section" id="installing-the-latest-development-version">
-<h2>安裝最新的開發中版本<a class="headerlink" href="#installing-the-latest-development-version" title="本標題的永久連結">¶</a></h2>
-<p>要安裝 Channels 的最新開發中版本，使用 git clone 將專案複製下來，並切換進該專案目錄，然後使用 pip install 來安裝到您目前的虛擬環境之中:</p>
+<h2>Installing the latest development version<a class="headerlink" href="#installing-the-latest-development-version" title="本標題的永久連結">¶</a></h2>
+<p>To install the latest version of Channels, clone the repo, change to the repo,
+change to the repo directory, and pip install it into your current virtual
+environment:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone git@github.com:django/channels.git
 $ cd channels
 $ &lt;activate your project’s virtual environment&gt;
@@ -91,17 +118,17 @@ $ &lt;activate your project’s virtual environment&gt;
   <h3><a href="index.html">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">安裝</a><ul>
-<li><a class="reference internal" href="#installing-the-latest-development-version">安裝最新的開發中版本</a></li>
+<li><a class="reference internal" href="#installing-the-latest-development-version">Installing the latest development version</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>上一個主題</h4>
-  <p class="topless"><a href="concepts.html"
-                        title="上一章">Channels 的概念</a></p>
+  <p class="topless"><a href="introduction.html"
+                        title="上一章">簡介</a></p>
   <h4>下一個主題</h4>
-  <p class="topless"><a href="getting-started.html"
-                        title="下一章">Getting Started with Channels</a></p>
+  <p class="topless"><a href="tutorial/index.html"
+                        title="下一章">教學</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -130,12 +157,12 @@ $ &lt;activate your project’s virtual environment&gt;
           <a href="genindex.html" title="總索引"
              >索引</a></li>
         <li class="right" >
-          <a href="getting-started.html" title="Getting Started with Channels"
+          <a href="tutorial/index.html" title="教學"
              >下一頁</a> |</li>
         <li class="right" >
-          <a href="concepts.html" title="Channels 的概念"
+          <a href="introduction.html" title="簡介"
              >上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

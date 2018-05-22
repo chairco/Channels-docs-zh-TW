@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>通道 WebSocket 包裝 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
+    <title>Channels WebSocket 包裝 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.5',
+        VERSION:     '2.1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="通道層類型" href="backends.html" />
-    <link rel="prev" title="資料綁定" href="binding.html" /> 
+    <link rel="next" title="ASGI 非同步伺服器閘道介面" href="asgi.html" />
+    <link rel="prev" title="Channels 2 帶來那些新的改變？" href="one-to-two.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,12 +38,12 @@
           <a href="genindex.html" title="總索引"
              accesskey="I">索引</a></li>
         <li class="right" >
-          <a href="backends.html" title="通道層類型"
+          <a href="asgi.html" title="ASGI 非同步伺服器閘道介面"
              accesskey="N">下一頁</a> |</li>
         <li class="right" >
-          <a href="binding.html" title="資料綁定"
+          <a href="one-to-two.html" title="Channels 2 帶來那些新的改變？"
              accesskey="P">上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -53,7 +53,7 @@
           <div class="body" role="main">
             
   <div class="section" id="channels-websocket-wrapper">
-<h1>通道 WebSocket 包裝<a class="headerlink" href="#channels-websocket-wrapper" title="本標題的永久連結">¶</a></h1>
+<h1>Channels WebSocket 包裝<a class="headerlink" href="#channels-websocket-wrapper" title="本標題的永久連結">¶</a></h1>
 <p>Channels ships with a javascript WebSocket wrapper to help you connect to your websocket
 and send/receive messages.</p>
 <p>First, you must include the javascript library in your template; if you&#8217;re using
@@ -83,8 +83,8 @@ specific integration on top of it.</p>
 </pre></div>
 </div>
 <p>To demultiplex specific streams</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">connect</span><span class="p">();</span>
-<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="s1">&#39;/ws/&#39;</span><span class="p">);</span>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;/ws/&#39;</span><span class="p">);</span>
+<span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">listen</span><span class="p">();</span>
 <span class="nx">webSocketBridge</span><span class="p">.</span><span class="nx">demultiplex</span><span class="p">(</span><span class="s1">&#39;mystream&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">stream</span><span class="p">);</span>
 <span class="p">});</span>
@@ -114,11 +114,11 @@ specific integration on top of it.</p>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>上一個主題</h4>
-  <p class="topless"><a href="binding.html"
-                        title="上一章">資料綁定</a></p>
+  <p class="topless"><a href="one-to-two.html"
+                        title="上一章">Channels 2 帶來那些新的改變？</a></p>
   <h4>下一個主題</h4>
-  <p class="topless"><a href="backends.html"
-                        title="下一章">通道層類型</a></p>
+  <p class="topless"><a href="asgi.html"
+                        title="下一章">ASGI 非同步伺服器閘道介面</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -147,12 +147,12 @@ specific integration on top of it.</p>
           <a href="genindex.html" title="總索引"
              >索引</a></li>
         <li class="right" >
-          <a href="backends.html" title="通道層類型"
+          <a href="asgi.html" title="ASGI 非同步伺服器閘道介面"
              >下一頁</a> |</li>
         <li class="right" >
-          <a href="binding.html" title="資料綁定"
+          <a href="one-to-two.html" title="Channels 2 帶來那些新的改變？"
              >上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -1,0 +1,154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../releases/2.1.0.rst:2
+msgid "2.1.0 Release Notes"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:4
+msgid "Channels 2.1 brings a few new major changes to Channels as well as some more minor fixes. In addition, if you've not yet seen it, we now have a long-form :doc:`tutorial </tutorial/index>` to better introduce some of the concepts and sync versus async styles of coding."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:11
+msgid "Major Changes"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:14
+msgid "Async HTTP Consumer"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:16
+msgid "There is a new native-async HTTP consumer class, ``channels.generic.http.AsyncHttpConsumer``. This allows much easier writing of long-poll endpoints or other long-lived HTTP connection handling that benefits from native async support."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:21
+msgid "You can read more about it in the :doc:`/topics/consumers` documentation."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:25
+msgid "WebSocket Consumers"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:27
+msgid "These consumer classes now all have built-in group join and leave functionality, which will make a consumer join all group names that are in the iterable ``groups`` on the consumer class (this can be a static list or a ``@property`` method)."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:32
+msgid "In addition, the ``accept`` methods on both variants now take an optional ``subprotocol`` argument, which will be sent back to the WebSocket client as the subprotocol the server has selected. The client's advertised subprotocols can, as always, be found in the scope as ``scope[\"subprotocols\"]``."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:39
+msgid "Nested URL Routing"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:41
+msgid "``URLRouter`` instances can now be nested inside each other and, like Django's URL handling and ``include``, will strip off the matched part of the URL in the outer router and leave only the unmatched portion for the inner router, allowing reuseable routing files."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:46
+msgid "Note that you **cannot** use the Django ``include`` function inside of the ``URLRouter`` as it assumes a bit too much about what it is given as its left-hand side and will terminate your regular expression/URL pattern wrongly."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:52
+msgid "Login and Logout"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:54
+msgid "As well as overhauling the internals of the ``AuthMiddleware``, there are now also ``login`` and ``logout`` async functions you can call in consumers to log users in and out of the current session."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:58
+msgid "Due to the way cookies are sent back to clients, these come with some caveats; read more about them and how to use them properly in :doc:`/topics/authentication`."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:63
+msgid "In-Memory Channel Layer"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:65
+msgid "The in-memory channel layer has been extended to have full expiry and group support so it should now be suitable for drop-in replacement for most test scenarios."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:71
+msgid "Testing"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:73
+msgid "The ``ChannelsLiveServerTestCase`` has been rewritten to use a new method for launching Daphne that should be more resilient (and faster), and now shares code with the Daphne test suite itself."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:77
+msgid "Ports are now left up to the operating system to decide rather than being picked from within a set range. It also now supports static files when the Django ``staticfiles`` app is enabled."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:81
+msgid "In addition, the Communicator classes have gained a ``receive_nothing`` method that allows you to assert that the application didn't send anything, rather than writing this yourself using exception handling. See more in the :doc:`/topics/testing` documentation."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:88
+msgid "Origin header validation"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:90
+msgid "As well as removing the ``print`` statements that accidentally got into the last release, this has been overhauled to more correctly match against headers according to the Origin header spec and align with Django's ``ALLOWED_HOSTS`` setting."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:95
+msgid "It can now also enforce protocol (``http`` versus ``https``) and port, both optionally."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:100
+msgid "Bugfixes & Small Changes"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:102
+msgid "``print`` statements that accidentally got left in the ``Origin`` validation code were removed."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:105
+msgid "The ``runserver`` command now shows the version of Channels you are running."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:107
+msgid "Orphaned tasks that may have caused warnings during test runs or occasionally live site traffic are now correctly killed off rather than letting them die later on and print warning messages."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:111
+msgid "``WebsocketCommunicator`` now accepts a query string passed into the constructor and adds it to the scope rather than just ignoring it."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:114
+msgid "Test handlers will correctly handle changing the ``CHANNEL_LAYERS`` setting via decorators and wipe the internal channel layer cache."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:117
+msgid "``SessionMiddleware`` can be safely nested inside itself rather than causing a runtime error."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:122
+msgid "Backwards Incompatible Changes"
+msgstr ""
+
+#: ../../releases/2.1.0.rst:124
+msgid "The format taken by the ``OriginValidator`` for its domains has changed and ``*.example.com`` is no longer allowed; instead, use ``.example.com`` to match a domain and all its subdomains."
+msgstr ""
+
+#: ../../releases/2.1.0.rst:128
+msgid "If you previously nested ``URLRouter`` instances inside each other both would have been matching on the full URL before, whereas now they will match on the unmatched portion of the URL, meaning your URL routes would break if you had intended this usage."
+msgstr ""
+

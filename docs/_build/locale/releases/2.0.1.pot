@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../releases/2.0.1.rst:2
+msgid "2.0.1 Release Notes"
+msgstr ""
+
+#: ../../releases/2.0.1.rst:4
+msgid "Channels 2.0.1 is a patch release of channels, adding a couple of small new features and fixing one bug in URL resolution."
+msgstr ""
+
+#: ../../releases/2.0.1.rst:7
+msgid "As always, when updating Channels make sure to also update its dependencies (``asgiref`` and ``daphne``) as these also get their own bugfix updates, and some bugs that may appear to be part of Channels are actually in those packages."
+msgstr ""
+
+#: ../../releases/2.0.1.rst:13
+msgid "New Features"
+msgstr ""
+
+#: ../../releases/2.0.1.rst:15
+msgid "There are new async versions of the Websocket generic consumers, ``AsyncWebsocketConsumer`` and ``AsyncJsonWebsocketConsumer``. Read more about them in :doc:`/topics/consumers`."
+msgstr ""
+
+#: ../../releases/2.0.1.rst:19
+msgid "The old ``allowed_hosts_only`` decorator has been removed (it was accidentally included in the 2.0 release but didn't work) and replaced with a new ``OriginValidator`` and ``AllowedHostsOriginValidator`` set of ASGI middleware. Read more in :doc:`/topics/security`."
+msgstr ""
+
+#: ../../releases/2.0.1.rst:26
+msgid "Bugfixes"
+msgstr ""
+
+#: ../../releases/2.0.1.rst:28
+msgid "A bug in ``URLRouter`` which didn't allow you to match beyond the first URL in some situations has been resolved, and a test suite was added for URL resolution to prevent it happening again."
+msgstr ""
+
+#: ../../releases/2.0.1.rst:34
+msgid "Backwards Incompatible Changes"
+msgstr ""
+
+#: ../../releases/2.0.1.rst:36
+msgid "None."
+msgstr ""
+

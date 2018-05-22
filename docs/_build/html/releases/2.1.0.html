@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2.1.0 Release Notes &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="2.1.1 Release Notes" href="2.1.1.html" />
+    <link rel="prev" title="2.0.2 Release Notes" href="2.0.2.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="2.1.1.html" title="2.1.1 Release Notes"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="2.0.2.html" title="2.0.2 Release Notes"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">發行說明</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="release-notes">
+<h1>2.1.0 Release Notes<a class="headerlink" href="#release-notes" title="本標題的永久連結">¶</a></h1>
+<p>Channels 2.1 brings a few new major changes to Channels as well as some more
+minor fixes. In addition, if you&#8217;ve not yet seen it, we now have a long-form
+<a class="reference internal" href="../tutorial/index.html"><span class="doc">tutorial</span></a> to better introduce some of the concepts
+and sync versus async styles of coding.</p>
+<div class="section" id="major-changes">
+<h2>Major Changes<a class="headerlink" href="#major-changes" title="本標題的永久連結">¶</a></h2>
+<div class="section" id="async-http-consumer">
+<h3>Async HTTP Consumer<a class="headerlink" href="#async-http-consumer" title="本標題的永久連結">¶</a></h3>
+<p>There is a new native-async HTTP consumer class,
+<code class="docutils literal"><span class="pre">channels.generic.http.AsyncHttpConsumer</span></code>. This allows much easier writing
+of long-poll endpoints or other long-lived HTTP connection handling that
+benefits from native async support.</p>
+<p>You can read more about it in the <a class="reference internal" href="../topics/consumers.html"><span class="doc">消費者</span></a> documentation.</p>
+</div>
+<div class="section" id="websocket-consumers">
+<h3>WebSocket Consumers<a class="headerlink" href="#websocket-consumers" title="本標題的永久連結">¶</a></h3>
+<p>These consumer classes now all have built-in group join and leave functionality,
+which will make a consumer join all group names that are in the iterable
+<code class="docutils literal"><span class="pre">groups</span></code> on the consumer class (this can be a static list or a <code class="docutils literal"><span class="pre">&#64;property</span></code>
+method).</p>
+<p>In addition, the <code class="docutils literal"><span class="pre">accept</span></code> methods on both variants now take an optional
+<code class="docutils literal"><span class="pre">subprotocol</span></code> argument, which will be sent back to the WebSocket client as
+the subprotocol the server has selected. The client&#8217;s advertised subprotocols
+can, as always, be found in the scope as <code class="docutils literal"><span class="pre">scope[&quot;subprotocols&quot;]</span></code>.</p>
+</div>
+<div class="section" id="nested-url-routing">
+<h3>Nested URL Routing<a class="headerlink" href="#nested-url-routing" title="本標題的永久連結">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">URLRouter</span></code> instances can now be nested inside each other and, like Django&#8217;s
+URL handling and <code class="docutils literal"><span class="pre">include</span></code>, will strip off the matched part of the URL in the
+outer router and leave only the unmatched portion for the inner router, allowing
+reuseable routing files.</p>
+<p>Note that you <strong>cannot</strong> use the Django <code class="docutils literal"><span class="pre">include</span></code> function inside of the
+<code class="docutils literal"><span class="pre">URLRouter</span></code> as it assumes a bit too much about what it is given as its
+left-hand side and will terminate your regular expression/URL pattern wrongly.</p>
+</div>
+<div class="section" id="login-and-logout">
+<h3>Login and Logout<a class="headerlink" href="#login-and-logout" title="本標題的永久連結">¶</a></h3>
+<p>As well as overhauling the internals of the <code class="docutils literal"><span class="pre">AuthMiddleware</span></code>, there are now
+also <code class="docutils literal"><span class="pre">login</span></code> and <code class="docutils literal"><span class="pre">logout</span></code> async functions you can call in consumers to
+log users in and out of the current session.</p>
+<p>Due to the way cookies are sent back to clients, these come with some caveats;
+read more about them and how to use them properly in <a class="reference internal" href="../topics/authentication.html"><span class="doc">認證</span></a>.</p>
+</div>
+<div class="section" id="in-memory-channel-layer">
+<h3>In-Memory Channel Layer<a class="headerlink" href="#in-memory-channel-layer" title="本標題的永久連結">¶</a></h3>
+<p>The in-memory channel layer has been extended to have full expiry and group
+support so it should now be suitable for drop-in replacement for most
+test scenarios.</p>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="本標題的永久連結">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">ChannelsLiveServerTestCase</span></code> has been rewritten to use a new method for
+launching Daphne that should be more resilient (and faster), and now shares
+code with the Daphne test suite itself.</p>
+<p>Ports are now left up to the operating
+system to decide rather than being picked from within a set range. It also now
+supports static files when the Django <code class="docutils literal"><span class="pre">staticfiles</span></code> app is enabled.</p>
+<p>In addition, the Communicator classes have gained a <code class="docutils literal"><span class="pre">receive_nothing</span></code> method
+that allows you to assert that the application didn&#8217;t send anything, rather
+than writing this yourself using exception handling. See more in the
+<a class="reference internal" href="../topics/testing.html"><span class="doc">Testing</span></a> documentation.</p>
+</div>
+<div class="section" id="origin-header-validation">
+<h3>Origin header validation<a class="headerlink" href="#origin-header-validation" title="本標題的永久連結">¶</a></h3>
+<p>As well as removing the <code class="docutils literal"><span class="pre">print</span></code> statements that accidentally got into the
+last release, this has been overhauled to more correctly match against headers
+according to the Origin header spec and align with Django&#8217;s <code class="docutils literal"><span class="pre">ALLOWED_HOSTS</span></code>
+setting.</p>
+<p>It can now also enforce protocol (<code class="docutils literal"><span class="pre">http</span></code> versus <code class="docutils literal"><span class="pre">https</span></code>) and port, both
+optionally.</p>
+</div>
+</div>
+<div class="section" id="bugfixes-small-changes">
+<h2>Bugfixes &amp; Small Changes<a class="headerlink" href="#bugfixes-small-changes" title="本標題的永久連結">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">print</span></code> statements that accidentally got left in the <code class="docutils literal"><span class="pre">Origin</span></code> validation
+code were removed.</li>
+<li>The <code class="docutils literal"><span class="pre">runserver</span></code> command now shows the version of Channels you are running.</li>
+<li>Orphaned tasks that may have caused warnings during test runs or occasionally
+live site traffic are now correctly killed off rather than letting them die
+later on and print warning messages.</li>
+<li><code class="docutils literal"><span class="pre">WebsocketCommunicator</span></code> now accepts a query string passed into the
+constructor and adds it to the scope rather than just ignoring it.</li>
+<li>Test handlers will correctly handle changing the <code class="docutils literal"><span class="pre">CHANNEL_LAYERS</span></code> setting
+via decorators and wipe the internal channel layer cache.</li>
+<li><code class="docutils literal"><span class="pre">SessionMiddleware</span></code> can be safely nested inside itself rather than causing
+a runtime error.</li>
+</ul>
+</div>
+<div class="section" id="backwards-incompatible-changes">
+<h2>Backwards Incompatible Changes<a class="headerlink" href="#backwards-incompatible-changes" title="本標題的永久連結">¶</a></h2>
+<ul class="simple">
+<li>The format taken by the <code class="docutils literal"><span class="pre">OriginValidator</span></code> for its domains has changed and
+<code class="docutils literal"><span class="pre">*.example.com</span></code> is no longer allowed; instead, use <code class="docutils literal"><span class="pre">.example.com</span></code> to match
+a domain and all its subdomains.</li>
+<li>If you previously nested <code class="docutils literal"><span class="pre">URLRouter</span></code> instances inside each other both would
+have been matching on the full URL before, whereas now they will match on the
+unmatched portion of the URL, meaning your URL routes would break if you had
+intended this usage.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.1.0 Release Notes</a><ul>
+<li><a class="reference internal" href="#major-changes">Major Changes</a><ul>
+<li><a class="reference internal" href="#async-http-consumer">Async HTTP Consumer</a></li>
+<li><a class="reference internal" href="#websocket-consumers">WebSocket Consumers</a></li>
+<li><a class="reference internal" href="#nested-url-routing">Nested URL Routing</a></li>
+<li><a class="reference internal" href="#login-and-logout">Login and Logout</a></li>
+<li><a class="reference internal" href="#in-memory-channel-layer">In-Memory Channel Layer</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+<li><a class="reference internal" href="#origin-header-validation">Origin header validation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bugfixes-small-changes">Bugfixes &amp; Small Changes</a></li>
+<li><a class="reference internal" href="#backwards-incompatible-changes">Backwards Incompatible Changes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="2.0.2.html"
+                        title="上一章">2.0.2 Release Notes</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="2.1.1.html"
+                        title="下一章">2.1.1 Release Notes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releases/2.1.0.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="2.1.1.html" title="2.1.1 Release Notes"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="2.0.2.html" title="2.0.2 Release Notes"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >發行說明</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>資料庫存取 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="Channel Layers" href="channel_layers.html" />
+    <link rel="prev" title="路由" href="routing.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="channel_layers.html" title="Channel Layers"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="database-access">
+<h1>資料庫存取<a class="headerlink" href="#database-access" title="本標題的永久連結">¶</a></h1>
+<p>The Django ORM is a synchronous piece of code, and so if you want to access
+it from asynchronous code you need to do special handling to make sure its
+connections are closed properly.</p>
+<p>If you&#8217;re using <code class="docutils literal"><span class="pre">SyncConsumer</span></code>, or anything based on it - like
+<code class="docutils literal"><span class="pre">JsonWebsocketConsumer</span></code> - you don&#8217;t need to do anything special, as all your
+code is already run in a synchronous mode and Channels will do the cleanup
+for you as part of the <code class="docutils literal"><span class="pre">SyncConsumer</span></code> code.</p>
+<p>If you are writing asynchronous code, however, you will need to call
+database methods in a safe, synchronous context, using <code class="docutils literal"><span class="pre">database_sync_to_async</span></code>.</p>
+<div class="section" id="database-connections">
+<h2>Database Connections<a class="headerlink" href="#database-connections" title="本標題的永久連結">¶</a></h2>
+<p>Channels can potentially open a lot more database connections than you may be used to if you are using threaded consumers (synchronous ones) - it can open up to one connection per thread.</p>
+<p>By default, the number of threads is set to &#8220;the number of CPUs * 5&#8221;, so you may see up to this number of threads. If you want to change it, set the <code class="docutils literal"><span class="pre">ASGI_THREADS</span></code> environment variable to the maximum number you wish to allow.</p>
+<p>To avoid having too many threads idling in connections, you can instead rewrite your code to use async consumers and only dip into threads when you need to use Django&#8217;s ORM (using <code class="docutils literal"><span class="pre">database_sync_to_async</span></code>).</p>
+</div>
+<div class="section" id="database-sync-to-async">
+<h2>database_sync_to_async<a class="headerlink" href="#database-sync-to-async" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">channels.db.database_sync_to_async</span></code> is a version of <code class="docutils literal"><span class="pre">asgiref.sync.sync_to_async</span></code>
+that also cleans up database connections on exit.</p>
+<p>To use it, write your ORM queries in a separate function or method, and then
+call it with <code class="docutils literal"><span class="pre">database_sync_to_async</span></code> like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.db</span> <span class="k">import</span> <span class="n">database_sync_to_async</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="k">await</span> <span class="n">database_sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">)()</span>
+
+<span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+<p>You can also use it as a decorator:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.db</span> <span class="k">import</span> <span class="n">database_sync_to_async</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+
+<span class="nd">@database_sync_to_async</span>
+<span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">資料庫存取</a><ul>
+<li><a class="reference internal" href="#database-connections">Database Connections</a></li>
+<li><a class="reference internal" href="#database-sync-to-async">database_sync_to_async</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="routing.html"
+                        title="上一章">路由</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="channel_layers.html"
+                        title="下一章">Channel Layers</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/databases.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="channel_layers.html" title="Channel Layers"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="routing.html" title="路由"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

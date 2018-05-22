@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Channel Layers &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="對談 (Sessions)" href="sessions.html" />
+    <link rel="prev" title="資料庫存取" href="databases.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="sessions.html" title="對談 (Sessions)"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="databases.html" title="資料庫存取"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="channel-layers">
+<h1>Channel Layers<a class="headerlink" href="#channel-layers" title="本標題的永久連結">¶</a></h1>
+<p>Channel layers allow you to talk between different instances of an application.
+They&#8217;re a useful part of making a distributed realtime application if you don&#8217;t
+want to have to shuttle all of your messages or events through a database.</p>
+<p>Additionally, they can also be used in combination with a worker process
+to make a basic task queue or to offload tasks - read more in
+<a class="reference internal" href="worker.html"><span class="doc">Worker 與背景任務</span></a>.</p>
+<p>Channels does not ship with any channel layers you can use out of the box, as
+each one depends on a different way of transporting data across a network. We
+would recommend you use <code class="docutils literal"><span class="pre">channels_redis</span></code>, which is an offical Django-maintained
+layer that uses Redis as a transport and what we&#8217;ll focus the examples on here.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p>Channel layers are an entirely optional part of Channels as of version 2.0.
+If you don&#8217;t want to use them, just leave <code class="docutils literal"><span class="pre">CHANNEL_LAYERS</span></code> unset, or
+set it to the empty dict <code class="docutils literal"><span class="pre">{}</span></code>.</p>
+<p class="last">Messages across channel layers also go to consumers/ASGI application
+instances, just like events from the client, and so they now need a
+<code class="docutils literal"><span class="pre">type</span></code> key as well. See more below.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">Channel layers have a purely async interface (for both send and receive);
+you will need to wrap them in a converter if you want to call them from
+synchronous code (see below).</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="本標題的永久連結">¶</a></h2>
+<p>Channel layers are configured via the <code class="docutils literal"><span class="pre">CHANNEL_LAYERS</span></code> Django setting. It
+generally looks something like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;channels_redis.core.RedisChannelLayer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;redis-server-name&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can get the default channel layer from a project with
+<code class="docutils literal"><span class="pre">channels.layers.get_channel_layer()</span></code>, but if you are using consumers a copy
+is automatically provided for you on the consumer as <code class="docutils literal"><span class="pre">self.channel_layer</span></code>.</p>
+</div>
+<div class="section" id="synchronous-functions">
+<h2>Synchronous Functions<a class="headerlink" href="#synchronous-functions" title="本標題的永久連結">¶</a></h2>
+<p>By default the <code class="docutils literal"><span class="pre">send()</span></code>, <code class="docutils literal"><span class="pre">group_send()</span></code>, <code class="docutils literal"><span class="pre">group_add()</span></code> and other functions
+are async functions, meaning you have to <code class="docutils literal"><span class="pre">await</span></code> them. If you need to call
+them from synchronous code, you&#8217;ll need to use the handy
+<code class="docutils literal"><span class="pre">asgiref.sync.async_to_sync</span></code> wrapper:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="k">import</span> <span class="n">async_to_sync</span>
+
+<span class="n">async_to_sync</span><span class="p">(</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">send</span><span class="p">)(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="p">{</span><span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="what-to-send-over-the-channel-layer">
+<h2>What To Send Over The Channel Layer<a class="headerlink" href="#what-to-send-over-the-channel-layer" title="本標題的永久連結">¶</a></h2>
+<p>Unlike in Channels 1, the channel layer is only for high-level
+application-to-application communication. When you send a message, it is
+received by the consumers listening to the group or channel on the other end,
+and not transported to that consumer&#8217;s socket directly.</p>
+<p>What this means is that you should send high-level events over the channel
+layer, and then have consumers handle those events and do appropriate low-level
+networking to their attached client.</p>
+<p>For example, the <a class="reference external" href="https://github.com/andrewgodwin/channels-examples/tree/master/multichat">multichat example</a>
+in Andrew Godwin&#8217;s <code class="docutils literal"><span class="pre">channels-examples</span></code> repository sends events like this
+over the channel layer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_send</span><span class="p">(</span>
+    <span class="n">room</span><span class="o">.</span><span class="n">group_name</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat.message&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;room_id&quot;</span><span class="p">:</span> <span class="n">room_id</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+        <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>And then the consumers define a handling function to receive those events
+and turn them into WebSocket frames:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Called when someone has messaged our chat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Send a message down to the client</span>
+    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;msg_type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">MSG_TYPE_MESSAGE</span><span class="p">,</span>
+            <span class="s2">&quot;room&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;room_id&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Any consumer based on Channels&#8217; <code class="docutils literal"><span class="pre">SyncConsumer</span></code> or <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> will
+automatically provide you a <code class="docutils literal"><span class="pre">self.channel_layer</span></code> and <code class="docutils literal"><span class="pre">self.channel_name</span></code>
+attribute, which contains a pointer to the channel layer instance and the
+channel name that will reach the consumer respectively.</p>
+<p>Any message sent to that channel name - or to a group the channel name was
+added to - will be received by the consumer much like an event from its
+connected client, and dispatched to a named method on the consumer. The name
+of the method will be the <code class="docutils literal"><span class="pre">type</span></code> of the event with periods replaced by
+underscores - so, for example, an event coming in over the channel layer
+with a <code class="docutils literal"><span class="pre">type</span></code> of <code class="docutils literal"><span class="pre">chat.join</span></code> will be handled by the method <code class="docutils literal"><span class="pre">chat_join</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">If you are inheriting from the <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> class tree, all your
+event handlers, including ones for events over the channel layer, must
+be asynchronous (<code class="docutils literal"><span class="pre">async</span> <span class="pre">def</span></code>). If you are in the <code class="docutils literal"><span class="pre">SyncConsumer</span></code> class
+tree instead, they must all be synchronous (<code class="docutils literal"><span class="pre">def</span></code>).</p>
+</div>
+</div>
+<div class="section" id="single-channels">
+<h2>Single Channels<a class="headerlink" href="#single-channels" title="本標題的永久連結">¶</a></h2>
+<p>Each application instance - so, for example, each long-running HTTP request
+or open WebSocket - results in a single Consumer instance, and if you have
+channel layers enabled, Consumers will generate a unique <em>channel name</em> for
+themselves, and start listening on it for events.</p>
+<p>This means you can send those consumers events from outside the process -
+from other consumers, maybe, or from management commands - and they will react
+to them and run code just like they would events from their client connection.</p>
+<p>The channel name is available on a consumer as <code class="docutils literal"><span class="pre">self.channel_name</span></code>. Here&#8217;s
+an example of writing the channel name into a database upon connection,
+and then specifying a handler method for events on it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Make a database row with our channel name</span>
+        <span class="n">Clients</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="c1"># Note that in some rare cases (power loss, etc) disconnect may fail</span>
+        <span class="c1"># to run; this naive example would leave zombie channel names around.</span>
+        <span class="n">Clients</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># Handles the &quot;chat.message&quot; event when it&#39;s sent to us.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Note that, because you&#8217;re mixing event handling from the channel layer and
+from the protocol connection, you need to make sure that your type names do not
+clash. It&#8217;s recommended you prefix type names (like we did here with <code class="docutils literal"><span class="pre">chat.</span></code>)
+to avoid clashes.</p>
+<p>To send to a single channel, just find its channel name (for the example above,
+we could crawl the database), and use <code class="docutils literal"><span class="pre">channel_layer.send</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.layers</span> <span class="k">import</span> <span class="n">get_channel_layer</span>
+
+<span class="n">channel_layer</span> <span class="o">=</span> <span class="n">get_channel_layer</span><span class="p">()</span>
+<span class="k">await</span> <span class="n">channel_layer</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat.message&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello there!&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="groups">
+<span id="id1"></span><h2>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h2>
+<p>Obviously, sending to individual channels isn&#8217;t particularly useful - in most
+cases you&#8217;ll want to send to multiple channels/consumers at once as a broadcast.
+Not only for cases like a chat where you want to send incoming messages to
+everyone in the room, but even for sending to an individual user who might have
+more than one browser tab or device connected.</p>
+<p>You can construct your own solution for this if you like, using your existing
+datastores, or use the Groups system built-in to some channel layers. Groups
+are a broadcast system that:</p>
+<ul class="simple">
+<li>Allows you to add and remove channel names from named groups, and send to
+those named groups.</li>
+<li>Provides group expiry for clean-up of connections whose disconnect handler
+didn&#8217;t get to run (e.g. power failure)</li>
+</ul>
+<p>They do not allow you to enumerate or list the channels in a group; it&#8217;s a
+pure broadcast system. If you need more precise control or need to know who
+is connected, you should build your own system or use a suitable third-party
+one.</p>
+<p>You use groups by adding a channel to them during connection, and removing it
+during disconnection, illustrated here on the WebSocket generic consumer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># This example uses WebSocket consumer, which is synchronous, and so</span>
+<span class="c1"># needs the async channel layer functions to be converted.</span>
+<span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="k">import</span> <span class="n">async_to_sync</span>
+
+<span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_add</span><span class="p">)(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">close_code</span><span class="p">):</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_discard</span><span class="p">)(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, to send to a group, use <code class="docutils literal"><span class="pre">group_send</span></code>, like in this small example
+which broadcasts chat messages to every connected socket when combined with
+the code above:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_data</span><span class="p">):</span>
+        <span class="n">async_to_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_send</span><span class="p">)(</span>
+            <span class="s2">&quot;chat&quot;</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat.message&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text_data</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text_data</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-outside-of-consumers">
+<h2>Using Outside Of Consumers<a class="headerlink" href="#using-outside-of-consumers" title="本標題的永久連結">¶</a></h2>
+<p>You&#8217;ll often want to send to the channel layer from outside of the scope of
+a consumer, and so you won&#8217;t have <code class="docutils literal"><span class="pre">self.channel_layer</span></code>. In this case, you
+should use the <code class="docutils literal"><span class="pre">get_channel_layer</span></code> function to retrieve it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.layers</span> <span class="k">import</span> <span class="n">get_channel_layer</span>
+<span class="n">channel_layer</span> <span class="o">=</span> <span class="n">get_channel_layer</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then, once you have it, you can just call methods on it. Remember that
+<strong>channel layers only support async methods</strong>, so you can either call it
+from your own asynchronous context:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">chat_name</span> <span class="ow">in</span> <span class="n">chats</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">channel_layer</span><span class="o">.</span><span class="n">group_send</span><span class="p">(</span>
+        <span class="n">chat_name</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat.system_message&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">announcement_text</span><span class="p">},</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Or you&#8217;ll need to use async_to_sync:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="k">import</span> <span class="n">async_to_sync</span>
+
+<span class="n">async_to_sync</span><span class="p">(</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_send</span><span class="p">)(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat.force_disconnect&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Channel Layers</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#synchronous-functions">Synchronous Functions</a></li>
+<li><a class="reference internal" href="#what-to-send-over-the-channel-layer">What To Send Over The Channel Layer</a></li>
+<li><a class="reference internal" href="#single-channels">Single Channels</a></li>
+<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#using-outside-of-consumers">Using Outside Of Consumers</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="databases.html"
+                        title="上一章">資料庫存取</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="sessions.html"
+                        title="下一章">對談 (Sessions)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/channel_layers.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="sessions.html" title="對談 (Sessions)"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="databases.html" title="資料庫存取"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

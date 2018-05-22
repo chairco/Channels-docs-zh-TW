@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: YUN CHEN <kweily632@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: ../../releases/1.0.3.rst:2
 msgid "1.0.3 Release Notes"
@@ -31,31 +31,31 @@ msgid "Changes"
 msgstr ""
 
 #: ../../releases/1.0.3.rst:9
-msgid ""
-"Database connections are no longer force-closed after each test is run."
-msgstr "資料庫連結已不會在每次測試完後強制關閉。"
+msgid "Database connections are no longer force-closed after each test is run."
+msgstr ""
 
 #: ../../releases/1.0.3.rst:11
 msgid ""
-"Channel sessions are not re-saved if they're empty even if they're marked as"
-" modified, allowing logout to work correctly."
+"Channel sessions are not re-saved if they're empty even if they're marked"
+" as modified, allowing logout to work correctly."
 msgstr ""
 
 #: ../../releases/1.0.3.rst:14
 msgid ""
-"WebsocketDemultiplexer now correctly does sessions for the second/third/etc."
-" connect and disconnect handlers."
+"WebsocketDemultiplexer now correctly does sessions for the "
+"second/third/etc. connect and disconnect handlers."
 msgstr ""
 
 #: ../../releases/1.0.3.rst:17
 msgid ""
-"Request reading timeouts now correctly return 408 rather than erroring out."
+"Request reading timeouts now correctly return 408 rather than erroring "
+"out."
 msgstr ""
 
 #: ../../releases/1.0.3.rst:19
 msgid ""
-"The ``rundelay`` delay server now only polls the database once per second, "
-"and this interval is configurable with the ``--sleep`` option."
+"The ``rundelay`` delay server now only polls the database once per "
+"second, and this interval is configurable with the ``--sleep`` option."
 msgstr ""
 
 #: ../../releases/1.0.3.rst:24
@@ -64,4 +64,5 @@ msgstr ""
 
 #: ../../releases/1.0.3.rst:26
 msgid "None."
-msgstr "無"
+msgstr ""
+

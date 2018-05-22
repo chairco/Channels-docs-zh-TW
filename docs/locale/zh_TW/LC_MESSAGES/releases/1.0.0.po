@@ -1,32 +1,32 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: 豆豆 (Tommy Lin) <gnat_lin@hotmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: ../../releases/1.0.0.rst:2
 msgid "1.0.0 Release Notes"
-msgstr "1.0.0 發行公告"
+msgstr ""
 
 #: ../../releases/1.0.0.rst:4
 msgid ""
-"Channels 1.0.0 brings together a number of design changes, including some "
-"breaking changes, into our first fully stable release, and also brings the "
-"databinding code out of alpha phase. It was released on 2017/01/08."
+"Channels 1.0.0 brings together a number of design changes, including some"
+" breaking changes, into our first fully stable release, and also brings "
+"the databinding code out of alpha phase. It was released on 2017/01/08."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:8
@@ -39,19 +39,19 @@ msgstr ""
 #: ../../releases/1.0.0.rst:12
 msgid ""
 "It was unfortunately not possible to make all of the changes backwards "
-"compatible, though most code should not be too affected and the fixes are "
-"generally quite easy."
+"compatible, though most code should not be too affected and the fixes are"
+" generally quite easy."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:16
 msgid ""
-"You **must also update Daphne** to at least 1.0.0 to have this release of "
-"Channels work correctly."
+"You **must also update Daphne** to at least 1.0.0 to have this release of"
+" Channels work correctly."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:21
 msgid "Major Features"
-msgstr "主要特徵"
+msgstr ""
 
 #: ../../releases/1.0.0.rst:23
 msgid "Channels 1.0 introduces a couple of new major features."
@@ -59,45 +59,44 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:27
 msgid "WebSocket accept/reject flow"
-msgstr "WebSocket 接受/拒絕流量"
+msgstr ""
 
 #: ../../releases/1.0.0.rst:29
 msgid ""
 "Rather than be immediately accepted, WebSockets now pause during the "
-"handshake while they send over a message on ``websocket.connect``, and your "
-"application must either accept or reject the connection before the handshake"
-" is completed and messages can be received."
+"handshake while they send over a message on ``websocket.connect``, and "
+"your application must either accept or reject the connection before the "
+"handshake is completed and messages can be received."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:34 ../../releases/1.0.0.rst:168
-msgid ""
-"You **must** update Daphne to at least 1.0.0 to make this work correctly."
+msgid "You **must** update Daphne to at least 1.0.0 to make this work correctly."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:36
 msgid "This has several advantages:"
-msgstr "這裡有幾項優點:"
+msgstr ""
 
 #: ../../releases/1.0.0.rst:38
 msgid ""
 "You can now reject WebSockets before they even finish connecting, giving "
-"appropriate error codes to browsers and not letting the browser-side socket "
-"ever get into a connected state and send messages."
+"appropriate error codes to browsers and not letting the browser-side "
+"socket ever get into a connected state and send messages."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:42
 msgid ""
-"Combined with Consumer Atomicity (below), it means there is no longer any "
-"need for the old \"slight ordering\" mode, as the connect consumer must run "
-"to completion and accept the socket before any messages can be received and "
-"forwarded onto ``websocket.receive``."
+"Combined with Consumer Atomicity (below), it means there is no longer any"
+" need for the old \"slight ordering\" mode, as the connect consumer must "
+"run to completion and accept the socket before any messages can be "
+"received and forwarded onto ``websocket.receive``."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:47
 msgid ""
 "Any ``send`` message sent to the WebSocket will implicitly accept the "
-"connection, meaning only a limited set of ``connect`` consumers need changes"
-" (see Backwards Incompatible Changes below)"
+"connection, meaning only a limited set of ``connect`` consumers need "
+"changes (see Backwards Incompatible Changes below)"
 msgstr ""
 
 #: ../../releases/1.0.0.rst:53
@@ -113,11 +112,11 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:59
 msgid ""
-"This makes the flow of messages much easier to reason about - consumers can "
-"now be reasoned about as atomic blocks that run and then send messages, "
-"meaning that if you send a message to start another consumer you're "
-"guaranteed that the sending consumer has finished running by the time it's "
-"acted upon."
+"This makes the flow of messages much easier to reason about - consumers "
+"can now be reasoned about as atomic blocks that run and then send "
+"messages, meaning that if you send a message to start another consumer "
+"you're guaranteed that the sending consumer has finished running by the "
+"time it's acted upon."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:64
@@ -138,21 +137,21 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:76
 msgid ""
-"Previously, databinding subclasses had to implement ``group_names(instance, "
-"action)`` to return what groups to send an instance's change to of the type "
-"``action``. This had flaws, most notably when what was actually just a "
-"modification to the instance in question changed its permission status so "
-"more clients could see it; to those clients, it should instead have been "
-"\"created\"."
+"Previously, databinding subclasses had to implement "
+"``group_names(instance, action)`` to return what groups to send an "
+"instance's change to of the type ``action``. This had flaws, most notably"
+" when what was actually just a modification to the instance in question "
+"changed its permission status so more clients could see it; to those "
+"clients, it should instead have been \"created\"."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:83
 msgid ""
-"Now, Channels just calls ``group_names(instance)``, and you should return "
-"what groups can see the instance at the current point in time given the "
-"instance you were passed. Channels will actually call the method before and "
-"after changes, comparing the groups you gave, and sending out create, update"
-" or delete messages to clients appropriately."
+"Now, Channels just calls ``group_names(instance)``, and you should return"
+" what groups can see the instance at the current point in time given the "
+"instance you were passed. Channels will actually call the method before "
+"and after changes, comparing the groups you gave, and sending out create,"
+" update or delete messages to clients appropriately."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:89
@@ -169,22 +168,22 @@ msgstr ""
 msgid ""
 "Demuliplexers have changed to remove the behaviour where they re-sent "
 "messages onto new channels without special headers, and instead now "
-"correctly split out incoming messages into sub-messages that still look like"
-" ``websocket.receive`` messages, and directly dispatch these to the relevant"
-" consumer."
+"correctly split out incoming messages into sub-messages that still look "
+"like ``websocket.receive`` messages, and directly dispatch these to the "
+"relevant consumer."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:101
 msgid ""
-"They also now forward all ``websocket.connect`` and ``websocket.disconnect``"
-" messages to all of their sub-consumers, so it's much easier to compose "
-"things together from code that also works outside the context of "
-"multiplexing."
+"They also now forward all ``websocket.connect`` and "
+"``websocket.disconnect`` messages to all of their sub-consumers, so it's "
+"much easier to compose things together from code that also works outside "
+"the context of multiplexing."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:105
 msgid "For more, read the updated :doc:`/generic` docs."
-msgstr "更多資訊，請詳閱更新文件：doc:`/generic` "
+msgstr ""
 
 #: ../../releases/1.0.0.rst:109
 msgid "Delay Server"
@@ -192,14 +191,14 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:111
 msgid ""
-"A built-in delay server, launched with `manage.py rundelay`, now ships if "
-"you wish to use it. It needs some extra initial setup and uses a database "
-"for persistance; see :doc:`/delay` for more information."
+"A built-in delay server, launched with `manage.py rundelay`, now ships if"
+" you wish to use it. It needs some extra initial setup and uses a "
+"database for persistance; see :doc:`/delay` for more information."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:117
 msgid "Minor Changes"
-msgstr "次要修正"
+msgstr ""
 
 #: ../../releases/1.0.0.rst:119
 msgid ""
@@ -219,21 +218,21 @@ msgstr ""
 
 #: ../../releases/1.0.0.rst:126
 msgid ""
-"``enforce_ordering`` no longer has a ``slight`` mode (because of the accept "
-"flow changes), and is more efficient with session saving."
+"``enforce_ordering`` no longer has a ``slight`` mode (because of the "
+"accept flow changes), and is more efficient with session saving."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:129
 msgid ""
-"``runserver`` respects ``--nothreading`` and only launches one worker, takes"
-" a ``--http-timeout`` option if you want to override it from the default "
-"``60``,"
+"``runserver`` respects ``--nothreading`` and only launches one worker, "
+"takes a ``--http-timeout`` option if you want to override it from the "
+"default ``60``,"
 msgstr ""
 
 #: ../../releases/1.0.0.rst:132
 msgid ""
-"A new ``@channel_and_http_session`` decorator rehydrates the HTTP session "
-"out of the channel session if you want to access it inside receive "
+"A new ``@channel_and_http_session`` decorator rehydrates the HTTP session"
+" out of the channel session if you want to access it inside receive "
 "consumers."
 msgstr ""
 
@@ -270,33 +269,34 @@ msgstr ""
 #: ../../releases/1.0.0.rst:153
 msgid ""
 "Sends at least one message onto the ``reply_channel`` that generates a "
-"WebSocket frame (either ``bytes`` or ``text`` is set), either directly or "
-"via a group."
+"WebSocket frame (either ``bytes`` or ``text`` is set), either directly or"
+" via a group."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:156
 msgid ""
-"Sends a message onto the ``reply_channel`` that is ``{\"accept\": True}``, "
-"to accept a connection without sending data."
+"Sends a message onto the ``reply_channel`` that is ``{\"accept\": "
+"True}``, to accept a connection without sending data."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:158
 msgid ""
-"Sends a message onto the ``reply_channel`` that is ``{\"close\": True}``, to"
-" reject a connection mid-handshake."
+"Sends a message onto the ``reply_channel`` that is ``{\"close\": True}``,"
+" to reject a connection mid-handshake."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:161
 msgid ""
-"Many consumers already do the former, but if your connect consumer does not "
-"send anything you MUST now send an accept message or the socket will remain "
-"in the handshaking phase forever and you'll never get any messages."
+"Many consumers already do the former, but if your connect consumer does "
+"not send anything you MUST now send an accept message or the socket will "
+"remain in the handshaking phase forever and you'll never get any "
+"messages."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:165
 msgid ""
-"All built-in Channels consumers (e.g. in the generic consumers) have been "
-"upgraded to do this."
+"All built-in Channels consumers (e.g. in the generic consumers) have been"
+" upgraded to do this."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:172
@@ -306,31 +306,31 @@ msgstr ""
 #: ../../releases/1.0.0.rst:174
 msgid ""
 "If you have databinding subclasses, you will have implemented "
-"``group_names(instance, action)``, which returns the groups to use based on "
-"the instance and action provided."
+"``group_names(instance, action)``, which returns the groups to use based "
+"on the instance and action provided."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:178
 msgid ""
-"Now, instead, you must implement ``group_names(instance)``, which returns "
-"the groups that can see the instance as it is presented for you; the action "
-"results will be worked out for you. For example, if you want to only show "
-"objects marked as \"admin_only\" to admins, and objects without it to "
-"everyone, previously you would have done::"
+"Now, instead, you must implement ``group_names(instance)``, which returns"
+" the groups that can see the instance as it is presented for you; the "
+"action results will be worked out for you. For example, if you want to "
+"only show objects marked as \"admin_only\" to admins, and objects without"
+" it to everyone, previously you would have done::"
 msgstr ""
 
 #: ../../releases/1.0.0.rst:190
 msgid ""
-"Because you did nothing based on the ``action`` (and if you did, you would "
-"have got incomplete messages, hence this design change), you can just change"
-" the signature of the method like this::"
+"Because you did nothing based on the ``action`` (and if you did, you "
+"would have got incomplete messages, hence this design change), you can "
+"just change the signature of the method like this::"
 msgstr ""
 
 #: ../../releases/1.0.0.rst:200
 msgid ""
-"Now, when an object is updated to have ``admin_only = True``, the clients in"
-" the ``non-admins`` group will get a ``delete`` message, while those in the "
-"``admins`` group will get an ``update`` message."
+"Now, when an object is updated to have ``admin_only = True``, the clients"
+" in the ``non-admins`` group will get a ``delete`` message, while those "
+"in the ``admins`` group will get an ``update`` message."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:206
@@ -340,25 +340,25 @@ msgstr ""
 #: ../../releases/1.0.0.rst:208
 msgid ""
 "Demultiplexers have changed from using a ``mapping`` dict, which mapped "
-"stream names to channels, to using a ``consumers`` dict which maps stream "
-"names directly to consumer classes."
+"stream names to channels, to using a ``consumers`` dict which maps stream"
+" names directly to consumer classes."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:212
 msgid ""
 "You will have to convert over to using direct references to consumers, "
-"change the name of the dict, and then you can remove any channel routing for"
-" the old channels that were in ``mapping`` from your routes."
+"change the name of the dict, and then you can remove any channel routing "
+"for the old channels that were in ``mapping`` from your routes."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:216
 msgid ""
 "Additionally, the Demultiplexer now forwards messages as they would look "
-"from a direct connection, meaning that where you previously got a decoded "
-"object through you will now get a correctly-formatted ``websocket.receive`` "
-"message through with the content as a ``text`` key, JSON-encoded. You will "
-"also now have to handle ``websocket.connect`` and ``websocket.disconnect`` "
-"messages."
+"from a direct connection, meaning that where you previously got a decoded"
+" object through you will now get a correctly-formatted "
+"``websocket.receive`` message through with the content as a ``text`` key,"
+" JSON-encoded. You will also now have to handle ``websocket.connect`` and"
+" ``websocket.disconnect`` messages."
 msgstr ""
 
 #: ../../releases/1.0.0.rst:222
@@ -367,3 +367,4 @@ msgid ""
 "generic consumer, which will decode for you and correctly separate "
 "connection and disconnection handling into their own methods."
 msgstr ""
+

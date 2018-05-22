@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Channels 2 帶來那些新的改變？ &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+    <link rel="next" title="Channels WebSocket 包裝" href="javascript.html" />
+    <link rel="prev" title="部署" href="deploying.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="javascript.html" title="Channels WebSocket 包裝"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="deploying.html" title="部署"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="what-s-new-in-channels-2">
+<h1>Channels 2 帶來那些新的改變？<a class="headerlink" href="#what-s-new-in-channels-2" title="本標題的永久連結">¶</a></h1>
+<p>Channels 1 and Channels 2 are substantially different codebases, and the upgrade
+<strong>is a major one</strong>. While we have attempted to keep things as familiar and
+backwards-compatible as possible, major architectural shifts mean you will
+need at least some code changes to upgrade.</p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="本標題的永久連結">¶</a></h2>
+<p>First of all, Channels 2 is <em>Python 3.5 and up only</em>.</p>
+<p>If you are using Python 2, or a previous version of Python 3, you cannot use
+Channels 2 as it relies on the <code class="docutils literal"><span class="pre">asyncio</span></code> library and native Python async
+support. This decision was a tough one, but ultimately Channels is a library
+built around async functionality and so to not use these features would be
+foolish in the long run.</p>
+<p>Apart from that, there are no major changed requirements, and in fact Channels 2
+deploys do not need separate worker and server processes and so should be easier
+to manage.</p>
+</div>
+<div class="section" id="conceptual-changes">
+<h2>Conceptual Changes<a class="headerlink" href="#conceptual-changes" title="本標題的永久連結">¶</a></h2>
+<p>The fundamental layout and concepts of how Channels work have been significantly
+changed; you&#8217;ll need to understand how and why to help in upgrading.</p>
+<div class="section" id="channel-layers-and-processes">
+<h3>Channel Layers and Processes<a class="headerlink" href="#channel-layers-and-processes" title="本標題的永久連結">¶</a></h3>
+<p>Channels 1 terminated HTTP and WebSocket connections in a separate process
+to the one that ran Django code, and shuffled requests and events between them
+over a cross-process <em>channel layer</em>, based on Redis or similar.</p>
+<p>This not only meant that all request data had to be re-serialized over the
+network, but that you needed to deploy and scale two separate sets of servers.
+Channels 2 changes this by running the Django code in-process via a threadpool,
+meaning that the network termination and application logic are combined, like
+WSGI.</p>
+</div>
+<div class="section" id="application-instances">
+<h3>Application Instances<a class="headerlink" href="#application-instances" title="本標題的永久連結">¶</a></h3>
+<p>Because of this, all processing for a socket happens in the same process,
+so ASGI applications are now instantiated once per socket and can use
+local variables on <code class="docutils literal"><span class="pre">self</span></code> to store information, rather than the
+<code class="docutils literal"><span class="pre">channel_session</span></code> storage provided before (that is now gone entirely).</p>
+<p>The channel layer is now only used to communicate between processes for things
+like broadcast messaging - in particular, you can talk to other application
+instances in direct events, rather than having to send directly to client sockets.</p>
+<p>This means, for example, to broadcast a chat message, you would now send a
+new-chat-message event to every application instance that needed it, and the application
+code can handle that event, serialize the message down to the socket format,
+and send it out (and apply things like multiplexing).</p>
+</div>
+<div class="section" id="new-consumers">
+<h3>New Consumers<a class="headerlink" href="#new-consumers" title="本標題的永久連結">¶</a></h3>
+<p>Because of these changes, the way consumers work has also significantly changed.
+Channels 2 is now a turtles-all-the-way-down design; every aspect of the system
+is designed as a valid ASGI application, including consumers and the routing
+system.</p>
+<p>The consumer base classes have changed, though if you were using the generic
+consumers before, the way they work is broadly similar. However, the way that
+user authentication, sessions, multiplexing, and similar features work has
+changed.</p>
+</div>
+<div class="section" id="full-async">
+<h3>Full Async<a class="headerlink" href="#full-async" title="本標題的永久連結">¶</a></h3>
+<p>Channels 2 is also built on a fundamental async foundation, and all servers
+are actually running an asynchronous event loop and only jumping to synchronous
+code when you interact with the Django view system or ORM. That means that
+you, too, can write fully asychronous code if you wish.</p>
+<p>It&#8217;s not a requirement, but it&#8217;s there if you need it. We also provide
+convenience methods that let you jump between synchronous and asynchronous
+worlds easily, with correct blocking semantics, so you can write most of
+a consumer in an async style and then have one method that calls the Django ORM
+run synchronously.</p>
+</div>
+</div>
+<div class="section" id="removed-components">
+<h2>Removed Components<a class="headerlink" href="#removed-components" title="本標題的永久連結">¶</a></h2>
+<p>The binding framework has been removed entirely - it was a simplistic
+implementation, and it being in the core package prevented people from exploring
+their own solutions. It&#8217;s likely similar concepts and APIs will appear in a
+third-party (non-official-Django) package as an option for those who want them.</p>
+</div>
+<div class="section" id="how-to-upgrade">
+<h2>How to Upgrade<a class="headerlink" href="#how-to-upgrade" title="本標題的永久連結">¶</a></h2>
+<p>While this is not an exhaustive guide, here are some rough rules on how to
+proceed with an upgrade.</p>
+<p>Given the major changes to the architecture and layout of Channels 2, it is
+likely that upgrading will be a significant rewrite of your code, depending on
+what you are doing.</p>
+<p>It is <strong>not</strong> a drop-in replacement; we would have done this if we could,
+but changing to <code class="docutils literal"><span class="pre">asyncio</span></code> and Python 3 made it almost impossible to keep
+things backwards-compatible, and we wanted to correct some major design
+decisions.</p>
+<div class="section" id="function-based-consumers-and-routing">
+<h3>Function-based consumers and Routing<a class="headerlink" href="#function-based-consumers-and-routing" title="本標題的永久連結">¶</a></h3>
+<p>Channels 1 allowed you to route by event type (e.g. <code class="docutils literal"><span class="pre">websocket.connect</span></code>) and
+pass individual functions with routing that looked like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">channel_routing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">route</span><span class="p">(</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">,</span> <span class="n">connect_blog</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^/liveblog/(?P&lt;slug&gt;[^/]+)/stream/$&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>And function-based consumers that looked like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">connect_blog</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">slug</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>You&#8217;ll need to convert these to be class-based consumers, as routing is now
+done once, at connection time, and so all the event handlers have to be together
+in a single ASGI application. In addition, URL arguments are no longer passed
+down into the individual functions - instead, they will be provided in <code class="docutils literal"><span class="pre">scope</span></code>
+as the key <code class="docutils literal"><span class="pre">url_route</span></code>, a dict with an <code class="docutils literal"><span class="pre">args</span></code> key containing a list of
+positional regex groups and a <code class="docutils literal"><span class="pre">kwargs</span></code> key with a dict of the named groups.</p>
+<p>Routing is also now the main entry point, so you will need to change routing
+to have a ProtocolTypeRouter with URLRouters nested inside it. See
+<a class="reference internal" href="topics/routing.html"><span class="doc">路由</span></a> for more.</p>
+</div>
+<div class="section" id="channel-session-and-enforce-ordering">
+<h3>channel_session and enforce_ordering<a class="headerlink" href="#channel-session-and-enforce-ordering" title="本標題的永久連結">¶</a></h3>
+<p>Any use of the <code class="docutils literal"><span class="pre">channel_session</span></code> or <code class="docutils literal"><span class="pre">enforce_ordering</span></code> decorators can be
+removed; ordering is now always followed as protocols are handled in the same
+process, and <code class="docutils literal"><span class="pre">channel_session</span></code> is not needed as the same application instance
+now handles all traffic from a single client.</p>
+<p>Anywhere you stored information in the <code class="docutils literal"><span class="pre">channel_session</span></code> can be replaced by
+storing it on <code class="docutils literal"><span class="pre">self</span></code> inside a consumer.</p>
+</div>
+<div class="section" id="http-sessions-and-django-auth">
+<h3>HTTP sessions and Django auth<a class="headerlink" href="#http-sessions-and-django-auth" title="本標題的永久連結">¶</a></h3>
+<p>All <a class="reference internal" href="topics/authentication.html"><span class="doc">authentication</span></a> and
+<span class="xref doc">sessions</span> are now done with middleware. You can remove
+any decorators that handled them, like <code class="docutils literal"><span class="pre">http_session</span></code>, <code class="docutils literal"><span class="pre">channel_session_user</span></code>
+and so on (in fact, there are no decorators in Channels 2 - it&#8217;s all middleware).</p>
+<p>To get auth now, wrap your URLRouter in an <code class="docutils literal"><span class="pre">AuthMiddlewareStack</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span><span class="p">,</span> <span class="n">URLRouter</span>
+<span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">AuthMiddlewareStack</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">AuthMiddlewareStack</span><span class="p">(</span>
+        <span class="n">URLRouter</span><span class="p">([</span>
+            <span class="o">...</span>
+        <span class="p">])</span>
+    <span class="p">),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>You need to replace accesses to <code class="docutils literal"><span class="pre">message.http_session</span></code> with
+<code class="docutils literal"><span class="pre">self.scope[&quot;session&quot;]</span></code>, and <code class="docutils literal"><span class="pre">message.user</span></code> with <code class="docutils literal"><span class="pre">self.scope[&quot;user&quot;]</span></code>.
+There is no need to do a handoff like <code class="docutils literal"><span class="pre">channel_session_user_from_http</span></code> any
+more - just wrap the auth middleware around and the user will be in the scope
+for the lifetime of the connection.</p>
+</div>
+<div class="section" id="channel-layers">
+<h3>Channel Layers<a class="headerlink" href="#channel-layers" title="本標題的永久連結">¶</a></h3>
+<p>Channel layers are now an optional part of Channels, and the interface they
+need to provide has changed to be async. Only <code class="docutils literal"><span class="pre">channels_redis</span></code>, formerly known as
+<code class="docutils literal"><span class="pre">asgi_redis</span></code>, has been updated to match so far.</p>
+<p>Settings are still similar to before, but there is no longer a <code class="docutils literal"><span class="pre">ROUTING</span></code>
+key (the base routing is instead defined with <code class="docutils literal"><span class="pre">ASGI_APPLICATION</span></code>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CHANNEL_LAYERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;channels_redis.core.RedisChannelLayer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CONFIG&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;redis-server-name&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>All consumers have a <code class="docutils literal"><span class="pre">self.channel_layer</span></code> and <code class="docutils literal"><span class="pre">self.channel_name</span></code> object
+that is populated if you&#8217;ve configured a channel layer. Any messages you send
+to the <code class="docutils literal"><span class="pre">channel_name</span></code> will now go to the consumer rather than directly to the
+client - see the <a class="reference internal" href="topics/channel_layers.html"><span class="doc">Channel Layers</span></a> documentation for more.</p>
+<p>The method names are largely the same, but they&#8217;re all now awaitables rather
+than synchronous functions, and <code class="docutils literal"><span class="pre">send_group</span></code> is now <code class="docutils literal"><span class="pre">group_send</span></code>.</p>
+</div>
+<div class="section" id="group-objects">
+<h3>Group objects<a class="headerlink" href="#group-objects" title="本標題的永久連結">¶</a></h3>
+<p>Group objects no longer exist; instead you should use the <code class="docutils literal"><span class="pre">group_add</span></code>,
+<code class="docutils literal"><span class="pre">group_discard</span></code>, and <code class="docutils literal"><span class="pre">group_send</span></code> methods on the <code class="docutils literal"><span class="pre">self.channel_layer</span></code>
+object inside of a consumer directly. As an example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="k">import</span> <span class="n">async_to_sync</span>
+
+<span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">AsyncWebsocketConsumer</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_add</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_layer</span><span class="o">.</span><span class="n">group_discard</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="delay-server">
+<h3>Delay server<a class="headerlink" href="#delay-server" title="本標題的永久連結">¶</a></h3>
+<p>If you used the delay server before to put things on hold for a few seconds,
+you can now instead use an <code class="docutils literal"><span class="pre">AsyncConsumer</span></code> and <code class="docutils literal"><span class="pre">asyncio.sleep</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PingConsumer</span><span class="p">(</span><span class="n">AsyncConsumer</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket.send&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;pong&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="本標題的永久連結">¶</a></h3>
+<p>The <a class="reference internal" href="topics/testing.html"><span class="doc">testing framework</span></a> has been entirely rewritten to
+be async-based.</p>
+<p>While this does make writing tests a lot easier and cleaner,
+it means you must entirely rewrite any consumer tests completely - there is no
+backwards-compatible interface with the old testing client as it was
+synchronous. You can read more about the new testing framework in the
+<a class="reference internal" href="topics/testing.html"><span class="doc">testing documentation</span></a>.</p>
+<p>Also of note is that the live test case class has been renamed from
+<code class="docutils literal"><span class="pre">ChannelLiveServerTestCase</span></code> to <code class="docutils literal"><span class="pre">ChannelsLiveServerTestCase</span></code> - note the extra
+<code class="docutils literal"><span class="pre">s</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Channels 2 帶來那些新的改變？</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#conceptual-changes">Conceptual Changes</a><ul>
+<li><a class="reference internal" href="#channel-layers-and-processes">Channel Layers and Processes</a></li>
+<li><a class="reference internal" href="#application-instances">Application Instances</a></li>
+<li><a class="reference internal" href="#new-consumers">New Consumers</a></li>
+<li><a class="reference internal" href="#full-async">Full Async</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#removed-components">Removed Components</a></li>
+<li><a class="reference internal" href="#how-to-upgrade">How to Upgrade</a><ul>
+<li><a class="reference internal" href="#function-based-consumers-and-routing">Function-based consumers and Routing</a></li>
+<li><a class="reference internal" href="#channel-session-and-enforce-ordering">channel_session and enforce_ordering</a></li>
+<li><a class="reference internal" href="#http-sessions-and-django-auth">HTTP sessions and Django auth</a></li>
+<li><a class="reference internal" href="#channel-layers">Channel Layers</a></li>
+<li><a class="reference internal" href="#group-objects">Group objects</a></li>
+<li><a class="reference internal" href="#delay-server">Delay server</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="deploying.html"
+                        title="上一章">部署</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="javascript.html"
+                        title="下一章">Channels WebSocket 包裝</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/one-to-two.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="javascript.html" title="Channels WebSocket 包裝"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="deploying.html" title="部署"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

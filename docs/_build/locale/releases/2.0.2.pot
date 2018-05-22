@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../releases/2.0.2.rst:2
+msgid "2.0.2 Release Notes"
+msgstr ""
+
+#: ../../releases/2.0.2.rst:4
+msgid "Channels 2.0.2 is a patch release of Channels, fixing a bug in the database connection handling."
+msgstr ""
+
+#: ../../releases/2.0.2.rst:7
+msgid "As always, when updating Channels make sure to also update its dependencies (``asgiref`` and ``daphne``) as these also get their own bugfix updates, and some bugs that may appear to be part of Channels are actually in those packages."
+msgstr ""
+
+#: ../../releases/2.0.2.rst:13
+msgid "New Features"
+msgstr ""
+
+#: ../../releases/2.0.2.rst:15
+msgid "There is a new ``channels.db.database_sync_to_async`` wrapper that is like ``sync_to_async`` but also closes database connections for you. You can read more about usage in :doc:`/topics/databases`."
+msgstr ""
+
+#: ../../releases/2.0.2.rst:21
+msgid "Bugfixes"
+msgstr ""
+
+#: ../../releases/2.0.2.rst:23
+msgid "SyncConsumer and all its descendant classes now close database connections when they exit."
+msgstr ""
+
+#: ../../releases/2.0.2.rst:28
+msgid "Backwards Incompatible Changes"
+msgstr ""
+
+#: ../../releases/2.0.2.rst:30
+msgid "None."
+msgstr ""
+

@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Channel Layer 規範 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜尋" href="search.html" />
+    <link rel="next" title="社群專案" href="community.html" />
+    <link rel="prev" title="ASGI 非同步伺服器閘道介面" href="asgi.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="community.html" title="社群專案"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="asgi.html" title="ASGI 非同步伺服器閘道介面"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="channel-layer-specification">
+<h1>Channel Layer 規範<a class="headerlink" href="#channel-layer-specification" title="本標題的永久連結">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">Channel layers are now internal only to Channels, and not used as part of
+ASGI. This spec defines what Channels and applications written using it
+expect a channel layer to provide.</p>
+</div>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="本標題的永久連結">¶</a></h2>
+<p>This document outlines a set of standardized definitions for <em>channels</em> and
+a <em>channel layer</em> which provides a mechanism to send and receive messages over
+them. They allow inter-process communication between different processes to
+help build applications that have messaging and events between different clients.</p>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="本標題的永久連結">¶</a></h2>
+<div class="section" id="messages">
+<h3>Messages<a class="headerlink" href="#messages" title="本標題的永久連結">¶</a></h3>
+<p>Messages must be a <code class="docutils literal"><span class="pre">dict</span></code>. Because these messages are sometimes sent
+over a network, they need to be serializable, and so they are only allowed
+to contain the following types:</p>
+<ul class="simple">
+<li>Byte strings</li>
+<li>Unicode strings</li>
+<li>Integers (within the signed 64 bit range)</li>
+<li>Floating point numbers (within the IEEE 754 double precision range)</li>
+<li>Lists (tuples should be encoded as lists)</li>
+<li>Dicts (keys must be unicode strings)</li>
+<li>Booleans</li>
+<li>None</li>
+</ul>
+</div>
+<div class="section" id="channels">
+<h3>Channels<a class="headerlink" href="#channels" title="本標題的永久連結">¶</a></h3>
+<p>Channels are identified by a unicode string name consisting only of ASCII
+letters, ASCII numerical digits, periods (<code class="docutils literal"><span class="pre">.</span></code>), dashes (<code class="docutils literal"><span class="pre">-</span></code>) and
+underscores (<code class="docutils literal"><span class="pre">_</span></code>), plus an optional type character (see below).</p>
+<p>Channels are a first-in, first out queue with at-most-once delivery
+semantics. They can have multiple writers and multiple readers; only a single
+reader should get each written message. Implementations must never deliver
+a message more than once or to more than one reader, and must drop messages if
+this is necessary to achieve this restriction.</p>
+<p>In order to aid with scaling and network architecture, a distinction
+is made between channels that have multiple readers and
+<em>process-specific channels</em> that are read from a single known process.</p>
+<p><em>Normal channel</em> names contain no type characters, and can be routed however
+the backend wishes; in particular, they do not have to appear globally
+consistent, and backends may shard their contents out to different servers
+so that a querying client only sees some portion of the messages. Calling
+<code class="docutils literal"><span class="pre">receive</span></code> on these channels does not guarantee that you will get the
+messages in order or that you will get anything if the channel is non-empty.</p>
+<p><em>Process-specific channel</em> names contain an exclamation mark (<code class="docutils literal"><span class="pre">!</span></code>) that
+separates a remote and local part. These channels are received differently;
+only the name up to and including the <code class="docutils literal"><span class="pre">!</span></code> character is passed to the
+<code class="docutils literal"><span class="pre">receive()</span></code> call, and it will receive any message on any channel with that
+prefix. This allows a process, such as a HTTP terminator, to listen on a single
+process-specific channel, and then distribute incoming requests to the
+appropriate client sockets using the local part (the part after the <code class="docutils literal"><span class="pre">!</span></code>).
+The local parts must be generated and managed by the process that consumes them.
+These channels, like single-reader channels, are guaranteed to give any extant
+messages in order if received from a single process.</p>
+<p>Messages should expire after a set time sitting unread in a channel;
+the recommendation is one minute, though the best value depends on the
+channel layer and the way it is deployed, and it is recommended that users
+are allowed to configure the expiry time.</p>
+<p>The maximum message size is 1MB if the message were encoded as JSON;
+if more data than this needs to be transmitted it must be chunked into
+smaller messages. All channel layers must support messages up
+to this size, but channel layer users are encouraged to keep well below it.</p>
+</div>
+<div class="section" id="extensions">
+<span id="asgi-extensions"></span><h3>Extensions<a class="headerlink" href="#extensions" title="本標題的永久連結">¶</a></h3>
+<p>Extensions are functionality that is
+not required for basic application code and nearly all protocol server
+code, and so has been made optional in order to enable lightweight
+channel layers for applications that don&#8217;t need the full feature set defined
+here.</p>
+<p>The extensions defined here are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">groups</span></code>: Allows grouping of channels to allow broadcast; see below for more.</li>
+<li><code class="docutils literal"><span class="pre">flush</span></code>: Allows easier testing and development with channel layers.</li>
+</ul>
+<p>There is potential to add further extensions; these may be defined by
+a separate specification, or a new version of this specification.</p>
+<p>If application code requires an extension, it should check for it as soon
+as possible, and hard error if it is not provided. Frameworks should
+encourage optional use of extensions, while attempting to move any
+extension-not-found errors to process startup rather than message handling.</p>
+</div>
+<div class="section" id="asynchronous-support">
+<h3>Asynchronous Support<a class="headerlink" href="#asynchronous-support" title="本標題的永久連結">¶</a></h3>
+<p>All channel layers must provide asynchronous (coroutine) methods for their
+primary endpoints. End-users will be able to achieve synchronous versions
+using the <code class="docutils literal"><span class="pre">asgiref.sync.async_to_sync</span></code> wrapper.</p>
+</div>
+<div class="section" id="groups">
+<h3>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h3>
+<p>While the basic channel model is sufficient to handle basic application
+needs, many more advanced uses of asynchronous messaging require
+notifying many users at once when an event occurs - imagine a live blog,
+for example, where every viewer should get a long poll response or
+WebSocket packet when a new entry is posted.</p>
+<p>Thus, there is an <em>optional</em> groups extension which allows easier broadcast
+messaging to groups of channels. End-users are free, of course, to use just
+channel names and direct sending and build their own persistence/broadcast
+system instead.</p>
+</div>
+<div class="section" id="capacity">
+<h3>Capacity<a class="headerlink" href="#capacity" title="本標題的永久連結">¶</a></h3>
+<p>To provide backpressure, each channel in a channel layer may have a capacity,
+defined however the layer wishes (it is recommended that it is configurable
+by the user using keyword arguments to the channel layer constructor, and
+furthermore configurable per channel name or name prefix).</p>
+<p>When a channel is at or over capacity, trying to send() to that channel
+may raise ChannelFull, which indicates to the sender the channel is over
+capacity. How the sender wishes to deal with this will depend on context;
+for example, a web application trying to send a response body will likely
+wait until it empties out again, while a HTTP interface server trying to
+send in a request would drop the request and return a 503 error.</p>
+<p>Process-local channels must apply their capacity on the non-local part (that is,
+up to and including the <code class="docutils literal"><span class="pre">!</span></code> character), and so capacity is shared among all
+of the &#8220;virtual&#8221; channels inside it.</p>
+<p>Sending to a group never raises ChannelFull; instead, it must silently drop
+the message if it is over capacity, as per ASGI&#8217;s at-most-once delivery
+policy.</p>
+</div>
+</div>
+<div class="section" id="specification-details">
+<h2>Specification Details<a class="headerlink" href="#specification-details" title="本標題的永久連結">¶</a></h2>
+<p>A <em>channel layer</em> must provide an object with these attributes
+(all function arguments are positional):</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">send(channel,</span> <span class="pre">message)</span></code>, that takes two arguments: the
+channel to send on, as a unicode string, and the message
+to send, as a serializable <code class="docutils literal"><span class="pre">dict</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">receive(channel)</span></code>, that takes a single channel name and returns
+the next received message on that channel.</li>
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">new_channel()</span></code>, which returns a new process-specific channel
+that can be used to give to a local coroutine or receiver.</li>
+<li><code class="docutils literal"><span class="pre">MessageTooLarge</span></code>, the exception raised when a send operation fails
+because the encoded message is over the layer&#8217;s size limit.</li>
+<li><code class="docutils literal"><span class="pre">ChannelFull</span></code>, the exception raised when a send operation fails
+because the destination channel is over capacity.</li>
+<li><code class="docutils literal"><span class="pre">extensions</span></code>, a list of unicode string names indicating which
+extensions this layer provides, or an empty list if it supports none.
+The possible extensions can be seen in <a class="reference internal" href="#asgi-extensions"><span class="std std-ref">Extensions</span></a>.</li>
+</ul>
+<p>A channel layer implementing the <code class="docutils literal"><span class="pre">groups</span></code> extension must also provide:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">group_add(group,</span> <span class="pre">channel)</span></code>, that takes a <code class="docutils literal"><span class="pre">channel</span></code> and adds
+it to the group given by <code class="docutils literal"><span class="pre">group</span></code>. Both are unicode strings. If the channel
+is already in the group, the function should return normally.</li>
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">group_discard(group,</span> <span class="pre">channel)</span></code>, that removes the <code class="docutils literal"><span class="pre">channel</span></code>
+from the <code class="docutils literal"><span class="pre">group</span></code> if it is in it, and does nothing otherwise.</li>
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">group_send(group,</span> <span class="pre">message)</span></code>, that takes two positional
+arguments; the group to send to, as a unicode string, and the message
+to send, as a serializable <code class="docutils literal"><span class="pre">dict</span></code>. It may raise MessageTooLarge but cannot
+raise ChannelFull.</li>
+<li><code class="docutils literal"><span class="pre">group_expiry</span></code>, an integer number of seconds that specifies how long group
+membership is valid for after the most recent <code class="docutils literal"><span class="pre">group_add</span></code> call (see
+<em>Persistence</em> below)</li>
+</ul>
+<p>A channel layer implementing the <code class="docutils literal"><span class="pre">flush</span></code> extension must also provide:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">coroutine</span> <span class="pre">flush()</span></code>, that resets the channel layer to a blank state,
+containing no messages and no groups (if the groups extension is
+implemented). This call must block until the system is cleared and will
+consistently look empty to any client, if the channel layer is distributed.</li>
+</ul>
+<div class="section" id="channel-semantics">
+<h3>Channel Semantics<a class="headerlink" href="#channel-semantics" title="本標題的永久連結">¶</a></h3>
+<p>Channels <strong>must</strong>:</p>
+<ul class="simple">
+<li>Preserve ordering of messages perfectly with only a single reader
+and writer if the channel is a <em>single-reader</em> or <em>process-specific</em> channel.</li>
+<li>Never deliver a message more than once.</li>
+<li>Never block on message send (though they may raise ChannelFull or
+MessageTooLarge)</li>
+<li>Be able to handle messages of at least 1MB in size when encoded as
+JSON (the implementation may use better encoding or compression, as long
+as it meets the equivalent size)</li>
+<li>Have a maximum name length of at least 100 bytes.</li>
+</ul>
+<p>They should attempt to preserve ordering in all cases as much as possible,
+but perfect global ordering is obviously not possible in the distributed case.</p>
+<p>They are not expected to deliver all messages, but a success rate of at least
+99.99% is expected under normal circumstances. Implementations may want to
+have a &#8220;resilience testing&#8221; mode where they deliberately drop more messages
+than usual so developers can test their code&#8217;s handling of these scenarios.</p>
+</div>
+<div class="section" id="persistence">
+<h3>Persistence<a class="headerlink" href="#persistence" title="本標題的永久連結">¶</a></h3>
+<p>Channel layers do not need to persist data long-term; group
+memberships only need to live as long as a connection does, and messages
+only as long as the message expiry time, which is usually a couple of minutes.</p>
+<p>If a channel layer implements the <code class="docutils literal"><span class="pre">groups</span></code> extension, it must persist group
+membership until at least the time when the member channel has a message
+expire due to non-consumption, after which it may drop membership at any time.
+If a channel subsequently has a successful delivery, the channel layer must
+then not drop group membership until another message expires on that channel.</p>
+<p>Channel layers must also drop group membership after a configurable long timeout
+after the most recent <code class="docutils literal"><span class="pre">group_add</span></code> call for that membership, the default being
+86,400 seconds (one day). The value of this timeout is exposed as the
+<code class="docutils literal"><span class="pre">group_expiry</span></code> property on the channel layer.</p>
+</div>
+<div class="section" id="approximate-global-ordering">
+<h3>Approximate Global Ordering<a class="headerlink" href="#approximate-global-ordering" title="本標題的永久連結">¶</a></h3>
+<p>While maintaining true global (across-channels) ordering of messages is
+entirely unreasonable to expect of many implementations, they should strive
+to prevent busy channels from overpowering quiet channels.</p>
+<p>For example, imagine two channels, <code class="docutils literal"><span class="pre">busy</span></code>, which spikes to 1000 messages a
+second, and <code class="docutils literal"><span class="pre">quiet</span></code>, which gets one message a second. There&#8217;s a single
+consumer running <code class="docutils literal"><span class="pre">receive(['busy',</span> <span class="pre">'quiet'])</span></code> which can handle
+around 200 messages a second.</p>
+<p>In a simplistic for-loop implementation, the channel layer might always check
+<code class="docutils literal"><span class="pre">busy</span></code> first; it always has messages available, and so the consumer never
+even gets to see a message from <code class="docutils literal"><span class="pre">quiet</span></code>, even if it was sent with the
+first batch of <code class="docutils literal"><span class="pre">busy</span></code> messages.</p>
+<p>A simple way to solve this is to randomize the order of the channel list when
+looking for messages inside the channel layer; other, better methods are also
+available, but whatever is chosen, it should try to avoid a scenario where
+a message doesn&#8217;t get received purely because another channel is busy.</p>
+</div>
+<div class="section" id="strings-and-unicode">
+<h3>Strings and Unicode<a class="headerlink" href="#strings-and-unicode" title="本標題的永久連結">¶</a></h3>
+<p>In this document, and all sub-specifications, <em>byte string</em> refers to
+<code class="docutils literal"><span class="pre">str</span></code> on Python 2 and <code class="docutils literal"><span class="pre">bytes</span></code> on Python 3. If this type still supports
+Unicode codepoints due to the underlying implementation, then any values
+should be kept within the 0 - 255 range.</p>
+<p><em>Unicode string</em> refers to <code class="docutils literal"><span class="pre">unicode</span></code> on Python 2 and <code class="docutils literal"><span class="pre">str</span></code> on Python 3.
+This document will never specify just <em>string</em> - all strings are one of the
+two exact types.</p>
+<p>Some serializers, such as <code class="docutils literal"><span class="pre">json</span></code>, cannot differentiate between byte
+strings and unicode strings; these should include logic to box one type as
+the other (for example, encoding byte strings as base64 unicode strings with
+a preceding special character, e.g. U+FFFF).</p>
+<p>Channel and group names are always unicode strings, with the additional
+limitation that they only use the following characters:</p>
+<ul class="simple">
+<li>ASCII letters</li>
+<li>The digits <code class="docutils literal"><span class="pre">0</span></code> through <code class="docutils literal"><span class="pre">9</span></code></li>
+<li>Hyphen <code class="docutils literal"><span class="pre">-</span></code></li>
+<li>Underscore <code class="docutils literal"><span class="pre">_</span></code></li>
+<li>Period <code class="docutils literal"><span class="pre">.</span></code></li>
+<li>Question mark <code class="docutils literal"><span class="pre">?</span></code> (only to delineiate single-reader channel names,
+and only one per name)</li>
+<li>Exclamation mark <code class="docutils literal"><span class="pre">!</span></code> (only to delineate process-specific channel names,
+and only one per name)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="copyright">
+<h2>Copyright<a class="headerlink" href="#copyright" title="本標題的永久連結">¶</a></h2>
+<p>This document has been placed in the public domain.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Channel Layer 規範</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#messages">Messages</a></li>
+<li><a class="reference internal" href="#channels">Channels</a></li>
+<li><a class="reference internal" href="#extensions">Extensions</a></li>
+<li><a class="reference internal" href="#asynchronous-support">Asynchronous Support</a></li>
+<li><a class="reference internal" href="#groups">Groups</a></li>
+<li><a class="reference internal" href="#capacity">Capacity</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#specification-details">Specification Details</a><ul>
+<li><a class="reference internal" href="#channel-semantics">Channel Semantics</a></li>
+<li><a class="reference internal" href="#persistence">Persistence</a></li>
+<li><a class="reference internal" href="#approximate-global-ordering">Approximate Global Ordering</a></li>
+<li><a class="reference internal" href="#strings-and-unicode">Strings and Unicode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#copyright">Copyright</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="asgi.html"
+                        title="上一章">ASGI 非同步伺服器閘道介面</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="community.html"
+                        title="下一章">社群專案</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/channel_layer_spec.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="community.html" title="社群專案"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="asgi.html" title="ASGI 非同步伺服器閘道介面"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

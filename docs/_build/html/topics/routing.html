@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>路由 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="資料庫存取" href="databases.html" />
+    <link rel="prev" title="消費者" href="consumers.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="databases.html" title="資料庫存取"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="consumers.html" title="消費者"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="routing">
+<h1>路由<a class="headerlink" href="#routing" title="本標題的永久連結">¶</a></h1>
+<p>While consumers are valid <a class="reference internal" href="../asgi.html"><span class="doc">ASGI</span></a> applications, you don&#8217;t want
+to just write one and have that be the only thing you can give to protocol
+servers like Daphne. Channels provides routing classes that allow you to
+combine and stack your consumers (and any other valid ASGI application) to
+dispatch based on what the connection is.</p>
+<div class="admonition important">
+<p class="first admonition-title">重要</p>
+<p class="last">Channels routers only work on the <em>scope</em> level, not on the level of
+individual <em>events</em>, which means you can only have one consumer for any
+given connection. Routing is to work out what single consumer to give a
+connection, not how to spread events from one connection across
+multiple consumers.</p>
+</div>
+<p>Routers are themselves valid ASGI applications, and it&#8217;s possible to nest them.
+We suggest that you have a <code class="docutils literal"><span class="pre">ProtocolTypeRouter</span></code> as the root application of
+your project - the one that you pass to protocol servers - and nest other,
+more protocol-specific routing underneath there.</p>
+<p>Channels expects you to be able to define a single <em>root application</em>, and
+provide the path to it as the <code class="docutils literal"><span class="pre">ASGI_APPLICATION</span></code> setting (think of this as
+being analagous to the <code class="docutils literal"><span class="pre">ROOT_URLCONF</span></code> setting in Django). There&#8217;s no fixed
+rule as to where you need to put the routing and the root application,
+but we recommend putting them in a project-level file called <code class="docutils literal"><span class="pre">routing.py</span></code>,
+next to <code class="docutils literal"><span class="pre">urls.py</span></code>. You can read more about deploying Channels projects and
+settings in <a class="reference internal" href="../deploying.html"><span class="doc">部署</span></a>.</p>
+<p>Here&#8217;s an example of what that <code class="docutils literal"><span class="pre">routing.py</span></code> might look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span><span class="p">,</span> <span class="n">URLRouter</span>
+<span class="kn">from</span> <span class="nn">channels.auth</span> <span class="k">import</span> <span class="n">AuthMiddlewareStack</span>
+
+<span class="kn">from</span> <span class="nn">chat.consumers</span> <span class="k">import</span> <span class="n">AdminChatConsumer</span><span class="p">,</span> <span class="n">PublicChatConsumer</span>
+<span class="kn">from</span> <span class="nn">aprs_news.consumers</span> <span class="k">import</span> <span class="n">APRSNewsConsumer</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+
+    <span class="c1"># WebSocket chat handler</span>
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">AuthMiddlewareStack</span><span class="p">(</span>
+        <span class="n">URLRouter</span><span class="p">([</span>
+            <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^chat/admin/$&quot;</span><span class="p">,</span> <span class="n">AdminChatConsumer</span><span class="p">),</span>
+            <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^chat/$&quot;</span><span class="p">,</span> <span class="n">PublicChatConsumer</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">),</span>
+
+    <span class="c1"># Using the third-party project frequensgi, which provides an APRS protocol</span>
+    <span class="s2">&quot;aprs&quot;</span><span class="p">:</span> <span class="n">APRSNewsConsumer</span><span class="p">,</span>
+
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>It&#8217;s possible to have routers from third-party apps, too, or write your own,
+but we&#8217;ll go over the built-in Channels ones here.</p>
+<div class="section" id="protocoltyperouter">
+<h2>ProtocolTypeRouter<a class="headerlink" href="#protocoltyperouter" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">channels.routing.ProtocolTypeRouter</span></code></p>
+<p>This should be the
+top level of your ASGI application stack and the main entry in your routing file.</p>
+<p>It lets you dispatch to one of a number of other ASGI applications based on the
+<code class="docutils literal"><span class="pre">type</span></code> value present in the <code class="docutils literal"><span class="pre">scope</span></code>. Protocols will define a fixed type
+value that their scope contains, so you can use this to distinguish between
+incoming connection types.</p>
+<p>It takes a single argument - a dictionary mapping type names to ASGI
+applications that serve them:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+    <span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="n">some_app</span><span class="p">,</span>
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">some_other_app</span><span class="p">,</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>If a <code class="docutils literal"><span class="pre">http</span></code> argument is not provided, it will default to the Django view
+system&#8217;s ASGI interface, <code class="docutils literal"><span class="pre">channels.http.AsgiHandler</span></code>, which means that for
+most projects that aren&#8217;t doing custom long-poll HTTP handling, you can simply
+not specify a <code class="docutils literal"><span class="pre">http</span></code> option and leave it to work the &#8220;normal&#8221; Django way.</p>
+<p>If you want to split HTTP handling between long-poll handlers and Django views,
+use a URLRouter with <code class="docutils literal"><span class="pre">channels.http.AsgiHandler</span></code> specified as the last entry
+with a match-everything pattern.</p>
+</div>
+<div class="section" id="urlrouter">
+<h2>URLRouter<a class="headerlink" href="#urlrouter" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">channels.routing.URLRouter</span></code></p>
+<p>Routes <code class="docutils literal"><span class="pre">http</span></code> or <code class="docutils literal"><span class="pre">websocket</span></code> type connections via their HTTP path. Takes
+a single argument, a list of Django URL objects (either <code class="docutils literal"><span class="pre">path()</span></code> or <code class="docutils literal"><span class="pre">url()</span></code>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">URLRouter</span><span class="p">([</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^longpoll/$&quot;</span><span class="p">,</span> <span class="n">LongPollConsumer</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^notifications/(?P&lt;stream&gt;\w+)/$&quot;</span><span class="p">,</span> <span class="n">LongPollConsumer</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">AsgiHandler</span><span class="p">),</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>Any captured groups will be provided in <code class="docutils literal"><span class="pre">scope</span></code> as the key <code class="docutils literal"><span class="pre">url_route</span></code>, a
+dict with a <code class="docutils literal"><span class="pre">kwargs</span></code> key containing a dict of the named regex groups and
+an <code class="docutils literal"><span class="pre">args</span></code> key with a list of positional regex groups. Note that named
+and unnamed groups cannot be mixed: Positional groups are discarded as soon
+as a single named group is matched.</p>
+<p>For example, to pull out the named group <code class="docutils literal"><span class="pre">stream</span></code> in the example above, you
+would do this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">stream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;url_route&quot;</span><span class="p">][</span><span class="s2">&quot;kwargs&quot;</span><span class="p">][</span><span class="s2">&quot;stream&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Please note that <code class="docutils literal"><span class="pre">URLRouter</span></code> nesting will not work properly with
+<code class="docutils literal"><span class="pre">path()</span></code> routes if inner routers are wrapped by additional middleware.</p>
+</div>
+<div class="section" id="channelnamerouter">
+<h2>ChannelNameRouter<a class="headerlink" href="#channelnamerouter" title="本標題的永久連結">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">channels.routing.ChannelNameRouter</span></code></p>
+<p>Routes <code class="docutils literal"><span class="pre">channel</span></code> type scopes based on the value of the <code class="docutils literal"><span class="pre">channel</span></code> key in
+their scope. Intended for use with the <a class="reference internal" href="worker.html"><span class="doc">Worker 與背景任務</span></a>.</p>
+<p>It takes a single argument - a dictionary mapping channel names to ASGI
+applications that serve them:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ChannelNameRouter</span><span class="p">({</span>
+    <span class="s2">&quot;thumbnails-generate&quot;</span><span class="p">:</span> <span class="n">some_app</span><span class="p">,</span>
+    <span class="s2">&quot;thunbnails-delete&quot;</span><span class="p">:</span> <span class="n">some_other_app</span><span class="p">,</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">路由</a><ul>
+<li><a class="reference internal" href="#protocoltyperouter">ProtocolTypeRouter</a></li>
+<li><a class="reference internal" href="#urlrouter">URLRouter</a></li>
+<li><a class="reference internal" href="#channelnamerouter">ChannelNameRouter</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="consumers.html"
+                        title="上一章">消費者</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="databases.html"
+                        title="下一章">資料庫存取</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/routing.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="databases.html" title="資料庫存取"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="consumers.html" title="消費者"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

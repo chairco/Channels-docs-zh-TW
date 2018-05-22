@@ -1,20 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, test
-# This file is distributed under the same license as the test package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 # 
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: test 0.0.1\n"
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 15:46+0800\n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Jason <chairco@gmail.com>, 2017\n"
-"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-doc-tw/teams/72101/zh_TW/)\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
 "Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
@@ -24,30 +26,30 @@ msgstr "社群專案"
 
 #: ../../community.rst:4
 msgid "These projects from the community are developed on top of Channels:"
-msgstr "這些社群專案使用 Channels 系統再開發:"
+msgstr ""
 
 #: ../../community.rst:6
 msgid "Djangobot_, a bi-directional interface server for Slack."
-msgstr "Djangobot_，是一個與 Slack 聯繫的雙向介面伺服器。"
+msgstr ""
 
 #: ../../community.rst:7
 msgid "knocker_, a generic desktop-notification system."
-msgstr "knocker_，是一個通用的桌面通知系統。"
+msgstr ""
 
 #: ../../community.rst:8
 msgid "Beatserver_, a periodic task scheduler for django channels."
-msgstr "Beatserver_，是一個 django channels 的週期工作排程系統。"
+msgstr ""
 
 #: ../../community.rst:9
 msgid "cq_, a simple distributed task system."
-msgstr "cq_，是一個簡單的分散式排程系統。"
+msgstr ""
 
 #: ../../community.rst:10
 msgid "Debugpannel_, a django Debug Toolbar panel for channels."
-msgstr "Debugpannel_，是一個 channels 的除錯工具面板。"
+msgstr ""
 
 #: ../../community.rst:12
 msgid ""
 "If you'd like to add your project, please submit a PR with a link and brief "
 "description."
-msgstr "如果你想要增列您的專案，請發送包含專案連結與簡介的 PR 給我們。 "
+msgstr ""

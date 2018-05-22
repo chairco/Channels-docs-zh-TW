@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../installation.rst:2
+msgid "Installation"
+msgstr ""
+
+#: ../../installation.rst:4
+msgid "Channels is available on PyPI - to install it, just run::"
+msgstr ""
+
+#: ../../installation.rst:8
+msgid "Once that's done, you should add ``channels`` to your ``INSTALLED_APPS`` setting::"
+msgstr ""
+
+#: ../../installation.rst:20
+msgid "Then, make a default routing in ``myproject/routing.py``::"
+msgstr ""
+
+#: ../../installation.rst:28
+msgid "And finally, set your ``ASGI_APPLICATION`` setting to point to that routing object as your root application::"
+msgstr ""
+
+#: ../../installation.rst:33
+msgid "That's it! Once enabled, ``channels`` will integrate itself into Django and take control of the ``runserver`` command. See :doc:`introduction` for more."
+msgstr ""
+
+#: ../../installation.rst:37
+msgid "Please be wary of any other third-party apps that require an overloaded or replacement ``runserver`` command. Channels provides a separate ``runserver`` command and may conflict with it. An example of such a conflict is with `whitenoise.runserver_nostatic <https://github.com/evansd/whitenoise/issues/77>`_ from `whitenoise <https://github.com/evansd/whitenoise>`_. In order to solve such issues, try moving ``channels`` to the top of your ``INSTALLED_APPS`` or remove the offending app altogether."
+msgstr ""
+
+#: ../../installation.rst:47
+msgid "Installing the latest development version"
+msgstr ""
+
+#: ../../installation.rst:49
+msgid "To install the latest version of Channels, clone the repo, change to the repo, change to the repo directory, and pip install it into your current virtual environment::"
+msgstr ""
+

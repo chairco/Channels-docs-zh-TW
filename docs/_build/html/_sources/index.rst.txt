@@ -1,40 +1,44 @@
 Django Channels
 ===============
 
-Channels is a project to make Django able to handle more than just plain
-HTTP requests, including WebSockets and HTTP2, as well as the ability to
-run code after a response has been sent for things like thumbnailing or
-background calculation.
+Channels is a project that takes Django and extends its abilities beyond
+HTTP - to handle WebSockets, chat protocols, IoT protocols, and more.
 
-It's an easy-to-understand extension of the Django view model, and easy
-to integrate and deploy.
+It does this by taking the core of Django and layering a fully asynchronous
+layer underneath, running Django itself in a synchronous mode but handling
+connections and sockets asynchronously, and giving you the choice to write
+in either style.
 
-First, read our :doc:`concepts` documentation to get an idea of the
-data model underlying Channels and how they're used inside Django.
+To get started understanding how Channels works, read our :doc:`introduction`,
+which will walk through how things work. If you're upgrading from Channels 1,
+take a look at :doc:`one-to-two` to get an overview of the changes; things
+are substantially different.
 
-Then, read :doc:`getting-started` to see how to get up and running with
-WebSockets with only 30 lines of code.
+If you would like complete code examples to read alongside the documentation
+or experiment on, the `channels-examples <https://github.com/andrewgodwin/channels-examples/>`_
+repository contains well-commented example Channels projects.
 
-If you want a quick overview, start with :doc:`inshort`.
-
-If you are interested in contributing, please read our :doc:`contributing` docs!
+.. warning::
+   This is documentation for the **2.x series** of Channels. If you are looking
+   for documentation for the legacy Channels 1, you can select ``1.x`` from the
+   versions selector in the bottom-left corner.
 
 
 Projects
 --------
 
-Channels is comprised of five packages:
+Channels is comprised of several packages:
 
 * `Channels <https://github.com/django/channels/>`_, the Django integration layer
 * `Daphne <https://github.com/django/daphne/>`_, the HTTP and Websocket termination server
-* `asgiref <https://github.com/django/asgiref/>`_, the base ASGI library/memory backend
-* `asgi_redis <https://github.com/django/asgi_redis/>`_, the Redis channel backend
-* `asgi_rabbitmq <https://github.com/proofit404/asgi_rabbitmq/>`_, the RabbitMQ channel backend
-* `asgi_ipc <https://github.com/django/asgi_ipc/>`_, the POSIX IPC channel backend
+* `asgiref <https://github.com/django/asgiref/>`_, the base ASGI library
+* `channels_redis <https://github.com/django/channels_redis/>`_, the Redis channel layer backend (optional)
 
 This documentation covers the system as a whole; individual release notes and
 instructions can be found in the individual repositories.
 
+
+.. _topics:
 
 Topics
 ------
@@ -42,21 +46,31 @@ Topics
 .. toctree::
    :maxdepth: 2
 
-   inshort
-   concepts
+   introduction
    installation
-   getting-started
+   tutorial/index
+   topics/consumers
+   topics/routing
+   topics/databases
+   topics/channel_layers
+   topics/sessions
+   topics/authentication
+   topics/security
+   topics/testing
+   topics/worker
    deploying
-   generics
-   routing
-   binding
+   one-to-two
    javascript
-   backends
-   delay
-   testing
-   reference
-   faqs
+
+
+Reference
+---------
+
+.. toctree::
+   :maxdepth: 2
+
    asgi
+   channel_layer_spec
    community
    contributing
    releases/index

@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_TW">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>對談 (Sessions) &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="認證" href="authentication.html" />
+    <link rel="prev" title="Channel Layers" href="channel_layers.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="authentication.html" title="認證"
+             accesskey="N">下一頁</a> |</li>
+        <li class="right" >
+          <a href="channel_layers.html" title="Channel Layers"
+             accesskey="P">上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sessions">
+<h1>對談 (Sessions)<a class="headerlink" href="#sessions" title="本標題的永久連結">¶</a></h1>
+<p>Channels supports standard Django sessions using HTTP cookies for both HTTP
+and WebSocket. There are some caveats, however.</p>
+<div class="section" id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="本標題的永久連結">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">SessionMiddleware</span></code> in Channels supports standard Django sessions,
+and like all middleware, should be wrapped around the ASGI application that
+needs the session information in its scope (for example, a <code class="docutils literal"><span class="pre">URLRouter</span></code> to
+apply it to a whole collection of consumers, or an individual consumer).</p>
+<p><code class="docutils literal"><span class="pre">SessionMiddleware</span></code> requires <code class="docutils literal"><span class="pre">CookieMiddleware</span></code> to function.
+For convenience, these are also provided as a combined callable called
+<code class="docutils literal"><span class="pre">SessionMiddlewareStack</span></code> that includes both. All are importable from
+<code class="docutils literal"><span class="pre">channels.session</span></code>.</p>
+<p>To use the middleware, wrap it around the appropriate level of consumer
+in your <code class="docutils literal"><span class="pre">routing.py</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">channels.routing</span> <span class="k">import</span> <span class="n">ProtocolTypeRouter</span><span class="p">,</span> <span class="n">URLRouter</span>
+<span class="kn">from</span> <span class="nn">channels.sessions</span> <span class="k">import</span> <span class="n">SessionMiddlewareStack</span>
+
+<span class="kn">from</span> <span class="nn">myapp</span> <span class="k">import</span> <span class="n">consumers</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">ProtocolTypeRouter</span><span class="p">({</span>
+
+    <span class="s2">&quot;websocket&quot;</span><span class="p">:</span> <span class="n">SessionMiddlewareStack</span><span class="p">(</span>
+        <span class="n">URLRouter</span><span class="p">([</span>
+            <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^front(end)/$&quot;</span><span class="p">,</span> <span class="n">consumers</span><span class="o">.</span><span class="n">AsyncChatConsumer</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">),</span>
+
+<span class="p">})</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">SessionMiddleware</span></code> will only work on protocols that provide
+HTTP headers in their <code class="docutils literal"><span class="pre">scope</span></code> - by default, this is HTTP and WebSocket.</p>
+<p>To access the session, use <code class="docutils literal"><span class="pre">self.scope[&quot;session&quot;]</span></code> in your consumer code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConsumer</span><span class="p">(</span><span class="n">WebsocketConsumer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">][</span><span class="s2">&quot;seed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">SessionMiddleware</span></code> respects all the same Django settings as the default
+Django session framework, like SESSION_COOKIE_NAME and SESSION_COOKIE_DOMAIN.</p>
+</div>
+<div class="section" id="session-persistence">
+<h2>Session Persistence<a class="headerlink" href="#session-persistence" title="本標題的永久連結">¶</a></h2>
+<p>Within HTTP consumers or ASGI applications, session persistence works as you
+would expect from Django HTTP views - sessions are saved whenever you send
+a HTTP response that does not have status code <code class="docutils literal"><span class="pre">500</span></code>.</p>
+<p>This is done by overriding any <code class="docutils literal"><span class="pre">http.response.start</span></code> messages to inject
+cookie headers into the response as you send it out. If you have set
+the <code class="docutils literal"><span class="pre">SESSION_SAVE_EVERY_REQUEST</span></code> setting to <code class="docutils literal"><span class="pre">True</span></code>, it will save the
+session and send the cookie on every response, otherwise it will only save
+whenever the session is modified.</p>
+<p>If you are in a WebSocket consumer, however, the session is populated
+<strong>but will never be saved automatically</strong> - you must call
+<code class="docutils literal"><span class="pre">scope[&quot;session&quot;].save()</span></code> yourself whenever you want to persist a session
+to your session store. If you don&#8217;t save, the session will still work correctly
+inside the consumer (as it&#8217;s stored as an instance variable), but other
+connections or HTTP views won&#8217;t be able to see the changes.</p>
+<div class="admonition note">
+<p class="first admonition-title">備註</p>
+<p class="last">If you are in a long-polling HTTP consumer, you might want to save changes
+to the session before you send a response. If you want to do this,
+call <code class="docutils literal"><span class="pre">scope[&quot;session&quot;].save()</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目錄</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">對談 (Sessions)</a><ul>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li><a class="reference internal" href="#session-persistence">Session Persistence</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一個主題</h4>
+  <p class="topless"><a href="channel_layers.html"
+                        title="上一章">Channel Layers</a></p>
+  <h4>下一個主題</h4>
+  <p class="topless"><a href="authentication.html"
+                        title="下一章">認證</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本頁</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/topics/sessions.rst.txt"
+            rel="nofollow">顯示原始碼</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜尋</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="前往" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>瀏覽</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="總索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="authentication.html" title="認證"
+             >下一頁</a> |</li>
+        <li class="right" >
+          <a href="channel_layers.html" title="Channel Layers"
+             >上一頁</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版權所有 2018, Jason(@chairco)。
+      使用 <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2 創建。
+    </div>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Jason <chairco@gmail.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/Channels-zhTW/teams/86661/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../topics/authentication.rst:2
+msgid "Authentication"
+msgstr "認證"
+
+#: ../../topics/authentication.rst:4
+msgid ""
+"Channels supports standard Django authentication out-of-the-box for HTTP and"
+" WebSocket consumers, and you can write your own middleware or handling code"
+" if you want to support a different authentication scheme (for example, "
+"tokens in the URL)."
+msgstr ""
+
+#: ../../topics/authentication.rst:11
+msgid "Django authentication"
+msgstr ""
+
+#: ../../topics/authentication.rst:13
+msgid ""
+"The ``AuthMiddleware`` in Channels supports standard Django authentication, "
+"where the user details are stored in the session. It allows read-only access"
+" to a user object in the ``scope``."
+msgstr ""
+
+#: ../../topics/authentication.rst:17
+msgid ""
+"``AuthMiddleware`` requires ``SessionMiddleware`` to function, which itself "
+"requires ``CookieMiddleware``. For convenience, these are also provided as a"
+" combined callable called ``AuthMiddlewareStack`` that includes all three."
+msgstr ""
+
+#: ../../topics/authentication.rst:21
+msgid ""
+"To use the middleware, wrap it around the appropriate level of consumer in "
+"your ``routing.py``::"
+msgstr ""
+
+#: ../../topics/authentication.rst:41
+msgid ""
+"While you can wrap the middleware around each consumer individually, it's "
+"recommended you wrap it around a higher-level application component, like in"
+" this case the ``URLRouter``."
+msgstr ""
+
+#: ../../topics/authentication.rst:45
+msgid ""
+"Note that the ``AuthMiddleware`` will only work on protocols that provide "
+"HTTP headers in their ``scope`` - by default, this is HTTP and WebSocket."
+msgstr ""
+
+#: ../../topics/authentication.rst:48
+msgid ""
+"To access the user, just use ``self.scope[\"user\"]`` in your consumer "
+"code::"
+msgstr ""
+
+#: ../../topics/authentication.rst:58
+msgid "Custom Authentication"
+msgstr ""
+
+#: ../../topics/authentication.rst:60
+msgid ""
+"If you have a custom authentication scheme, you can write a custom "
+"middleware to parse the details and put a user object (or whatever other "
+"object you need) into your scope."
+msgstr ""
+
+#: ../../topics/authentication.rst:64
+msgid ""
+"Middleware is written as a callable that takes an ASGI application and wraps"
+" it to return another ASGI application. Most authentication can just be done"
+" on the scope, so all you need to do is override the initial constructor "
+"that takes a scope, rather than the event-running coroutine."
+msgstr ""
+
+#: ../../topics/authentication.rst:69
+msgid ""
+"Here's a simple example of a middleware that just takes a user ID out of the"
+" query string and uses that::"
+msgstr ""
+
+#: ../../topics/authentication.rst:93
+msgid ""
+"Right now you will need to call ``close_old_connections()`` after any "
+"database code you call inside a middleware's scope-setup method to ensure "
+"you don't leak idle database connections. We hope to call this automatically"
+" in future versions of Channels."
+msgstr ""
+
+#: ../../topics/authentication.rst:98
+msgid ""
+"The same principles can be applied to authenticate over non-HTTP protocols; "
+"for example, you might want to use someone's chat username from a chat "
+"protocol to turn it into a user."
+msgstr ""
+
+#: ../../topics/authentication.rst:104
+msgid "How to log a user in/out"
+msgstr ""
+
+#: ../../topics/authentication.rst:106
+msgid ""
+"Channels provides direct login and logout functions (much like Django's "
+"``contrib.auth`` package does) as ``channels.auth.login`` and "
+"``channels.auth.logout``."
+msgstr ""
+
+#: ../../topics/authentication.rst:110
+msgid ""
+"Within your consumer you can await ``login(scope, user, backend=None)`` to "
+"log a user in. This requires that your scope has a ``session`` object; the "
+"best way to do this is to ensure your consumer is wrapped in a "
+"``SessionMiddlewareStack`` or a ``AuthMiddlewareStack``."
+msgstr ""
+
+#: ../../topics/authentication.rst:115
+msgid "You can logout a user with the ``logout(scope)`` async function."
+msgstr ""
+
+#: ../../topics/authentication.rst:117
+msgid ""
+"If you are in a WebSocket consumer, or logging-in after the first response "
+"has been sent in a http consumer, the session is populated **but will not be"
+" saved automatically** - you must call ``scope[\"session\"].save()`` after "
+"login in your consumer code::"
+msgstr ""
+
+#: ../../topics/authentication.rst:135
+msgid ""
+"When calling ``login(scope, user)``, ``logout(scope)`` or "
+"``get_user(scope)`` from a synchronous function you will need to wrap them "
+"in ``async_to_sync``, as we only provide async versions::"
+msgstr ""
+
+#: ../../topics/authentication.rst:153
+msgid ""
+"If you are using a long running consumer, websocket or long-polling HTTP it "
+"is possible that the user will be logged out of their session elsewhere "
+"while your consumer is running. You can periodically use ``get_user(scope)``"
+" to be sure that the user is still logged in."
+msgstr ""

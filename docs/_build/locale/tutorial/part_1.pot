@@ -1,0 +1,217 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../tutorial/part_1.rst:2
+msgid "Tutorial Part 1: Basic Setup"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:4
+msgid "In this tutorial we will build a simple chat server. It will have two pages:"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:6
+msgid "An index view that lets you type the name of a chat room to join."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:7
+msgid "A room view that lets you see messages posted in a particular chat room."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:9
+msgid "The room view will use a WebSocket to communicate with the Django server and listen for any messages that are posted."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:12
+msgid "We assume that you are familar with basic concepts for building a Django site. If not we recommend you complete `the Django tutorial`_ first and then come back to this tutorial."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:16
+msgid "We assume that you have `Django installed`_ already. You can tell Django is installed and which version by running the following command in a shell prompt (indicated by the ``$`` prefix)::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:22
+msgid "We also assume that you have :doc:`Channels installed </installation>` already. You can tell Channels is installed by running the following command::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:27
+msgid "This tutorial is written for Channels 2.0, which supports Python 3.5+ and Django 1.11+. If the Channels version does not match, you can refer to the tutorial for your version of Channels by using the version switcher at the bottom left corner of this page, or update Channels to the newest version."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:32
+msgid "This tutorial also uses Docker to install and run Redis. We use Redis as the backing store for the channel layer, which is an optional component of the Channels library that we use in the tutorial. `Install Docker`_ from its official website."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:43
+msgid "Creating a project"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:45
+msgid "If you don't already have a Django project, you will need to create one."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:47
+msgid "From the command line, ``cd`` into a directory where you'd like to store your code, then run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:52
+msgid "This will create a ``mysite`` directory in your current directory with the following contents::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:64
+msgid "Creating the Chat app"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:66
+msgid "We will put the code for the chat server in its own app."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:68
+msgid "Make sure you're in the same directory as ``manage.py`` and type this command::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:72
+msgid "That'll create a directory ``chat``, which is laid out like this::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:84
+msgid "For the purposes of this tutorial, we will only be working with ``chat/views.py`` and ``chat/__init__.py``. So remove all other files from the ``chat`` directory."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:87
+msgid "After removing unnecessary files, the ``chat`` directory should look like::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:93
+msgid "We need to tell our project that the ``chat`` app is installed. Edit the ``mysite/settings.py`` file and add ``'chat'`` to the **INSTALLED_APPS** setting. It'll look like this::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:109
+msgid "Add the index view"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:111
+msgid "We will now create the first view, an index view that lets you type the name of a chat room to join."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:114
+msgid "Create a ``templates`` directory in your ``chat`` directory. Within the ``templates`` directory you have just created, create another directory called ``chat``, and within that create a file called ``index.html`` to hold the template for the index view."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:119
+msgid "Your chat directory should now look like::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:128
+msgid "Put the following code in ``chat/templates/chat/index.html``::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:157
+msgid "Create the view function for the room view. Put the following code in ``chat/views.py``::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:166
+msgid "To call the view, we need to map it to a URL - and for this we need a URLconf."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:168
+msgid "To create a URLconf in the chat directory, create a file called ``urls.py``. Your app directory should now look like::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:179
+msgid "In the ``chat/urls.py`` file include the following code::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:190
+msgid "The next step is to point the root URLconf at the **chat.urls** module. In ``mysite/urls.py``, add an import for **django.conf.urls.include** and insert an **include()** in the **urlpatterns** list, so you have::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:203
+msgid "Let's verify that the index view works. Run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:207
+#: ../../tutorial/part_1.rst:299
+msgid "You'll see the following output on the command line::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:222
+#: ../../tutorial/part_1.rst:317
+msgid "Ignore the warning about unapplied database migrations. We won't be using a database in this tutorial."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:225
+msgid "Go to http://127.0.0.1:8000/chat/ in your browser and you should see the text \"What chat room would you like to enter?\" along with a text input to provide a room name."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:229
+msgid "Type in \"lobby\" as the room name and press enter. You should be redirected to the room view at http://127.0.0.1:8000/chat/lobby/ but we haven't written the room view yet, so you'll get a \"Page not found\" error page."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:233
+#: ../../tutorial/part_1.rst:328
+msgid "Go to the terminal where you ran the ``runserver`` command and press Control-C to stop the server."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:237
+msgid "Integrate the Channels library"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:239
+msgid "So far we've just created a regular Django app; we haven't used the Channels library at all. Now it's time to integrate Channels."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:242
+msgid "Let's start by creating a root routing configuration for Channels. A Channels :doc:`routing configuration </topics/routing>` is similar to a Django URLconf in that it tells Channels what code to run when an HTTP request is received by the Channels server."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:246
+msgid "We'll start with an empty routing configuration. Create a file ``mysite/routing.py`` and include the following code::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:256
+msgid "Now add the Channels library to the list of installed apps. Edit the ``mysite/settings.py`` file and add ``'channels'`` to the ``INSTALLED_APPS`` setting. It'll look like this::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:272
+msgid "You'll also need to point Channels at the root routing configuration. Edit the ``mysite/settings.py`` file again and add the following to the bottom of it::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:280
+msgid "With Channels now in the installed apps, it will take control of the ``runserver`` command, replacing the standard Django development server with the Channels development server."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:285
+msgid "The Channels development server will conflict with any other third-party apps that require an overloaded or replacement runserver command. An example of such a conflict is with `whitenoise.runserver_nostatic`_ from `whitenoise`_. In order to solve such issues, try moving ``channels`` to the top of your ``INSTALLED_APPS`` or remove the offending app altogether."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:294
+msgid "Let's ensure that the Channels development server is working correctly. Run the following command::"
+msgstr ""
+
+#: ../../tutorial/part_1.rst:320
+msgid "Notice the line beginning with ``Starting ASGI/Channels development server at http://127.0.0.1:8000/``. This indicates that the Channels development server has taken over from the Django development server."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:325
+msgid "Go to http://127.0.0.1:8000/chat/ in your browser and you should still see the index page that we created before."
+msgstr ""
+
+#: ../../tutorial/part_1.rst:331
+msgid "This tutorial continues in :doc:`Tutorial 2 </tutorial/part_2>`."
+msgstr ""
+

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>ASGI (異步伺服器閘道介面) 規劃草案 &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
+    <title>ASGI 非同步伺服器閘道介面 &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.5',
+        VERSION:     '2.1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="社群專案" href="community.html" />
-    <link rel="prev" title="常見問題" href="faqs.html" /> 
+    <link rel="next" title="Channel Layer 規範" href="channel_layer_spec.html" />
+    <link rel="prev" title="Channels WebSocket 包裝" href="javascript.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,12 +38,12 @@
           <a href="genindex.html" title="總索引"
              accesskey="I">索引</a></li>
         <li class="right" >
-          <a href="community.html" title="社群專案"
+          <a href="channel_layer_spec.html" title="Channel Layer 規範"
              accesskey="N">下一頁</a> |</li>
         <li class="right" >
-          <a href="faqs.html" title="常見問題"
+          <a href="javascript.html" title="Channels WebSocket 包裝"
              accesskey="P">上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -52,491 +52,56 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="asgi-asynchronous-server-gateway-interface-draft-spec">
-<h1>ASGI (異步伺服器閘道介面) 規劃草案<a class="headerlink" href="#asgi-asynchronous-server-gateway-interface-draft-spec" title="本標題的永久連結">¶</a></h1>
-<div class="admonition note">
-<p class="first admonition-title">備註</p>
-<p class="last">仍在開發中，但是目前幾乎完成。</p>
+  <div class="section" id="asgi">
+<h1>ASGI 非同步伺服器閘道介面<a class="headerlink" href="#asgi" title="本標題的永久連結">¶</a></h1>
+<p>ASGI，或是非同步伺服器閘道介面是 Channel 和 Daphne 構建的規範，旨在解開來自特定應用程序服務器的通道應用程序，並提供編寫應用程序和中間件代碼的通用方法。</p>
+<p>It&#8217;s a spiritual successor to WSGI, designed not only run in an asychronous
+fashion via <code class="docutils literal"><span class="pre">asyncio</span></code>, but also supporting multiple protocols.</p>
+<p>The full ASGI spec can be found at
+<a class="reference external" href="https://github.com/django/asgiref/blob/master/specs/asgi.rst">https://github.com/django/asgiref/blob/master/specs/asgi.rst</a></p>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="本標題的永久連結">¶</a></h2>
+<p>An ASGI application is a callable that takes a scope and returns a coroutine
+callable, that takes receive and send methods. It&#8217;s usually written as a class:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Application</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
 </div>
-<div class="section" id="abstract">
-<h2>摘要<a class="headerlink" href="#abstract" title="本標題的永久連結">¶</a></h2>
-<p>該文檔旨在描述一個介於網絡協議服務 (尤其是 web 服務) 和 Python 應用之間的標準接口，能夠處理多種通用協議類型，(包括 HTTP、HTTP2 和 WebSocket)。</p>
-<p>This base specification is intended to fix in place the set of APIs by which
-these servers interact and the guarantees and style of message delivery;
-each supported protocol (such as HTTP) has a sub-specification that outlines
-how to encode and decode that protocol into messages.</p>
-<p>The set of sub-specifications is available <a class="reference internal" href="#asgi-sub-specifications"><span class="std std-ref">in the Message Formats section</span></a>.</p>
+<p>The <code class="docutils literal"><span class="pre">scope</span></code> dict defines the properties of a connection, like its remote IP (for
+HTTP) or username (for a chat protocol), and the lifetime of a connection.
+Applications are <em>instantiated</em> once per scope - so, for example, once per
+HTTP request, or once per open WebSocket connection.</p>
+<p>Scopes always have a <code class="docutils literal"><span class="pre">type</span></code> key, which tells you what kind of connection
+it is and what other keys to expect in the scope (and what sort of messages
+to expect).</p>
+<p>The <code class="docutils literal"><span class="pre">receive</span></code> awaitable provides events as dicts as they occur, and the
+<code class="docutils literal"><span class="pre">send</span></code> awaitable sends events back to the client in a similar dict format.</p>
+<p>A <em>protocol server</em> sits between the client and your application code,
+decoding the raw protocol into the scope and event dicts and encoding anything
+you send back down onto the protocol.</p>
 </div>
-<div class="section" id="rationale">
-<h2>依據<a class="headerlink" href="#rationale" title="本標題的永久連結">¶</a></h2>
-<p>WSGI 規範自誕生以來應用廣泛，在作為Python框架和web 服務的選擇上擁有非常好的靈活性。但，因為是針對HTTP風格的請求響應模型做的設計，加上越來越多不遵循這種模式的協議逐漸成為web編程的標準之一，(比如說，WebSocket)。所以需要新的改變。</p>
-<p>ASGI 嘗試保持在一個簡單的應用接口的前提下，提供允許數據能夠在任意時候、被任意應用進程發送和接受的抽象。</p>
-<p>它還採用將協議轉換為 Python 兼容，異步友好的消息集並將其概括為兩部分的原則。 一個標準化的通信接口和周圍的服務器（本文檔）和一套標準 <span class="xref std std-ref">message formats for each protocol 1</span>。</p>
-<p>Its primary goal is to provide a way to write HTTP/2 and WebSocket code,
-alongside normal HTTP handling code, however, and part of this design is
-ensuring there is an easy path to use both existing WSGI servers and
-applications, as a large majority of Python web usage relies on WSGI and
-providing an easy path forwards is critical to adoption. Details on that
-interoperability are covered in <span class="xref doc">/asgi/www</span>.</p>
-<p>The end result of this process has been a specification for generalised
-inter-process communication between Python processes, with a certain set of
-guarantees and delivery styles that make it suited to low-latency protocol
-processing and response. It is not intended to replace things like traditional
-task queues, but it is intended that it could be used for things like
-distributed systems communication, or as the backbone of a service-oriented
-architecure for inter-service communication.</p>
+<div class="section" id="composability">
+<h2>Composability<a class="headerlink" href="#composability" title="本標題的永久連結">¶</a></h2>
+<p>ASGI applications, like WSGI ones, are designed to be composable, and this
+includes Channels&#8217; routing and middleware components like <code class="docutils literal"><span class="pre">ProtocolTypeRouter</span></code>
+and <code class="docutils literal"><span class="pre">SessionMiddeware</span></code>. These are just ASGI applications that take other
+ASGI applications as arguments, so you can pass around just one top-level
+application for a whole Django project and dispatch down to the right consumer
+based on what sort of connection you&#8217;re handling.</p>
 </div>
-<div class="section" id="overview">
-<h2>總覽<a class="headerlink" href="#overview" title="本標題的永久連結">¶</a></h2>
-<p>ASGI 由三個不同的元件構成：<em>protocol servers</em>、<em>channel layer</em> 與 <em>application code</em>。Channel layers 是這個實現中最重要的部分，它能同時對 protocol servers 和 applications 提供接口。</p>
-<p>一個 channel layer 對 protocol server 或 一個 application server 提供一個 <code class="docutils literal"><span class="pre">send</span></code> 的可呼叫方法，該方法接受 channel name、message <code class="docutils literal"><span class="pre">dict</span></code> 以及一個 <code class="docutils literal"><span class="pre">receive</span></code> 的呼叫方法。他會獲取 channel names 的 list 並返回指定頻道的下一條可用的消息。</p>
-<p>所以，相較於在 WSGI 上，我們將 protocol server 直接指向 application，在 ASGI 裡，我們將 protocol server 和 application 同時指向一個 channel layer 的實例。它的目的是讓 applications 和 protocol servers 總是運行在不同的進程或者線程中，並通過 channel layer 進行通信。</p>
-<p>ASGI tries to be as compatible as possible by default, and so the only
-implementation of <code class="docutils literal"><span class="pre">receive</span></code> that must be provided is a fully-synchronous,
-nonblocking one. Implementations can then choose to implement a blocking mode
-in this method, and if they wish to go further, versions compatible with
-the asyncio or Twisted frameworks (or other frameworks that may become
-popular, thanks to the extension declaration mechanism).</p>
-<p>該文件中對 protocol servers 和 applications 的區分主要是為了明確彼此要扮演的角色，同時也為了更容易的描述概念。兩者之間並沒有 code-level 的區別，且完全有可能建立一個可以在兩個不同的 channel layer 或 channel name 之間轉換消息，類似 middleware-like 的程式碼。預計大部分部署將會採取這種模式。</p>
-<p>There is even room for a WSGI-like application abstraction on the application
-server side, with a callable which takes <code class="docutils literal"><span class="pre">(channel,</span> <span class="pre">message,</span> <span class="pre">send_func)</span></code>,
-but this would be slightly too restrictive for many use cases and does not
-cover how to specify channel names to listen on. It is expected that
-frameworks will cover this use case.</p>
-<div class="section" id="channels-and-messages">
-<h3>頻道和訊息<a class="headerlink" href="#channels-and-messages" title="本標題的永久連結">¶</a></h3>
-<p>在 ASGI stack 裡面的所有溝通都是透過在 <em>channels</em> 裡發送 <em>message</em> 進行的。所有的訊息必須是 object 最頂層的 <code class="docutils literal"><span class="pre">dict</span></code>，並且為了保證可序列化，只允許包含以下類型數據：</p>
+<div class="section" id="protocol-specifications">
+<h2>Protocol Specifications<a class="headerlink" href="#protocol-specifications" title="本標題的永久連結">¶</a></h2>
+<p>The basic ASGI spec only outlines the interface for an ASGI app - it does not
+specify how network protocols are encoded to and from scopes and event dicts.
+That&#8217;s the job of protocol specifications:</p>
 <ul class="simple">
-<li><p class="first">Byte 字串</p>
-</li>
-<li><p class="first">Unicode 字串</p>
-</li>
-<li>Integers (within the signed 64 bit range)</li>
-<li>Floating point numbers (within the IEEE 754 double precision range)</li>
-<li><p class="first">列表(元組會被視為列表)</p>
-</li>
-<li><p class="first">字典（鍵必須是 Unicode）</p>
-</li>
-<li><p class="first">布林</p>
-</li>
-<li>None</li>
+<li>HTTP and WebSocket: <a class="reference external" href="https://github.com/django/asgiref/blob/master/specs/www.rst">https://github.com/django/asgiref/blob/master/specs/www.rst</a></li>
 </ul>
-<p>Channel 的 ID 只能由 ASCII 字母、數字及 periods(<code class="docutils literal"><span class="pre">.</span></code>)、dashes(<code class="docutils literal"><span class="pre">-</span></code>)、underscores(<code class="docutils literal"><span class="pre">_</span></code>)，以及一個可選的字符構成（見下文）。</p>
-<p>Channels 是一個先進先出佇列，佇列裡的項最多被傳輸一次。它允許多位寫入者和多位讀取者，當僅有一位讀取者時，需要讀取每一個寫入的消息。實現絕對不能將一條消息傳輸多次或傳輸給一位以上讀取者，為了保證這一限制，必要時必須清空所有信息。</p>
-<p>In order to aid with scaling and network architecture, a distinction
-is made between channels that have multiple readers (such as the
-<code class="docutils literal"><span class="pre">http.request</span></code> channel that web applications would listen on from every
-application worker process), <em>single-reader channels</em> that are read from a
-single unknown location (such as <code class="docutils literal"><span class="pre">http.request.body?ABCDEF</span></code>), and
-<em>process-specific channels</em> (such as a <code class="docutils literal"><span class="pre">http.response.A1B2C3!D4E5F6</span></code> channel
-tied to a client socket).</p>
-<p><em>Normal channel</em> names contain no type characters, and can be routed however
-the backend wishes; in particular, they do not have to appear globally
-consistent, and backends may shard their contents out to different servers
-so that a querying client only sees some portion of the messages. Calling
-<code class="docutils literal"><span class="pre">receive</span></code> on these channels does not guarantee that you will get the
-messages in order or that you will get anything if the channel is non-empty.</p>
-<p><em>Single-reader channel</em> names contain a question mark
-(<code class="docutils literal"><span class="pre">?</span></code>) character in order to indicate to the channel layer that it must make
-these channels appear globally consistent. The <code class="docutils literal"><span class="pre">?</span></code> is always preceded by
-the main channel name (e.g. <code class="docutils literal"><span class="pre">http.response.body</span></code>) and followed by a
-random portion. Channel layers may use the random portion to help pin the
-channel to a server, but reads from this channel by a single process must
-always be in-order and return messages if the channel is non-empty. These names
-must be generated by the <code class="docutils literal"><span class="pre">new_channel</span></code> call.</p>
-<p><em>Process-specific channel</em> names contain an exclamation mark (<code class="docutils literal"><span class="pre">!</span></code>) that
-separates a remote and local part. These channels are received differently;
-only the name up to and including the <code class="docutils literal"><span class="pre">!</span></code> character is passed to the
-<code class="docutils literal"><span class="pre">receive()</span></code> call, and it will receive any message on any channel with that
-prefix. This allows a process, such as a HTTP terminator, to listen on a single
-process-specific channel, and then distribute incoming requests to the
-appropriate client sockets using the local part (the part after the <code class="docutils literal"><span class="pre">!</span></code>).
-The local parts must be generated and managed by the process that consumes them.
-These channels, like single-reader channels, are guaranteed to give any extant
-messages in order if received from a single process.</p>
-<p>訊息如果在一個 channel 裡超過設定時間未讀會過期。這個設定時間推薦為一分鐘，當然最佳的設定還是取決於 channel layer 以及它部署的方式。</p>
-<p>The maximum message size is 1MB if the message were encoded as JSON;
-if more data than this needs to be transmitted it must be chunked or placed
-onto its own single-reader or process-specific channel (see how HTTP request
-bodies are done, for example). All channel layers must support messages up
-to this size, but protocol specifications are encouraged to keep well below it.</p>
-</div>
-<div class="section" id="handling-protocols">
-<h3>處理協議<a class="headerlink" href="#handling-protocols" title="本標題的永久連結">¶</a></h3>
-<p>ASGI 訊息主要有兩類，內部應用事件（例如，一個 channel 可能使用 queue 將之前上傳的視訊進行縮圖），以及來自/連接客戶端的協議事件。</p>
-<p>As such, there are <a class="reference internal" href="#asgi-sub-specifications"><span class="std std-ref">sub-specifications</span></a> that
-outline encodings to and from ASGI messages for common protocols like HTTP and
-WebSocket; in particular, the HTTP one covers the WSGI/ASGI interoperability.
-It is recommended that if a protocol becomes commonplace, it should gain
-standardized formats in a sub-specification of its own.</p>
-<p>The message formats are a key part of the specification; without them,
-the protocol server and web application might be able to talk to each other,
-but may not understand some of what the other is saying. It&#8217;s equivalent to the
-standard keys in the <code class="docutils literal"><span class="pre">environ</span></code> dict for WSGI.</p>
-<p>The design pattern is that most protocols will share a few channels for
-incoming data (for example, <code class="docutils literal"><span class="pre">http.request</span></code>, <code class="docutils literal"><span class="pre">websocket.connect</span></code> and
-<code class="docutils literal"><span class="pre">websocket.receive</span></code>), but will have individual channels for sending to
-each client (such as <code class="docutils literal"><span class="pre">http.response!kj2daj23</span></code>). This allows incoming
-data to be dispatched into a cluster of application servers that can all
-handle it, while responses are routed to the individual protocol server
-that has the other end of the client&#8217;s socket.</p>
-<p>Some protocols, however, do not have the concept of a unique socket
-connection; for example, an SMS gateway protocol server might just have
-<code class="docutils literal"><span class="pre">sms.receive</span></code> and <code class="docutils literal"><span class="pre">sms.send</span></code>, and the protocol server cluster would
-take messages from <code class="docutils literal"><span class="pre">sms.send</span></code> and route them into the normal phone
-network based on attributes in the message (in this case, a telephone
-number).</p>
-</div>
-<div class="section" id="extensions">
-<span id="asgi-extensions"></span><h3>Extensions<a class="headerlink" href="#extensions" title="本標題的永久連結">¶</a></h3>
-<p>Extensions are functionality that is
-not required for basic application code and nearly all protocol server
-code, and so has been made optional in order to enable lightweight
-channel layers for applications that don&#8217;t need the full feature set defined
-here.</p>
-<p>此處擴充定義為:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">groups</span></code>: Allows grouping of channels to allow broadcast; see below for more.</li>
-<li><code class="docutils literal"><span class="pre">flush</span></code>: Allows easier testing and development with channel layers.</li>
-<li><code class="docutils literal"><span class="pre">statistics</span></code>: Allows channel layers to provide global and per-channel statistics.</li>
-<li><code class="docutils literal"><span class="pre">twisted</span></code>: Async compatibility with the Twisted framework.</li>
-<li><code class="docutils literal"><span class="pre">asyncio</span></code>: Async compatibility with Python 3&#8217;s asyncio.</li>
-</ul>
-<p>There is potential to add further extensions; these may be defined by
-a separate specification, or a new version of this specification.</p>
-<p>If application code requires an extension, it should check for it as soon
-as possible, and hard error if it is not provided. Frameworks should
-encourage optional use of extensions, while attempting to move any
-extension-not-found errors to process startup rather than message handling.</p>
-</div>
-<div class="section" id="groups">
-<h3>Groups<a class="headerlink" href="#groups" title="本標題的永久連結">¶</a></h3>
-<p>While the basic channel model is sufficient to handle basic application
-needs, many more advanced uses of asynchronous messaging require
-notifying many users at once when an event occurs - imagine a live blog,
-for example, where every viewer should get a long poll response or
-WebSocket packet when a new entry is posted.</p>
-<p>This concept could be kept external to the ASGI spec, and would be, if it
-were not for the significant performance gains a channel layer implementation
-could make on the send-group operation by having it included - the
-alternative being a <code class="docutils literal"><span class="pre">send_many</span></code> callable that might have to take
-tens of thousands of destination channel names in a single call. However,
-the group feature is still optional; its presence is indicated by the
-<code class="docutils literal"><span class="pre">supports_groups</span></code> attribute on the channel layer object.</p>
-<p>Thus, there is a simple Group concept in ASGI, which acts as the
-broadcast/multicast mechanism across channels. Channels are added to a group,
-and then messages sent to that group are sent to all members of the group.
-Channels can be removed from a group manually (e.g. based on a disconnect
-event), and the channel layer will garbage collect &#8220;old&#8221; channels in groups
-on a periodic basis.</p>
-<p>How this garbage collection happens is not specified here, as it depends on
-the internal implementation of the channel layer. The recommended approach,
-however, is when a message on a process-specific channel expires, the channel
-layer should remove that channel from all groups it&#8217;s currently a member of;
-this is deemed an acceptable indication that the channel&#8217;s listener is gone.</p>
-<p><em>Implementation of the group functionality is optional</em>. If it is not provided
-and an application or protocol server requires it, they should hard error
-and exit with an appropriate error message. It is expected that protocol
-servers will not need to use groups.</p>
-</div>
-<div class="section" id="linearization">
-<h3>線性化<a class="headerlink" href="#linearization" title="本標題的永久連結">¶</a></h3>
-<p>ASGI 的設計目的為在實現無共享架構下，其中訊息可以藉由一組 threads，processes 或機器其中的任何一個來處理運行的應用程序代碼。</p>
-<p>This, of course, means that several different copies of the application
-could be handling messages simultaneously, and those messages could even
-be from the same client; in the worst case, two packets from a client
-could even be processed out-of-order if one server is slower than another.</p>
-<p>This is an existing issue with things like WSGI as well - a user could
-open two different tabs to the same site at once and launch simultaneous
-requests to different servers - but the nature of the new protocols
-specified here mean that collisions are more likely to occur.</p>
-<p>Solving this issue is left to frameworks and application code; there are
-already solutions such as database transactions that help solve this,
-and the vast majority of application code will not need to deal with this
-problem. If ordering of incoming packets matters for a protocol, they should
-be annotated with a packet number (as WebSocket is in its specification).</p>
-<p>Single-reader and process-specific channels, such as those used for response
-channels back to clients, are not subject to this problem; a single reader
-on these must always receive messages in channel order.</p>
-</div>
-<div class="section" id="capacity">
-<h3>容量<a class="headerlink" href="#capacity" title="本標題的永久連結">¶</a></h3>
-<p>To provide backpressure, each channel in a channel layer may have a capacity,
-defined however the layer wishes (it is recommended that it is configurable
-by the user using keyword arguments to the channel layer constructor, and
-furthermore configurable per channel name or name prefix).</p>
-<p>When a channel is at or over capacity, trying to send() to that channel
-may raise ChannelFull, which indicates to the sender the channel is over
-capacity. How the sender wishes to deal with this will depend on context;
-for example, a web application trying to send a response body will likely
-wait until it empties out again, while a HTTP interface server trying to
-send in a request would drop the request and return a 503 error.</p>
-<p>Process-local channels must apply their capacity on the non-local part (that is,
-up to and including the <code class="docutils literal"><span class="pre">!</span></code> character), and so capacity is shared among all
-of the &#8220;virtual&#8221; channels inside it.</p>
-<p>Sending to a group never raises ChannelFull; instead, it must silently drop
-the message if it is over capacity, as per ASGI&#8217;s at-most-once delivery
-policy.</p>
-</div>
-</div>
-<div class="section" id="specification-details">
-<h2>規格明細<a class="headerlink" href="#specification-details" title="本標題的永久連結">¶</a></h2>
-<p>一個 <em>路徑圖層</em> 必須有個物件具有這些屬性(所有函數參數都有方位性)：</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">send(channel,</span> <span class="pre">message)</span></code>, a callable that takes two arguments: the
-channel to send on, as a unicode string, and the message
-to send, as a serializable <code class="docutils literal"><span class="pre">dict</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">receive(channels,</span> <span class="pre">block=False)</span></code>, a callable that takes a list of channel
-names as unicode strings, and returns with either <code class="docutils literal"><span class="pre">(None,</span> <span class="pre">None)</span></code>
-or <code class="docutils literal"><span class="pre">(channel,</span> <span class="pre">message)</span></code> if a message is available. If <code class="docutils literal"><span class="pre">block</span></code> is True, then
-it will not return a message arrives (or optionally, a built-in timeout,
-but it is valid to block forever if there are no messages); if
-<code class="docutils literal"><span class="pre">block</span></code> is false, it will always return immediately. It is perfectly
-valid to ignore <code class="docutils literal"><span class="pre">block</span></code> and always return immediately, or after a delay;
-<code class="docutils literal"><span class="pre">block</span></code> means that the call can take as long as it likes before returning
-a message or nothing, not that it must block until it gets one.</li>
-<li><code class="docutils literal"><span class="pre">new_channel(pattern)</span></code>, a callable that takes a unicode string pattern,
-and returns a new valid channel name that does not already exist, by
-adding a unicode string after the <code class="docutils literal"><span class="pre">!</span></code> or <code class="docutils literal"><span class="pre">?</span></code> character in <code class="docutils literal"><span class="pre">pattern</span></code>,
-and checking for existence of that name in the channel layer. The <code class="docutils literal"><span class="pre">pattern</span></code>
-must end with <code class="docutils literal"><span class="pre">!</span></code> or <code class="docutils literal"><span class="pre">?</span></code> or this function must error. If the character
-is <code class="docutils literal"><span class="pre">!</span></code>, making it a process-specific channel, <code class="docutils literal"><span class="pre">new_channel</span></code> must be
-called on the same channel layer that intends to read the channel with
-<code class="docutils literal"><span class="pre">receive</span></code>; any other channel layer instance may not receive
-messages on this channel due to client-routing portions of the appended string.</li>
-<li><code class="docutils literal"><span class="pre">MessageTooLarge</span></code>, the exception raised when a send operation fails
-because the encoded message is over the layer&#8217;s size limit.</li>
-<li><code class="docutils literal"><span class="pre">ChannelFull</span></code>, the exception raised when a send operation fails
-because the destination channel is over capacity.</li>
-<li><code class="docutils literal"><span class="pre">extensions</span></code>, a list of unicode string names indicating which
-extensions this layer provides, or an empty list if it supports none.
-The possible extensions can be seen in <a class="reference internal" href="#asgi-extensions"><span class="std std-ref">Extensions</span></a>.</li>
-</ul>
-<p>A channel layer implementing the <code class="docutils literal"><span class="pre">groups</span></code> extension must also provide:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">group_add(group,</span> <span class="pre">channel)</span></code>, a callable that takes a <code class="docutils literal"><span class="pre">channel</span></code> and adds
-it to the group given by <code class="docutils literal"><span class="pre">group</span></code>. Both are unicode strings. If the channel
-is already in the group, the function should return normally.</li>
-<li><code class="docutils literal"><span class="pre">group_discard(group,</span> <span class="pre">channel)</span></code>, a callable that removes the <code class="docutils literal"><span class="pre">channel</span></code>
-from the <code class="docutils literal"><span class="pre">group</span></code> if it is in it, and does nothing otherwise.</li>
-<li><code class="docutils literal"><span class="pre">group_channels(group)</span></code>, a callable that returns an iterable which yields
-all of the group&#8217;s member channel names. The return value should be serializable
-with regards to local adds and discards, but best-effort with regards to
-adds and discards on other nodes.</li>
-<li><code class="docutils literal"><span class="pre">send_group(group,</span> <span class="pre">message)</span></code>, a callable that takes two positional
-arguments; the group to send to, as a unicode string, and the message
-to send, as a serializable <code class="docutils literal"><span class="pre">dict</span></code>. It may raise MessageTooLarge but cannot
-raise ChannelFull.</li>
-<li><code class="docutils literal"><span class="pre">group_expiry</span></code>, an integer number of seconds that specifies how long group
-membership is valid for after the most recent <code class="docutils literal"><span class="pre">group_add</span></code> call (see
-<em>Persistence</em> below)</li>
-</ul>
-<p>路徑層架構的 <code class="docutils literal"><span class="pre">統計</span></code> 擴充功能需具備：</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">global_statistics()</span></code>, a callable that returns statistics across all channels</li>
-<li><code class="docutils literal"><span class="pre">channel_statistics(channel)</span></code>, a callable that returns statistics for specified channel</li>
-<li>in both cases statistics are a dict with zero or more of (unicode string keys):<ul>
-<li><code class="docutils literal"><span class="pre">messages_count</span></code>, the number of messages processed since server start</li>
-<li><code class="docutils literal"><span class="pre">messages_count_per_second</span></code>, the number of messages processed in the last second</li>
-<li><code class="docutils literal"><span class="pre">messages_pending</span></code>, the current number of messages waiting</li>
-<li><code class="docutils literal"><span class="pre">messages_max_age</span></code>, how long the oldest message has been waiting, in seconds</li>
-<li><code class="docutils literal"><span class="pre">channel_full_count</span></code>, the number of times <cite>ChannelFull</cite> exception has been risen since server start</li>
-<li><code class="docutils literal"><span class="pre">channel_full_count_per_second</span></code>, the number of times <cite>ChannelFull</cite> exception has been risen in the last second</li>
-</ul>
-</li>
-<li><p class="first">執行可提供次數總和、每秒次數，或是兩者皆提供。</p>
-</li>
-</ul>
-<p>A channel layer implementing the <code class="docutils literal"><span class="pre">flush</span></code> extension must also provide:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">flush()</span></code>, a callable that resets the channel layer to a blank state,
-containing no messages and no groups (if the groups extension is
-implemented). This call must block until the system is cleared and will
-consistently look empty to any client, if the channel layer is distributed.</li>
-</ul>
-<p>A channel layer implementing the <code class="docutils literal"><span class="pre">twisted</span></code> extension must also provide:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">receive_twisted(channels)</span></code>, a function that behaves
-like <code class="docutils literal"><span class="pre">receive</span></code> but that returns a Twisted Deferred that eventually
-returns either <code class="docutils literal"><span class="pre">(channel,</span> <span class="pre">message)</span></code> or <code class="docutils literal"><span class="pre">(None,</span> <span class="pre">None)</span></code>. It is not possible
-to run it in nonblocking mode; use the normal <code class="docutils literal"><span class="pre">receive</span></code> for that.</li>
-</ul>
-<p>A channel layer implementing the <code class="docutils literal"><span class="pre">async</span></code> extension must also provide:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">receive_async(channels)</span></code>, a function that behaves
-like <code class="docutils literal"><span class="pre">receive</span></code> but that fulfills the asyncio coroutine contract to
-block until either a result is available or an internal timeout is reached
-and <code class="docutils literal"><span class="pre">(None,</span> <span class="pre">None)</span></code> is returned. It is not possible
-to run it in nonblocking mode; use the normal <code class="docutils literal"><span class="pre">receive</span></code> for that.</li>
-</ul>
-<div class="section" id="channel-semantics">
-<h3>Channel 語義<a class="headerlink" href="#channel-semantics" title="本標題的永久連結">¶</a></h3>
-<p>Channels <strong>must</strong>:</p>
-<ul class="simple">
-<li>Preserve ordering of messages perfectly with only a single reader
-and writer if the channel is a <em>single-reader</em> or <em>process-specific</em> channel.</li>
-<li><p class="first">請勿重覆傳送相同訊息超過一次。</p>
-</li>
-<li>Never block on message send (though they may raise ChannelFull or
-MessageTooLarge)</li>
-<li>Be able to handle messages of at least 1MB in size when encoded as
-JSON (the implementation may use better encoding or compression, as long
-as it meets the equivalent size)</li>
-<li><p class="first">最長名稱的長度為 100 bytes。</p>
-</li>
-</ul>
-<p>They should attempt to preserve ordering in all cases as much as possible,
-but perfect global ordering is obviously not possible in the distributed case.</p>
-<p>They are not expected to deliver all messages, but a success rate of at least
-99.99% is expected under normal circumstances. Implementations may want to
-have a &#8220;resilience testing&#8221; mode where they deliberately drop more messages
-than usual so developers can test their code&#8217;s handling of these scenarios.</p>
-</div>
-<div class="section" id="persistence">
-<h3>Persistence<a class="headerlink" href="#persistence" title="本標題的永久連結">¶</a></h3>
-<p>Channel layers do not need to persist data long-term; group
-memberships only need to live as long as a connection does, and messages
-only as long as the message expiry time, which is usually a couple of minutes.</p>
-<p>That said, if a channel server goes down momentarily and loses all data,
-persistent socket connections will continue to transfer incoming data and
-send out new generated data, but will have lost all of their group memberships
-and in-flight messages.</p>
-<p>In order to avoid a nasty set of bugs caused by these half-deleted sockets,
-protocol servers should quit and hard restart if they detect that the channel
-layer has gone down or lost data; shedding all existing connections and letting
-clients reconnect will immediately resolve the problem.</p>
-<p>If a channel layer implements the <code class="docutils literal"><span class="pre">groups</span></code> extension, it must persist group
-membership until at least the time when the member channel has a message
-expire due to non-consumption, after which it may drop membership at any time.
-If a channel subsequently has a successful delivery, the channel layer must
-then not drop group membership until another message expires on that channel.</p>
-<p>Channel layers must also drop group membership after a configurable long timeout
-after the most recent <code class="docutils literal"><span class="pre">group_add</span></code> call for that membership, the default being
-86,400 seconds (one day). The value of this timeout is exposed as the
-<code class="docutils literal"><span class="pre">group_expiry</span></code> property on the channel layer.</p>
-<p>Protocol servers must have a configurable timeout value for every connection-based
-protocol they serve that closes the connection after the timeout, and should
-default this value to the value of <code class="docutils literal"><span class="pre">group_expiry</span></code>, if the channel
-layer provides it. This allows old group memberships to be cleaned up safely,
-knowing that after the group expiry the original connection must have closed,
-or is about to be in the next few seconds.</p>
-<p>It&#8217;s recommended that end developers put the timeout setting much lower - on
-the order of hours or minutes - to enable better protocol design and testing.
-Even with ASGI&#8217;s separation of protocol server restart from business logic
-restart, you will likely need to move and reprovision protocol servers, and
-making sure your code can cope with this is important.</p>
-</div>
-<div class="section" id="message-formats">
-<span id="asgi-sub-specifications"></span><h3>訊息格式<a class="headerlink" href="#message-formats" title="本標題的永久連結">¶</a></h3>
-<p>These describe the standardized message formats for the protocols this
-specification supports. All messages are <code class="docutils literal"><span class="pre">dicts</span></code> at the top level,
-and all keys are required unless explicitly marked as optional. If a key is
-marked optional, a default value is specified, which is to be assumed if
-the key is missing. Keys are unicode strings.</p>
-<p>The one common key across all protocols is <code class="docutils literal"><span class="pre">reply_channel</span></code>, a way to indicate
-the client-specific channel to send responses to. Protocols are generally
-encouraged to have one message type and one reply channel type to ensure ordering.</p>
-<p>A <code class="docutils literal"><span class="pre">reply_channel</span></code> should be unique per connection. If the protocol in question
-can have any server service a response - e.g. a theoretical SMS protocol - it
-should not have <code class="docutils literal"><span class="pre">reply_channel</span></code> attributes on messages, but instead a separate
-top-level outgoing channel.</p>
-<p>Messages are specified here along with the channel names they are expected
-on; if a channel name can vary, such as with reply channels, the varying
-portion will be represented by <code class="docutils literal"><span class="pre">!</span></code>, such as <code class="docutils literal"><span class="pre">http.response!</span></code>, which matches
-the format the <code class="docutils literal"><span class="pre">new_channel</span></code> callable takes.</p>
-<p>There is no label on message types to say what they are; their type is implicit
-in the channel name they are received on. Two types that are sent on the same
-channel, such as HTTP responses and response chunks, are distinguished apart
-by their required fields.</p>
-<p>Message formats can be found in the sub-specifications:</p>
-<div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="protocol-format-guidelines">
-<h3>協議格式指南<a class="headerlink" href="#protocol-format-guidelines" title="本標題的永久連結">¶</a></h3>
-<p>Message formats for protocols should follow these rules, unless
-a very good performance or implementation reason is present:</p>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">reply_channel</span></code> should be unique per logical connection, and not per
-logical client.</li>
-<li>If the protocol has server-side state, entirely encapsulate that state in
-the protocol server; do not require the message consumers to use an external
-state store.</li>
-<li>If the protocol has low-level negotiation, keepalive or other features,
-handle these within the protocol server and don&#8217;t expose them in ASGI
-messages.</li>
-<li>If the protocol has guaranteed ordering and does not use a specific channel
-for a given connection (as HTTP does for body data), ASGI messages should
-include an <code class="docutils literal"><span class="pre">order</span></code> field (0-indexed) that preserves the ordering as
-received by the protocol server (or as sent by the client, if available).
-This ordering should span all message types emitted by the client - for
-example, a connect message might have order <code class="docutils literal"><span class="pre">0</span></code>, and the first two frames
-order <code class="docutils literal"><span class="pre">1</span></code> and <code class="docutils literal"><span class="pre">2</span></code>.</li>
-<li>If the protocol is datagram-based, one datagram should equal one ASGI message
-(unless size is an issue)</li>
-</ul>
-</div>
-<div class="section" id="approximate-global-ordering">
-<h3>近似於全球訂購<a class="headerlink" href="#approximate-global-ordering" title="本標題的永久連結">¶</a></h3>
-<p>While maintaining true global (across-channels) ordering of messages is
-entirely unreasonable to expect of many implementations, they should strive
-to prevent busy channels from overpowering quiet channels.</p>
-<p>For example, imagine two channels, <code class="docutils literal"><span class="pre">busy</span></code>, which spikes to 1000 messages a
-second, and <code class="docutils literal"><span class="pre">quiet</span></code>, which gets one message a second. There&#8217;s a single
-consumer running <code class="docutils literal"><span class="pre">receive(['busy',</span> <span class="pre">'quiet'])</span></code> which can handle
-around 200 messages a second.</p>
-<p>In a simplistic for-loop implementation, the channel layer might always check
-<code class="docutils literal"><span class="pre">busy</span></code> first; it always has messages available, and so the consumer never
-even gets to see a message from <code class="docutils literal"><span class="pre">quiet</span></code>, even if it was sent with the
-first batch of <code class="docutils literal"><span class="pre">busy</span></code> messages.</p>
-<p>A simple way to solve this is to randomize the order of the channel list when
-looking for messages inside the channel layer; other, better methods are also
-available, but whatever is chosen, it should try to avoid a scenario where
-a message doesn&#8217;t get received purely because another channel is busy.</p>
-</div>
-<div class="section" id="strings-and-unicode">
-<h3>字串和 Unicode<a class="headerlink" href="#strings-and-unicode" title="本標題的永久連結">¶</a></h3>
-<p>In this document, and all sub-specifications, <em>byte string</em> refers to
-<code class="docutils literal"><span class="pre">str</span></code> on Python 2 and <code class="docutils literal"><span class="pre">bytes</span></code> on Python 3. If this type still supports
-Unicode codepoints due to the underlying implementation, then any values
-should be kept within the 0 - 255 range.</p>
-<p><em>Unicode string</em> refers to <code class="docutils literal"><span class="pre">unicode</span></code> on Python 2 and <code class="docutils literal"><span class="pre">str</span></code> on Python 3.
-This document will never specify just <em>string</em> - all strings are one of the
-two exact types.</p>
-<p>Some serializers, such as <code class="docutils literal"><span class="pre">json</span></code>, cannot differentiate between byte
-strings and unicode strings; these should include logic to box one type as
-the other (for example, encoding byte strings as base64 unicode strings with
-a preceding special character, e.g. U+FFFF).</p>
-<p>路徑和群組名稱皆為Unicode字串，且額外限制只使用以下文字：</p>
-<ul class="simple">
-<li><p class="first">ASCII字母</p>
-</li>
-<li><p class="first">字元從&#8221;0&#8221;到&#8221;9&#8221;</p>
-</li>
-<li><p class="first">連字號&#8221;-&#8220;</p>
-</li>
-<li><p class="first">底線&#8221;_&#8221;</p>
-</li>
-<li><p class="first">句號&#8221;.&#8221;</p>
-</li>
-<li><p class="first">問號&#8221;?&#8221;(僅限於單讀者路徑名稱，且每個名稱限用一次)</p>
-</li>
-<li><p class="first">驚嘆號&#8221;!&#8221;(僅描述特定於進行中的路徑名稱，且每個名稱限用一次)</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="common-questions">
-<h2>常見問題<a class="headerlink" href="#common-questions" title="本標題的永久連結">¶</a></h2>
-<ol class="arabic">
-<li><p class="first">Why are messages <code class="docutils literal"><span class="pre">dicts</span></code>, rather than a more advanced type?</p>
-<p>我們希望訊息方便編輯，特別在切換流程和機器介面，所以最好是一個簡單可編輯的類型。我們期望架構將包含每個特定協議訊息在各自定義類中(例如`http.request`訊息變`Request&#8217;物件)</p>
-</li>
-</ol>
-</div>
-<div class="section" id="copyright">
-<h2>版權<a class="headerlink" href="#copyright" title="本標題的永久連結">¶</a></h2>
-<p>此文件已放於公有領域</p>
 </div>
 </div>
 
@@ -548,39 +113,20 @@ a preceding special character, e.g. U+FFFF).</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目錄</a></h3>
   <ul>
-<li><a class="reference internal" href="#">ASGI (異步伺服器閘道介面) 規劃草案</a><ul>
-<li><a class="reference internal" href="#abstract">摘要</a></li>
-<li><a class="reference internal" href="#rationale">依據</a></li>
-<li><a class="reference internal" href="#overview">總覽</a><ul>
-<li><a class="reference internal" href="#channels-and-messages">頻道和訊息</a></li>
-<li><a class="reference internal" href="#handling-protocols">處理協議</a></li>
-<li><a class="reference internal" href="#extensions">Extensions</a></li>
-<li><a class="reference internal" href="#groups">Groups</a></li>
-<li><a class="reference internal" href="#linearization">線性化</a></li>
-<li><a class="reference internal" href="#capacity">容量</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#specification-details">規格明細</a><ul>
-<li><a class="reference internal" href="#channel-semantics">Channel 語義</a></li>
-<li><a class="reference internal" href="#persistence">Persistence</a></li>
-<li><a class="reference internal" href="#message-formats">訊息格式</a></li>
-<li><a class="reference internal" href="#protocol-format-guidelines">協議格式指南</a></li>
-<li><a class="reference internal" href="#approximate-global-ordering">近似於全球訂購</a></li>
-<li><a class="reference internal" href="#strings-and-unicode">字串和 Unicode</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#common-questions">常見問題</a></li>
-<li><a class="reference internal" href="#copyright">版權</a></li>
+<li><a class="reference internal" href="#">ASGI 非同步伺服器閘道介面</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#composability">Composability</a></li>
+<li><a class="reference internal" href="#protocol-specifications">Protocol Specifications</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>上一個主題</h4>
-  <p class="topless"><a href="faqs.html"
-                        title="上一章">常見問題</a></p>
+  <p class="topless"><a href="javascript.html"
+                        title="上一章">Channels WebSocket 包裝</a></p>
   <h4>下一個主題</h4>
-  <p class="topless"><a href="community.html"
-                        title="下一章">社群專案</a></p>
+  <p class="topless"><a href="channel_layer_spec.html"
+                        title="下一章">Channel Layer 規範</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -609,12 +155,12 @@ a preceding special character, e.g. U+FFFF).</p>
           <a href="genindex.html" title="總索引"
              >索引</a></li>
         <li class="right" >
-          <a href="community.html" title="社群專案"
+          <a href="channel_layer_spec.html" title="Channel Layer 規範"
              >下一頁</a> |</li>
         <li class="right" >
-          <a href="faqs.html" title="常見問題"
+          <a href="javascript.html" title="Channels WebSocket 包裝"
              >上一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

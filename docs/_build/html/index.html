@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Django Channels &#8212; Channels-docs-zhTW 1.1.5 說明文件</title>
+    <title>Django Channels &#8212; Channels-docs-zh_TW 2.1.1 說明文件</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.5',
+        VERSION:     '2.1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜尋" href="search.html" />
-    <link rel="next" title="簡短說明" href="inshort.html" /> 
+    <link rel="next" title="簡介" href="introduction.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,9 +37,9 @@
           <a href="genindex.html" title="總索引"
              accesskey="I">索引</a></li>
         <li class="right" >
-          <a href="inshort.html" title="簡短說明"
+          <a href="introduction.html" title="簡介"
              accesskey="N">下一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -50,166 +50,160 @@
             
   <div class="section" id="django-channels">
 <h1>Django Channels<a class="headerlink" href="#django-channels" title="本標題的永久連結">¶</a></h1>
-<p>Channels 是一個讓  Django 能夠處理更多 HTTP 請求的專案，包含 WebSockets 和 HTTP2, 及有能力在回應已經被送出時去執行程式碼類似縮圖或是背景計算。</p>
-<p>這是一個很容易透過 Django 視圖模型去延伸理解，也很容易去整合與發佈。</p>
-<p>首先，讀我們  <a class="reference internal" href="concepts.html"><span class="doc">Channels 的概念</span></a> 文件先得到一個 Channels 數據底層模型的觀念與他們如何在 Django 內使用。</p>
-<p>接著，研讀 <a class="reference internal" href="getting-started.html"><span class="doc">Getting Started with Channels</span></a> 開始了解如何只需要 30 行的程式碼透過 WebSockets 啟動與執行。</p>
-<p>假如你希望快速的導覽，從 <a class="reference internal" href="inshort.html"><span class="doc">簡短說明</span></a> 開始吧。</p>
-<p>假如你有興趣做出些貢獻，請研讀我們的 <a class="reference internal" href="contributing.html"><span class="doc">貢獻</span></a> docs！</p>
+<p>Channels is a project that takes Django and extends its abilities beyond
+HTTP - to handle WebSockets, chat protocols, IoT protocols, and more.</p>
+<p>It does this by taking the core of Django and layering a fully asynchronous
+layer underneath, running Django itself in a synchronous mode but handling
+connections and sockets asynchronously, and giving you the choice to write
+in either style.</p>
+<p>To get started understanding how Channels works, read our <a class="reference internal" href="introduction.html"><span class="doc">簡介</span></a>,
+which will walk through how things work. If you&#8217;re upgrading from Channels 1,
+take a look at <a class="reference internal" href="one-to-two.html"><span class="doc">Channels 2 帶來那些新的改變？</span></a> to get an overview of the changes; things
+are substantially different.</p>
+<p>If you would like complete code examples to read alongside the documentation
+or experiment on, the <a class="reference external" href="https://github.com/andrewgodwin/channels-examples/">channels-examples</a>
+repository contains well-commented example Channels projects.</p>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">This is documentation for the <strong>2.x series</strong> of Channels. If you are looking
+for documentation for the legacy Channels 1, you can select <code class="docutils literal"><span class="pre">1.x</span></code> from the
+versions selector in the bottom-left corner.</p>
+</div>
 <div class="section" id="projects">
-<h2>專案<a class="headerlink" href="#projects" title="本標題的永久連結">¶</a></h2>
-<p>Channels 來自於五個套件：</p>
+<h2>Projects<a class="headerlink" href="#projects" title="本標題的永久連結">¶</a></h2>
+<p>Channels is comprised of several packages:</p>
 <ul class="simple">
-<li><p class="first"><a class="reference external" href="https://github.com/django/channels/">Channels</a>，the Django integration layer</p>
-</li>
+<li><a class="reference external" href="https://github.com/django/channels/">Channels</a>, the Django integration layer</li>
 <li><a class="reference external" href="https://github.com/django/daphne/">Daphne</a>, the HTTP and Websocket termination server</li>
-<li><a class="reference external" href="https://github.com/django/asgiref/">asgiref</a>, the base ASGI library/memory backend</li>
-<li><a class="reference external" href="https://github.com/django/asgi_redis/">asgi_redis</a>, the Redis channel backend</li>
-<li><a class="reference external" href="https://github.com/proofit404/asgi_rabbitmq/">asgi_rabbitmq</a>, the RabbitMQ channel backend</li>
-<li><a class="reference external" href="https://github.com/django/asgi_ipc/">asgi_ipc</a>, the POSIX IPC channel backend</li>
+<li><a class="reference external" href="https://github.com/django/asgiref/">asgiref</a>, the base ASGI library</li>
+<li><a class="reference external" href="https://github.com/django/channels_redis/">channels_redis</a>, the Redis channel layer backend (optional)</li>
 </ul>
-<p>這份文件包含系統得整體；可以從個別的儲藏庫找到個別發佈紀錄與說明。</p>
+<p>This documentation covers the system as a whole; individual release notes and
+instructions can be found in the individual repositories.</p>
 </div>
 <div class="section" id="topics">
-<h2>主題<a class="headerlink" href="#topics" title="本標題的永久連結">¶</a></h2>
+<span id="id1"></span><h2>Topics<a class="headerlink" href="#topics" title="本標題的永久連結">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="inshort.html">簡短說明</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#what-is-channels">什麼是 Channels?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#how">How?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#i-have-to-change-how-i-run-django">我必須改變我使用Django的方法？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#what-else-does-channels-give-me">Channels還給會給我什麼？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#does-it-scale">這可以縮放嗎？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#why-doesn-t-it-use-my-favourite-message-queue">為什麼它不使用我的喜好排序訊息？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#do-i-need-to-worry-about-making-all-my-code-async-friendly">Do I need to worry about making all my code async-friendly?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#what-version-of-django-does-it-work-with">What version of Django does it work with?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#official-project">Official project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inshort.html#what-do-i-read-next">What do I read next?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Channels 的概念</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#what-is-a-channel">什麼是 channel?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#how-do-we-use-channels">我們如何使用 channels?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#channel-types">Channel 類型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#groups">群組</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#next-steps">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">簡介</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#turtles-all-the-way-down">Turtles All The Way Down</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#scopes-and-events">Scopes and Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#what-is-a-consumer">What is a Consumer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#routing-and-multiple-protocols">Routing and Multiple Protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#cross-process-communication">Cross-Process Communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#django-integration">Django Integration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">安裝</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-the-latest-development-version">安裝最新的開發中版本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-the-latest-development-version">Installing the latest development version</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started with Channels</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#first-consumers">First Consumers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#groups">群組</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#running-with-channels">Running with Channels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#persisting-data">Persisting Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#authentication">Authentication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#security">Security</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#routing">Routing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#models">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#enforcing-ordering">Enforcing Ordering</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html#next-steps">Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">教學</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/part_1.html">教學第一章: 基礎設定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/part_2.html">教學第二章: 實現一個 Chat Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/part_3.html">教學第三章: 改用非同步重寫 Chat Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/part_4.html">教學第四章: 自動化測試</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/consumers.html">消費者</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/consumers.html#basic-layout">Basic Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/consumers.html#scope">Scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/consumers.html#generic-consumers">Generic Consumers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/routing.html">路由</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/routing.html#protocoltyperouter">ProtocolTypeRouter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/routing.html#urlrouter">URLRouter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/routing.html#channelnamerouter">ChannelNameRouter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/databases.html">資料庫存取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/databases.html#database-connections">Database Connections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/databases.html#database-sync-to-async">database_sync_to_async</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/channel_layers.html">Channel Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/channel_layers.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/channel_layers.html#synchronous-functions">Synchronous Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/channel_layers.html#what-to-send-over-the-channel-layer">What To Send Over The Channel Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/channel_layers.html#single-channels">Single Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/channel_layers.html#groups">Groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/channel_layers.html#using-outside-of-consumers">Using Outside Of Consumers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/sessions.html">對談 (Sessions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/sessions.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/sessions.html#session-persistence">Session Persistence</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/authentication.html">認證</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/authentication.html#django-authentication">Django authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/authentication.html#custom-authentication">Custom Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/authentication.html#how-to-log-a-user-in-out">How to log a user in/out</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/security.html">安全性</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/security.html#websockets">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/testing.html#setting-up-async-tests">Setting Up Async Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/testing.html#applicationcommunicator">ApplicationCommunicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/testing.html#httpcommunicator">HttpCommunicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/testing.html#websocketcommunicator">WebsocketCommunicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/testing.html#channelsliveservertestcase">ChannelsLiveServerTestCase</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/worker.html">Worker 與背景任務</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/worker.html#sending">Sending</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/worker.html#receiving-and-consumers">Receiving and Consumers</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="deploying.html">部署</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#setting-up-a-channel-backend">設定一個 channel 後端</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#run-worker-servers">執行使用者伺服器</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#run-interface-servers">執行介面伺服器</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#deploying-new-versions-of-code">Deploying new versions of code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#running-just-asgi">Running just ASGI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#running-asgi-alongside-wsgi">Running ASGI alongside WSGI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#running-on-a-paas">Running on a PaaS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deploying.html#scaling-up">Scaling Up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#configuring-the-asgi-application">Configuring the ASGI application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#setting-up-a-channel-backend">Setting up a channel backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#run-protocol-servers">Run protocol servers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#http-and-websocket">HTTP and WebSocket</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="generics.html">一般消費者</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generics.html#base">基礎</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generics.html#websockets">WebSockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generics.html#websocket-multiplexing">WebSocket Multiplexing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generics.html#sessions-and-users">會期和使用者</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generics.html#applying-decorators">Applying Decorators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generics.html#as-route">As route</a></li>
+<li class="toctree-l1"><a class="reference internal" href="one-to-two.html">Channels 2 帶來那些新的改變？</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="one-to-two.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-to-two.html#conceptual-changes">Conceptual Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-to-two.html#removed-components">Removed Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-to-two.html#how-to-upgrade">How to Upgrade</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="routing.html">路由</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="routing.html#filters">篩選器</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">Channels WebSocket 包裝</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="本標題的永久連結">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="asgi.html">ASGI 非同步伺服器閘道介面</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="asgi.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asgi.html#composability">Composability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asgi.html#protocol-specifications">Protocol Specifications</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="binding.html">資料綁定</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="binding.html#what-does-data-binding-allow">資料綁定可以接受什麼？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="binding.html#getting-started">入門</a></li>
-<li class="toctree-l2"><a class="reference internal" href="binding.html#frontend-considerations">前端的考量點</a></li>
-<li class="toctree-l2"><a class="reference internal" href="binding.html#custom-serialization-protocols">客製序列化/通訊協定</a></li>
-<li class="toctree-l2"><a class="reference internal" href="binding.html#dealing-with-disconnection">斷線的處理</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="javascript.html">通道 WebSocket 包裝</a></li>
-<li class="toctree-l1"><a class="reference internal" href="backends.html">通道層類型</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="backends.html#redis">Redis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backends.html#rabbitmq">RabbitMQ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backends.html#ipc">IPC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backends.html#in-memory">In-memory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backends.html#writing-custom-channel-layers">編寫自定義通道層</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="delay.html">延遲伺服器</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="delay.html#getting-started-with-delay">從延遲入門開始</a></li>
-<li class="toctree-l2"><a class="reference internal" href="delay.html#delaying-messages">訊息延遲</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="testing.html">測試消費者</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#channeltestcase">Channel 測試案例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#generic-consumers">Generic Consumers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#groups">群組</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#clients">Clients</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#applying-routes">應用路由</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#test-data-binding-with-wsclient">Test Data binding with <code class="docutils literal"><span class="pre">WSClient</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#multiple-channel-layers">Multiple Channel Layers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#live-server-test-case">Live Server Test Case</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">參考</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#consumers">消費者</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#message">訊息</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#channel">Channel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#group">群組</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#channel-layer">Channel 層</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#asgirequest">AsgiRequest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#asgihandler">AsgiHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#decorators">Decorators</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="faqs.html">常見問題</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#why-are-you-doing-this-rather-than-just-using-tornado-gevent-asyncio-etc">為何使用 Channels，而不直接使用 Tornado/gevent/asyncio/ 等其他的套件?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#why-aren-t-you-using-node-go-etc-to-proxy-to-django">為何不用 node/go/ 等來作為 Django 的代理呢?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#why-isn-t-there-guaranteed-delivery-a-retry-mechanism">為什麼沒有做到一個保證交付/重試機制？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#can-i-run-http-requests-service-calls-etc-in-parallel-from-django-without-blocking">我可以在 Django 執行 HTTP requests/service call/etc. 再不阻斷下進行平行嗎？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#how-do-i-associate-data-with-incoming-connections">我該如何與傳入的連接和資料做關聯？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#how-do-i-talk-to-channels-from-my-non-django-application">如何讓非 Django 應用與 Channels 進行通話？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#are-channels-python-2-3-or-2-3">Channels 是否支援 Python 2, 3 或是 2+3?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#why-isn-t-there-support-for-socket-io-sockjs-long-poll-fallback">為何不支持 socket.io/SockJS/long poll fallback？</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="asgi.html">ASGI (異步伺服器閘道介面) 規劃草案</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="asgi.html#abstract">摘要</a></li>
-<li class="toctree-l2"><a class="reference internal" href="asgi.html#rationale">依據</a></li>
-<li class="toctree-l2"><a class="reference internal" href="asgi.html#overview">總覽</a></li>
-<li class="toctree-l2"><a class="reference internal" href="asgi.html#specification-details">規格明細</a></li>
-<li class="toctree-l2"><a class="reference internal" href="asgi.html#common-questions">常見問題</a></li>
-<li class="toctree-l2"><a class="reference internal" href="asgi.html#copyright">版權</a></li>
+<li class="toctree-l1"><a class="reference internal" href="channel_layer_spec.html">Channel Layer 規範</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="channel_layer_spec.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="channel_layer_spec.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="channel_layer_spec.html#specification-details">Specification Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="channel_layer_spec.html#copyright">Copyright</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="community.html">社群專案</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">貢獻</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#what-can-i-work-on">我可以運用在什麼？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#i-m-a-novice-contributor-developer-can-i-help">我是一個初階 合作/開發人員 - 我可以幫什麼？</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#can-you-pay-me-for-my-time">你能支付我的時間嗎？</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">貢獻力量</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#what-can-i-work-on">What can I work on?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#i-m-a-novice-contributor-developer-can-i-help">I&#8217;m a novice contributor/developer - can I help?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#can-you-pay-me-for-my-time">Can you pay me for my time?</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="releases/index.html">發行版本說明</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="releases/1.0.0.html">1.0.0 發行公告</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releases/1.0.1.html">1.0.1 發布說明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases/index.html">發行說明</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases/1.0.0.html">1.0.0 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/1.0.1.html">1.0.1 Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/1.0.2.html">1.0.2 Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/1.0.3.html">1.0.3 Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/1.1.0.html">1.1.0 Release Notes</a></li>
@@ -218,6 +212,12 @@
 <li class="toctree-l2"><a class="reference internal" href="releases/1.1.3.html">1.1.3 Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/1.1.4.html">1.1.4 Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/1.1.5.html">1.1.5 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/1.1.6.html">1.1.6 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/2.0.0.html">2.0.0 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/2.0.1.html">2.0.1 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/2.0.2.html">2.0.2 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/2.1.0.html">2.1.0 Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/2.1.1.html">2.1.1 Release Notes</a></li>
 </ul>
 </li>
 </ul>
@@ -234,15 +234,16 @@
   <h3><a href="#">目錄</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Django Channels</a><ul>
-<li><a class="reference internal" href="#projects">專案</a></li>
-<li><a class="reference internal" href="#topics">主題</a></li>
+<li><a class="reference internal" href="#projects">Projects</a></li>
+<li><a class="reference internal" href="#topics">Topics</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>下一個主題</h4>
-  <p class="topless"><a href="inshort.html"
-                        title="下一章">簡短說明</a></p>
+  <p class="topless"><a href="introduction.html"
+                        title="下一章">簡介</a></p>
   <div role="note" aria-label="source link">
     <h3>本頁</h3>
     <ul class="this-page-menu">
@@ -271,9 +272,9 @@
           <a href="genindex.html" title="總索引"
              >索引</a></li>
         <li class="right" >
-          <a href="inshort.html" title="簡短說明"
+          <a href="introduction.html" title="簡介"
              >下一頁</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">Channels-docs-zhTW 1.1.5 說明文件</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">Channels-docs-zh_TW 2.1.1 說明文件</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

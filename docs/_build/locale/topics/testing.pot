@@ -1,0 +1,267 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018, Jason(@chairco)
+# This file is distributed under the same license as the Channels-docs-zh_TW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Channels-docs-zh_TW 2.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 20:37+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../topics/testing.rst:2
+msgid "Testing"
+msgstr ""
+
+#: ../../topics/testing.rst:4
+msgid "Testing Channels consumers is a little trickier than testing normal Django views due to their underlying asynchronous nature."
+msgstr ""
+
+#: ../../topics/testing.rst:7
+msgid "To help with testing, Channels provides test helpers called *Communicators*, which allow you to wrap up an ASGI application (like a consumer) into its own event loop and ask it questions."
+msgstr ""
+
+#: ../../topics/testing.rst:11
+msgid "They do, however, require that you have asynchronous support in your test suite. While you can do this yourself, we recommend using ``py.test`` with its ``asyncio`` plugin, which is how we'll illustrate tests below."
+msgstr ""
+
+#: ../../topics/testing.rst:17
+msgid "Setting Up Async Tests"
+msgstr ""
+
+#: ../../topics/testing.rst:19
+msgid "Firstly, you need to get ``py.test`` set up with async test support, and presumably Django test support as well. You can do this by installing the ``pytest-django`` and ``pytest-asyncio`` packages::"
+msgstr ""
+
+#: ../../topics/testing.rst:25
+msgid "Then, you need to decorate the tests you want to run async with ``pytest.mark.asyncio``. Note that you can't mix this with ``unittest.TestCase`` subclasses; you have to write async tests as top-level test functions in the native ``py.test`` style::"
+msgstr ""
+
+#: ../../topics/testing.rst:41
+msgid "If you have normal Django views, you can continue to test those with the standard Django test tools and client. You only need the async setup for code that's written as consumers."
+msgstr ""
+
+#: ../../topics/testing.rst:45
+msgid "There's a few variants of the Communicator - a plain one for generic usage, and one each for HTTP and WebSockets specifically that have shortcut methods,"
+msgstr ""
+
+#: ../../topics/testing.rst:50
+msgid "ApplicationCommunicator"
+msgstr ""
+
+#: ../../topics/testing.rst:52
+msgid "``ApplicationCommunicator`` is the generic test helper for any ASGI application. It provides several basic methods for interaction as explained below."
+msgstr ""
+
+#: ../../topics/testing.rst:55
+msgid "You should only need this generic class for non-HTTP/WebSocket tests, though you might need to fall back to it if you are testing things like HTTP chunked responses or long-polling, which aren't supported in ``HttpCommunicator`` yet."
+msgstr ""
+
+#: ../../topics/testing.rst:60
+msgid "``ApplicationCommunicator`` is actually provided by the base ``asgiref`` package, but we let you import it from ``channels.testing`` for convenience."
+msgstr ""
+
+#: ../../topics/testing.rst:63
+msgid "To construct it, pass it an application and a scope::"
+msgstr ""
+
+#: ../../topics/testing.rst:69
+msgid "send_input"
+msgstr ""
+
+#: ../../topics/testing.rst:71
+msgid "Call it to send an event to the application::"
+msgstr ""
+
+#: ../../topics/testing.rst:79
+msgid "receive_output"
+msgstr ""
+
+#: ../../topics/testing.rst:81
+msgid "Call it to receive an event from the application::"
+msgstr ""
+
+#: ../../topics/testing.rst:89
+#: ../../topics/testing.rst:247
+msgid "receive_nothing"
+msgstr ""
+
+#: ../../topics/testing.rst:91
+msgid "Call it to check that there is no event waiting to be received from the application::"
+msgstr ""
+
+#: ../../topics/testing.rst:107
+msgid "The method has two optional parameters:"
+msgstr ""
+
+#: ../../topics/testing.rst:109
+msgid "``timeout``: number of seconds to wait to ensure the queue is empty. Defaults to 0.1."
+msgstr ""
+
+#: ../../topics/testing.rst:111
+msgid "``interval``: number of seconds to wait for another check for new events. Defaults to 0.01."
+msgstr ""
+
+#: ../../topics/testing.rst:115
+msgid "wait"
+msgstr ""
+
+#: ../../topics/testing.rst:117
+msgid "Call it to wait for an application to exit (you'll need to either do this or wait for it to send you output before you can see what it did using mocks or inspection)::"
+msgstr ""
+
+#: ../../topics/testing.rst:122
+msgid "If you're expecting your application to raise an exception, use ``pytest.raises`` around ``wait``::"
+msgstr ""
+
+#: ../../topics/testing.rst:130
+msgid "HttpCommunicator"
+msgstr ""
+
+#: ../../topics/testing.rst:132
+msgid "``HttpCommunicator`` is a subclass of ``ApplicationCommunicator`` specifically tailored for HTTP requests. You need only instantiate it with your desired options::"
+msgstr ""
+
+#: ../../topics/testing.rst:139
+msgid "And then wait for its response::"
+msgstr ""
+
+#: ../../topics/testing.rst:144
+msgid "You can pass the following arguments to the constructor:"
+msgstr ""
+
+#: ../../topics/testing.rst:146
+msgid "``method``: HTTP method name (unicode string, required)"
+msgstr ""
+
+#: ../../topics/testing.rst:147
+msgid "``path``: HTTP path (unicode string, required)"
+msgstr ""
+
+#: ../../topics/testing.rst:148
+msgid "``body``: HTTP body (bytestring, optional)"
+msgstr ""
+
+#: ../../topics/testing.rst:150
+msgid "The response from the ``get_response`` method will be a dict with the following keys::"
+msgstr ""
+
+#: ../../topics/testing.rst:159
+msgid "WebsocketCommunicator"
+msgstr ""
+
+#: ../../topics/testing.rst:161
+msgid "``WebsocketCommunicator`` allows you to more easily test WebSocket consumers. It provides several convenience methods for interacting with a WebSocket application, as shown in this example::"
+msgstr ""
+
+#: ../../topics/testing.rst:178
+msgid "All of these methods are coroutines, which means you must ``await`` them. If you do not, your test will either time out (if you forgot to await a send) or try comparing things to a coroutine object (if you forgot to await a receive)."
+msgstr ""
+
+#: ../../topics/testing.rst:185
+msgid "If you don't call ``WebsocketCommunicator.disconnect()`` before your test suite ends, you may find yourself getting ``RuntimeWarnings`` about things never being awaited, as you will be killing your app off in the middle of its lifecycle. You do not, however, have to ``disconnect()`` if your app already raised an error."
+msgstr ""
+
+#: ../../topics/testing.rst:192
+msgid "connect"
+msgstr ""
+
+#: ../../topics/testing.rst:194
+msgid "Triggers the connection phase of the WebSocket and waits for the application to either accept or deny the connection. Takes no parameters and returns either:"
+msgstr ""
+
+#: ../../topics/testing.rst:198
+msgid "``(True, <chosen_subprotocol>)`` if the socket was accepted. ``chosen_subprotocol`` defaults to ``None``."
+msgstr ""
+
+#: ../../topics/testing.rst:200
+msgid "``(False, <close_code>)`` if the socket was rejected. ``close_code`` defaults to ``1000``."
+msgstr ""
+
+#: ../../topics/testing.rst:204
+msgid "send_to"
+msgstr ""
+
+#: ../../topics/testing.rst:206
+msgid "Sends a data frame to the application. Takes exactly one of ``bytes_data`` or ``text_data`` as parameters, and returns nothing::"
+msgstr ""
+
+#: ../../topics/testing.rst:211
+msgid "This method will type-check your parameters for you to ensure what you are sending really is text or bytes."
+msgstr ""
+
+#: ../../topics/testing.rst:215
+msgid "send_json_to"
+msgstr ""
+
+#: ../../topics/testing.rst:217
+msgid "Sends a JSON payload to the application as a text frame. Call it with an object and it will JSON-encode it for you, and return nothing::"
+msgstr ""
+
+#: ../../topics/testing.rst:223
+msgid "receive_from"
+msgstr ""
+
+#: ../../topics/testing.rst:225
+msgid "Receives a frame from the application and gives you either ``bytes`` or ``text`` back depending on the frame type::"
+msgstr ""
+
+#: ../../topics/testing.rst:230
+msgid "Takes an optional ``timeout`` argument with a number of seconds to wait before timing out, which defaults to 1. It will typecheck your application's responses for you as well, to ensure that text frames contain text data, and binary frames contain binary data."
+msgstr ""
+
+#: ../../topics/testing.rst:236
+msgid "receive_json_from"
+msgstr ""
+
+#: ../../topics/testing.rst:238
+msgid "Receives a text frame from the application and decodes it for you::"
+msgstr ""
+
+#: ../../topics/testing.rst:243
+msgid "Takes an optional ``timeout`` argument with a number of seconds to wait before timing out, which defaults to 1."
+msgstr ""
+
+#: ../../topics/testing.rst:249
+msgid "Checks that there is no frame waiting to be received from the application. For details see :ref:`ApplicationCommunicator <application_communicator-receive_nothing>`."
+msgstr ""
+
+#: ../../topics/testing.rst:254
+msgid "disconnect"
+msgstr ""
+
+#: ../../topics/testing.rst:256
+msgid "Closes the socket from the client side. Takes nothing and returns nothing."
+msgstr ""
+
+#: ../../topics/testing.rst:258
+msgid "You do not need to call this if the application instance you're testing already exited (for example, if it errored), but if you do call it, it will just silently return control to you."
+msgstr ""
+
+#: ../../topics/testing.rst:264
+msgid "ChannelsLiveServerTestCase"
+msgstr ""
+
+#: ../../topics/testing.rst:266
+msgid "If you just want to run standard Selenium or other tests that require a webserver to be running for external programs, you can use ``ChannelsLiveServerTestCase``, which is a drop-in replacement for the standard Django ``LiveServerTestCase``::"
+msgstr ""
+
+#: ../../topics/testing.rst:280
+msgid "You can't use an in-memory database for your live tests. Therefore include a test database file name in your settings to tell Django to use a file database if you use SQLite::"
+msgstr ""
+
+#: ../../topics/testing.rst:295
+msgid "serve_static"
+msgstr ""
+
+#: ../../topics/testing.rst:297
+msgid "Subclass ``ChannelsLiveServerTestCase`` with ``serve_static = True`` in order to serve static files (comparable to Django's ``StaticLiveServerTestCase``, you don't need to run collectstatic before or as a part of your tests setup)."
+msgstr ""
+
