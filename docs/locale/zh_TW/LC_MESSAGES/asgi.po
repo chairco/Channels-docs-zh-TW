@@ -39,6 +39,7 @@ msgid ""
 "It's a spiritual successor to WSGI, designed not only run in an asychronous "
 "fashion via ``asyncio``, but also supporting multiple protocols."
 msgstr ""
+"它是 WSGI 的精神繼承者，不僅設計為以非同步方式運行"
 
 #: ../../asgi.rst:12
 msgid ""
