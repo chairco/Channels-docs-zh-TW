@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6a1c0a7f0461909630dabe660d34bb2b4e95cb76adf7c6a639b74b1fb15b0527"
+            "sha256": "a37c7c6688fd931435da20a1087dad0053105b5c9cb6e7a5a8b92beb815143d0"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -22,10 +22,10 @@
         },
         "babel": {
             "hashes": [
-                "sha256:3318ed2960240d61cbc6558858ee00c10eed77a6508c4d1ed8e6f7f48399c975",
-                "sha256:c535c4403802f6eb38173cd4863e419e2274921a01a8aad8a5b497c131c62875"
+                "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9",
+                "sha256:bc0c176f9f6a994582230df350aa6e05ba2ebe4b3ac317eab29d9be5d2768da0"
             ],
-            "version": "==2.3.4"
+            "version": "==2.9.1"
         },
         "click": {
             "hashes": [
@@ -96,10 +96,11 @@
         },
         "six": {
             "hashes": [
-                "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",
-                "sha256:832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb"
+                "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
+                "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "version": "==1.11.0"
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==1.16.0"
         },
         "snowballstemmer": {
             "hashes": [
